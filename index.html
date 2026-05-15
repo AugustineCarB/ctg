@@ -305,6 +305,7 @@ nav.scrolled {
 /* ===== SECTION STYLES ===== */
 section {
   position: relative;
+  overflow: hidden;
 }
 
 .section-dark {
@@ -319,6 +320,28 @@ section {
 
 .section-gradient {
   background: linear-gradient(180deg, rgba(26, 10, 10, 0.5) 0%, rgba(42, 15, 15, 0.5) 100%);
+}
+
+/* ===== SECTION BACKGROUND ART ===== */
+.section-bg-art {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.section-bg-art svg {
+  position: absolute;
+  fill: none;
+  stroke: currentColor;
+}
+
+.narrative, .chart-container, .timeline-wrapper {
+  position: relative;
+  z-index: 1;
 }
 
 /* ===== NARRATIVE BLOCK ===== */
@@ -682,6 +705,107 @@ footer .disclaimer {
   text-align: right;
 }
 
+/* ===== CHAPTER CARDS ===== */
+.chapter-card {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  position: relative;
+}
+
+.chapter-card-number {
+  font-family: var(--font-sans);
+  font-size: clamp(4rem, 8vw, 8rem);
+  font-weight: 900;
+  color: var(--gold);
+  opacity: 0.12;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.chapter-card-title {
+  font-family: var(--font-sans);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: 0.02em;
+  max-width: 600px;
+}
+
+.chapter-card-line {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--gold));
+  border-radius: 2px;
+  margin: 1.5rem auto 0;
+}
+
+/* ===== STICKY SCROLLY PAIRS ===== */
+.scrolly-pair {
+  display: flex;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.scrolly-sticky {
+  flex: 1;
+  position: sticky;
+  top: 100px;
+  align-self: flex-start;
+  max-width: 520px;
+}
+
+.scrolly-narrative {
+  flex: 1;
+  max-width: 600px;
+}
+
+.scrolly-narrative p {
+  font-size: 1.1rem;
+  line-height: 1.9;
+  margin-bottom: 1.5rem;
+  color: var(--light-gray);
+}
+
+.scrolly-narrative h3 {
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 3rem 0 1rem;
+  color: var(--gold);
+}
+
+.scrolly-narrative h4 {
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 2rem 0 0.75rem;
+  color: var(--red-light);
+}
+
+.scrolly-narrative ul, .scrolly-narrative ol {
+  margin: 1rem 0 1.5rem 1.5rem;
+  color: var(--light-gray);
+}
+
+.scrolly-narrative li {
+  margin-bottom: 0.75rem;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.scrolly-narrative li strong {
+  color: var(--white);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
   .nav-links { display: none; }
@@ -689,6 +813,9 @@ footer .disclaimer {
   .timeline::before { display: none; }
   .chart-row { flex-direction: column; align-items: center; }
   .chart-row .chart-half { max-width: 100%; }
+  .scrolly-pair { flex-direction: column; }
+  .scrolly-sticky { position: static; max-width: 100%; }
+  .chapter-card { min-height: 40vh; }
 }
 </style>
 </head>
@@ -751,8 +878,116 @@ footer .disclaimer {
   </div>
 </section>
 
+<!-- Chapter Card: Overview -->
+<div class="chapter-card section-dark fade-in">
+  <div class="chapter-card-number">01</div>
+  <div class="chapter-card-title">Overview</div>
+  <div class="chapter-card-line"></div>
+</div>
+
 <!-- ===================== OVERVIEW (PDF p.1) ===================== -->
 <section class="section-dark" id="overview">
+  <!-- Lujiazui Financial District Skyline -->
+  <!-- Lujiazui Financial District Skyline — full bleed -->
+  <div class="section-bg-art" style="color: var(--gold); opacity: 0.045;">
+    <svg viewBox="0 0 1400 800" style="top: 0; left: 0; width: 100%; height: 100%;" preserveAspectRatio="xMidYMid slice" stroke-width="1.2">
+      <!-- Perspective grid floor -->
+      <line x1="0" y1="620" x2="1400" y2="620" opacity="0.4" />
+      <line x1="0" y1="660" x2="1400" y2="660" opacity="0.3" />
+      <line x1="0" y1="700" x2="1400" y2="700" opacity="0.2" />
+      <line x1="0" y1="740" x2="1400" y2="740" opacity="0.15" />
+      <line x1="0" y1="780" x2="1400" y2="780" opacity="0.1" />
+      <!-- Vanishing point rays from center -->
+      <line x1="700" y1="200" x2="0" y2="780" opacity="0.08" />
+      <line x1="700" y1="200" x2="200" y2="780" opacity="0.08" />
+      <line x1="700" y1="200" x2="400" y2="780" opacity="0.08" />
+      <line x1="700" y1="200" x2="600" y2="780" opacity="0.08" />
+      <line x1="700" y1="200" x2="800" y2="780" opacity="0.08" />
+      <line x1="700" y1="200" x2="1000" y2="780" opacity="0.08" />
+      <line x1="700" y1="200" x2="1200" y2="780" opacity="0.08" />
+      <line x1="700" y1="200" x2="1400" y2="780" opacity="0.08" />
+      <!-- Sky elements — scattered construction cranes top area -->
+      <g opacity="0.35">
+        <line x1="100" y1="40" x2="100" y2="160" />
+        <line x1="100" y1="40" x2="200" y2="40" />
+        <line x1="200" y1="40" x2="200" y2="55" />
+        <line x1="100" y1="40" x2="60" y2="60" />
+        <line x1="1250" y1="80" x2="1250" y2="180" />
+        <line x1="1250" y1="80" x2="1350" y2="80" />
+        <line x1="1350" y1="80" x2="1350" y2="92" />
+        <line x1="1250" y1="80" x2="1200" y2="100" />
+      </g>
+      <!-- Main skyline cluster (center) -->
+      <!-- Oriental Pearl Tower -->
+      <line x1="520" y1="620" x2="520" y2="250" />
+      <line x1="512" y1="620" x2="512" y2="380" />
+      <line x1="528" y1="620" x2="528" y2="380" />
+      <circle cx="520" cy="310" r="24" />
+      <circle cx="520" cy="440" r="16" />
+      <line x1="507" y1="360" x2="533" y2="360" />
+      <line x1="496" y1="520" x2="544" y2="520" />
+      <line x1="496" y1="520" x2="512" y2="380" />
+      <line x1="544" y1="520" x2="528" y2="380" />
+      <!-- Shanghai Tower -->
+      <path d="M680,620 L680,220 Q688,200 696,220 L696,620" />
+      <line x1="675" y1="620" x2="675" y2="310" />
+      <line x1="701" y1="620" x2="701" y2="310" />
+      <path d="M677,310 Q688,290 699,310" />
+      <line x1="680" y1="280" x2="696" y2="280" />
+      <line x1="680" y1="350" x2="696" y2="350" />
+      <line x1="680" y1="420" x2="696" y2="420" />
+      <line x1="680" y1="490" x2="696" y2="490" />
+      <line x1="680" y1="560" x2="696" y2="560" />
+      <!-- SWFC -->
+      <rect x="770" y="280" width="44" height="340" rx="2" />
+      <rect x="777" y="305" width="30" height="35" rx="15" />
+      <line x1="770" y1="370" x2="814" y2="370" />
+      <line x1="770" y1="430" x2="814" y2="430" />
+      <line x1="770" y1="490" x2="814" y2="490" />
+      <line x1="770" y1="550" x2="814" y2="550" />
+      <!-- Jin Mao -->
+      <path d="M620,620 L620,310 L636,280 L652,310 L652,620" />
+      <line x1="620" y1="340" x2="652" y2="340" />
+      <line x1="620" y1="380" x2="652" y2="380" />
+      <line x1="620" y1="420" x2="652" y2="420" />
+      <line x1="620" y1="460" x2="652" y2="460" />
+      <line x1="620" y1="500" x2="652" y2="500" />
+      <line x1="620" y1="540" x2="652" y2="540" />
+      <line x1="620" y1="580" x2="652" y2="580" />
+      <!-- Mid-height buildings (spread across width) -->
+      <rect x="340" y="440" width="36" height="180" rx="1" />
+      <line x1="340" y1="480" x2="376" y2="480" />
+      <line x1="340" y1="530" x2="376" y2="530" />
+      <line x1="340" y1="580" x2="376" y2="580" />
+      <rect x="390" y="400" width="30" height="220" rx="1" />
+      <line x1="390" y1="450" x2="420" y2="450" />
+      <line x1="390" y1="510" x2="420" y2="510" />
+      <rect x="440" y="470" width="28" height="150" rx="1" />
+      <rect x="860" y="420" width="40" height="200" rx="1" />
+      <line x1="860" y1="470" x2="900" y2="470" />
+      <line x1="860" y1="530" x2="900" y2="530" />
+      <rect x="920" y="460" width="32" height="160" rx="1" />
+      <line x1="920" y1="510" x2="952" y2="510" />
+      <rect x="970" y="490" width="36" height="130" rx="1" />
+      <line x1="970" y1="540" x2="1006" y2="540" />
+      <!-- Far-spread smaller buildings -->
+      <rect x="80" y="520" width="30" height="100" rx="1" />
+      <rect x="130" y="490" width="35" height="130" rx="1" />
+      <rect x="180" y="530" width="28" height="90" rx="1" />
+      <rect x="230" y="480" width="32" height="140" rx="1" />
+      <rect x="280" y="510" width="26" height="110" rx="1" />
+      <rect x="1060" y="500" width="30" height="120" rx="1" />
+      <rect x="1110" y="530" width="35" height="90" rx="1" />
+      <rect x="1160" y="480" width="28" height="140" rx="1" />
+      <rect x="1210" y="520" width="32" height="100" rx="1" />
+      <rect x="1300" y="540" width="30" height="80" rx="1" />
+      <!-- Subtle horizontal scan lines throughout -->
+      <line x1="0" y1="150" x2="300" y2="150" opacity="0.1" />
+      <line x1="1100" y1="180" x2="1400" y2="180" opacity="0.1" />
+      <line x1="0" y1="350" x2="250" y2="350" opacity="0.1" />
+      <line x1="1050" y1="380" x2="1400" y2="380" opacity="0.1" />
+    </svg>
+  </div>
   <div class="narrative fade-in">
     <h2>Overview</h2>
     <p>
@@ -767,8 +1002,66 @@ footer .disclaimer {
   </div>
 </section>
 
+<!-- Chapter Card: History -->
+<div class="chapter-card section-gradient fade-in">
+  <div class="chapter-card-number">02</div>
+  <div class="chapter-card-title">Quantitative Hedge Fund History</div>
+  <div class="chapter-card-line"></div>
+</div>
+
 <!-- ===================== QUANTITATIVE HEDGE FUND HISTORY (PDF p.2-6) ===================== -->
 <section class="section-gradient" id="history">
+  <!-- NYSE Neoclassical Columns — full bleed -->
+  <div class="section-bg-art" style="color: var(--white); opacity: 0.035;">
+    <svg viewBox="0 0 1400 800" style="top: 0; left: 0; width: 100%; height: 100%;" preserveAspectRatio="xMidYMid slice" stroke-width="1">
+      <!-- Repeating column pairs across full width -->
+      <g opacity="0.6">
+        <line x1="80" y1="0" x2="80" y2="800" /><line x1="90" y1="0" x2="90" y2="800" />
+        <line x1="240" y1="0" x2="240" y2="800" /><line x1="250" y1="0" x2="250" y2="800" />
+        <line x1="400" y1="0" x2="400" y2="800" /><line x1="410" y1="0" x2="410" y2="800" />
+        <line x1="560" y1="0" x2="560" y2="800" /><line x1="570" y1="0" x2="570" y2="800" />
+        <line x1="720" y1="0" x2="720" y2="800" /><line x1="730" y1="0" x2="730" y2="800" />
+        <line x1="880" y1="0" x2="880" y2="800" /><line x1="890" y1="0" x2="890" y2="800" />
+        <line x1="1040" y1="0" x2="1040" y2="800" /><line x1="1050" y1="0" x2="1050" y2="800" />
+        <line x1="1200" y1="0" x2="1200" y2="800" /><line x1="1210" y1="0" x2="1210" y2="800" />
+        <line x1="1360" y1="0" x2="1360" y2="800" /><line x1="1370" y1="0" x2="1370" y2="800" />
+      </g>
+      <!-- Horizontal entablature bands -->
+      <rect x="0" y="60" width="1400" height="12" rx="1" opacity="0.5" />
+      <rect x="0" y="730" width="1400" height="12" rx="1" opacity="0.5" />
+      <!-- Column capitals at top -->
+      <g opacity="0.4">
+        <ellipse cx="85" cy="72" rx="12" ry="4" />
+        <ellipse cx="245" cy="72" rx="12" ry="4" />
+        <ellipse cx="405" cy="72" rx="12" ry="4" />
+        <ellipse cx="565" cy="72" rx="12" ry="4" />
+        <ellipse cx="725" cy="72" rx="12" ry="4" />
+        <ellipse cx="885" cy="72" rx="12" ry="4" />
+        <ellipse cx="1045" cy="72" rx="12" ry="4" />
+        <ellipse cx="1205" cy="72" rx="12" ry="4" />
+        <ellipse cx="1365" cy="72" rx="12" ry="4" />
+      </g>
+      <!-- Column bases at bottom -->
+      <g opacity="0.4">
+        <ellipse cx="85" cy="730" rx="14" ry="5" />
+        <ellipse cx="245" cy="730" rx="14" ry="5" />
+        <ellipse cx="405" cy="730" rx="14" ry="5" />
+        <ellipse cx="565" cy="730" rx="14" ry="5" />
+        <ellipse cx="725" cy="730" rx="14" ry="5" />
+        <ellipse cx="885" cy="730" rx="14" ry="5" />
+        <ellipse cx="1045" cy="730" rx="14" ry="5" />
+        <ellipse cx="1205" cy="730" rx="14" ry="5" />
+        <ellipse cx="1365" cy="730" rx="14" ry="5" />
+      </g>
+      <!-- Pediment centered -->
+      <path d="M400,60 L700,10 L1000,60" opacity="0.5" />
+      <path d="M450,58 L700,20 L950,58" opacity="0.35" />
+      <!-- Floor steps at bottom -->
+      <line x1="0" y1="750" x2="1400" y2="750" opacity="0.3" />
+      <line x1="0" y1="770" x2="1400" y2="770" opacity="0.2" />
+      <line x1="0" y1="790" x2="1400" y2="790" opacity="0.1" />
+    </svg>
+  </div>
   <div class="narrative fade-in">
     <h2>Quantitative Hedge Fund History</h2>
     <p>
@@ -877,6 +1170,43 @@ footer .disclaimer {
 
 <!-- ===================== CHINA HISTORY (PDF p.5-6) ===================== -->
 <section class="section-dark">
+  <!-- Shanghai Stock Exchange — concentric circles full bleed -->
+  <div class="section-bg-art" style="color: var(--red-light); opacity: 0.04;">
+    <svg viewBox="0 0 1400 800" style="top: 0; left: 0; width: 100%; height: 100%;" preserveAspectRatio="xMidYMid slice" stroke-width="1">
+      <!-- Primary concentric circles (left cluster) -->
+      <circle cx="250" cy="300" r="240" opacity="0.5" />
+      <circle cx="250" cy="300" r="200" opacity="0.45" />
+      <circle cx="250" cy="300" r="160" opacity="0.4" />
+      <circle cx="250" cy="300" r="120" opacity="0.35" />
+      <circle cx="250" cy="300" r="80" opacity="0.3" />
+      <circle cx="250" cy="300" r="40" opacity="0.25" />
+      <!-- Cross through primary -->
+      <line x1="250" y1="60" x2="250" y2="540" opacity="0.3" />
+      <line x1="10" y1="300" x2="490" y2="300" opacity="0.3" />
+      <line x1="80" y1="130" x2="420" y2="470" opacity="0.2" />
+      <line x1="420" y1="130" x2="80" y2="470" opacity="0.2" />
+      <!-- Secondary concentric circles (right cluster) -->
+      <circle cx="1100" cy="500" r="220" opacity="0.35" />
+      <circle cx="1100" cy="500" r="180" opacity="0.3" />
+      <circle cx="1100" cy="500" r="140" opacity="0.25" />
+      <circle cx="1100" cy="500" r="100" opacity="0.2" />
+      <circle cx="1100" cy="500" r="60" opacity="0.15" />
+      <!-- Cross through secondary -->
+      <line x1="1100" y1="280" x2="1100" y2="720" opacity="0.2" />
+      <line x1="880" y1="500" x2="1320" y2="500" opacity="0.2" />
+      <!-- Small accent circles scattered -->
+      <circle cx="700" cy="150" r="50" opacity="0.15" />
+      <circle cx="700" cy="150" r="30" opacity="0.12" />
+      <circle cx="900" cy="200" r="35" opacity="0.12" />
+      <circle cx="500" cy="650" r="45" opacity="0.12" />
+      <circle cx="1300" cy="120" r="40" opacity="0.1" />
+      <circle cx="150" cy="700" r="55" opacity="0.1" />
+      <!-- Horizontal scan lines -->
+      <line x1="0" y1="100" x2="1400" y2="100" opacity="0.08" />
+      <line x1="0" y1="400" x2="1400" y2="400" opacity="0.08" />
+      <line x1="0" y1="650" x2="1400" y2="650" opacity="0.08" />
+    </svg>
+  </div>
   <div class="narrative fade-in">
     <h2>China History</h2>
   </div>
@@ -976,8 +1306,67 @@ footer .disclaimer {
   </div>
 </section>
 
+<!-- Chapter Card: China vs Global -->
+<div class="chapter-card section-dark fade-in">
+  <div class="chapter-card-number">03</div>
+  <div class="chapter-card-title">China vs. Global</div>
+  <div class="chapter-card-line"></div>
+</div>
+
 <!-- ===================== QUANT DEVELOPMENT STAGES: CHINA VS. GLOBAL (PDF p.7-12) ===================== -->
 <section class="section-dark" id="china-vs-global">
+  <!-- Dual Globe Hemispheres — full bleed with grid -->
+  <div class="section-bg-art" style="color: var(--gold); opacity: 0.035;">
+    <svg viewBox="0 0 1400 800" style="top: 0; left: 0; width: 100%; height: 100%;" preserveAspectRatio="xMidYMid slice" stroke-width="1">
+      <!-- Background longitude/latitude grid -->
+      <g opacity="0.15">
+        <line x1="0" y1="100" x2="1400" y2="100" />
+        <line x1="0" y1="200" x2="1400" y2="200" />
+        <line x1="0" y1="300" x2="1400" y2="300" />
+        <line x1="0" y1="400" x2="1400" y2="400" />
+        <line x1="0" y1="500" x2="1400" y2="500" />
+        <line x1="0" y1="600" x2="1400" y2="600" />
+        <line x1="0" y1="700" x2="1400" y2="700" />
+        <line x1="100" y1="0" x2="100" y2="800" />
+        <line x1="250" y1="0" x2="250" y2="800" />
+        <line x1="400" y1="0" x2="400" y2="800" />
+        <line x1="550" y1="0" x2="550" y2="800" />
+        <line x1="700" y1="0" x2="700" y2="800" />
+        <line x1="850" y1="0" x2="850" y2="800" />
+        <line x1="1000" y1="0" x2="1000" y2="800" />
+        <line x1="1150" y1="0" x2="1150" y2="800" />
+        <line x1="1300" y1="0" x2="1300" y2="800" />
+      </g>
+      <!-- Western hemisphere (upper left) -->
+      <g opacity="0.7">
+        <circle cx="300" cy="280" r="200" />
+        <ellipse cx="300" cy="280" rx="200" ry="65" />
+        <ellipse cx="300" cy="280" rx="65" ry="200" />
+        <ellipse cx="300" cy="280" rx="130" ry="200" />
+        <ellipse cx="300" cy="185" rx="185" ry="32" />
+        <ellipse cx="300" cy="375" rx="185" ry="32" />
+        <path d="M260,110 Q240,155 250,190 Q260,210 245,245 Q230,265 240,310 Q250,340 235,385 Q225,405 230,430" />
+        <path d="M280,120 Q300,145 310,180 Q320,200 305,225 Q295,255 310,290 Q330,310 340,345 Q350,365 335,400" />
+      </g>
+      <!-- Eastern hemisphere (lower right) -->
+      <g opacity="0.7">
+        <circle cx="1100" cy="520" r="200" />
+        <ellipse cx="1100" cy="520" rx="200" ry="65" />
+        <ellipse cx="1100" cy="520" rx="65" ry="200" />
+        <ellipse cx="1100" cy="520" rx="130" ry="200" />
+        <ellipse cx="1100" cy="425" rx="185" ry="32" />
+        <ellipse cx="1100" cy="615" rx="185" ry="32" />
+        <path d="M1060,350 Q1080,375 1110,365 Q1140,375 1160,400 Q1180,420 1170,455 Q1160,475 1175,500 Q1185,520 1170,555 Q1150,575 1140,610" />
+        <path d="M1050,385 Q1030,420 1040,465 Q1050,500 1030,535 Q1020,565 1035,600" />
+      </g>
+      <!-- Connection arc between globes -->
+      <path d="M500,280 Q700,200 900,520" stroke-dasharray="10,8" opacity="0.35" />
+      <polygon points="895,512 910,522 898,528" style="fill: currentColor; stroke: none;" opacity="0.35" />
+      <!-- Small orbiting dots -->
+      <circle cx="500" cy="280" r="4" style="fill: currentColor; stroke: none;" opacity="0.3" />
+      <circle cx="700" cy="200" r="3" style="fill: currentColor; stroke: none;" opacity="0.2" />
+    </svg>
+  </div>
   <div class="narrative fade-in">
     <h2>Quant Development Stages: China vs. Global</h2>
 
@@ -1062,35 +1451,33 @@ footer .disclaimer {
     </div>
   </div>
 
-  <div class="narrative fade-in no-pad-top">
-    <h3>Strategy Diversity</h3>
-    <p>
-      Due to restrictions on short selling, leverage, and the limited availability of financial derivatives, quantitative investing in China is currently concentrated in the equity market, with 75% of strategies focused on quant equities. In contrast, U.S. quant firms operate across a wider range of asset classes and regions. For example, quant macro strategies account for 26% of the U.S. quant market but only account for 4% in China. Similarly, CTA (Commodity Trading Advisor) strategies represent 32% of the U.S. market compared to just 9% in China. Moreover, China's equity market is primarily facilitated through the Shanghai and Shenzhen stock exchanges, while the U.S. has 13 national exchanges and over 300 trading platforms. The diversity in the U.S. market enables a broader array of quant strategies, including cross-exchange arbitrage and dark pool trading.
-    </p>
-  </div>
-
-  <div class="chart-container fade-in">
-    <div class="chart-box">
-      <div class="chart-title">Quant Strategy Allocation by AUM</div>
-      <div class="chart-row" style="margin-top: 1.5rem;">
-        <div class="chart-half">
-          <div class="chart-subtitle">China (2021)</div>
-          <canvas id="chartStrategyCN" height="280"></canvas>
+  <div class="scrolly-pair fade-in">
+    <div class="scrolly-sticky">
+      <div class="chart-box">
+        <div class="chart-title">Quant Strategy Allocation by AUM</div>
+        <div class="chart-row" style="margin-top: 1.5rem;">
+          <div class="chart-half">
+            <div class="chart-subtitle">China (2021)</div>
+            <canvas id="chartStrategyCN" height="280"></canvas>
+          </div>
+          <div class="chart-half">
+            <div class="chart-subtitle">United States (2023)</div>
+            <canvas id="chartStrategyUS" height="280"></canvas>
+          </div>
         </div>
-        <div class="chart-half">
-          <div class="chart-subtitle">United States (2023)</div>
-          <canvas id="chartStrategyUS" height="280"></canvas>
-        </div>
+        <p class="chart-source">Source: AMAC, CITIC Securities (2021) / Aurum (2023.12)</p>
       </div>
-      <p class="chart-source">Source: AMAC, CITIC Securities (2021) / Aurum (2023.12)</p>
     </div>
-  </div>
-
-  <div class="narrative fade-in no-pad-top">
-    <h3>Quant Trading Participation Rate</h3>
-    <p>
-      Quant trading accounts for an estimated 20&ndash;30% of Chinese equity market volume, which is lower than the estimated 58% in the U.S. However, stricter regulations and the dominance of auction trading mechanisms in China, limit high-frequency trading and market-making activities, constraining the potential for growth in trading participation. For context, buy-side quant funds in the U.S. contribute only about 17% of the total equity market volume.
-    </p>
+    <div class="scrolly-narrative">
+      <h3>Strategy Diversity</h3>
+      <p>
+        Due to restrictions on short selling, leverage, and the limited availability of financial derivatives, quantitative investing in China is currently concentrated in the equity market, with 75% of strategies focused on quant equities. In contrast, U.S. quant firms operate across a wider range of asset classes and regions. For example, quant macro strategies account for 26% of the U.S. quant market but only account for 4% in China. Similarly, CTA (Commodity Trading Advisor) strategies represent 32% of the U.S. market compared to just 9% in China. Moreover, China's equity market is primarily facilitated through the Shanghai and Shenzhen stock exchanges, while the U.S. has 13 national exchanges and over 300 trading platforms. The diversity in the U.S. market enables a broader array of quant strategies, including cross-exchange arbitrage and dark pool trading.
+      </p>
+      <h3>Quant Trading Participation Rate</h3>
+      <p>
+        Quant trading accounts for an estimated 20&ndash;30% of Chinese equity market volume, which is lower than the estimated 58% in the U.S. However, stricter regulations and the dominance of auction trading mechanisms in China, limit high-frequency trading and market-making activities, constraining the potential for growth in trading participation. For context, buy-side quant funds in the U.S. contribute only about 17% of the total equity market volume.
+      </p>
+    </div>
   </div>
 
   <div class="chart-container fade-in">
@@ -1136,8 +1523,64 @@ footer .disclaimer {
   </div>
 </section>
 
+<!-- Chapter Card: Distinctive Features -->
+<div class="chapter-card section-gradient fade-in">
+  <div class="chapter-card-number">04</div>
+  <div class="chapter-card-title">Distinctive Features</div>
+  <div class="chapter-card-line"></div>
+</div>
+
 <!-- ===================== DISTINCTIVE FEATURES (PDF p.13-19) ===================== -->
 <section class="section-dark" id="features">
+  <!-- Candlestick Chart Patterns + Math Symbols — full bleed -->
+  <div class="section-bg-art" style="color: var(--gold); opacity: 0.04;">
+    <svg viewBox="0 0 1400 800" style="top: 0; left: 0; width: 100%; height: 100%;" preserveAspectRatio="xMidYMid slice" stroke-width="1">
+      <!-- Candlesticks spread across full width — cluster 1 (left) -->
+      <g opacity="0.5">
+        <line x1="60" y1="100" x2="60" y2="300" /><rect x="52" y="150" width="16" height="90" rx="1" />
+        <line x1="120" y1="160" x2="120" y2="340" /><rect x="112" y="200" width="16" height="80" rx="1" />
+        <line x1="180" y1="80" x2="180" y2="260" /><rect x="172" y="110" width="16" height="100" rx="1" />
+        <line x1="240" y1="130" x2="240" y2="320" /><rect x="232" y="170" width="16" height="90" rx="1" />
+        <line x1="300" y1="60" x2="300" y2="220" /><rect x="292" y="90" width="16" height="80" rx="1" />
+      </g>
+      <!-- Cluster 2 (center-left) -->
+      <g opacity="0.4">
+        <line x1="420" y1="300" x2="420" y2="520" /><rect x="412" y="350" width="16" height="100" rx="1" />
+        <line x1="480" y1="350" x2="480" y2="560" /><rect x="472" y="400" width="16" height="90" rx="1" />
+        <line x1="540" y1="280" x2="540" y2="480" /><rect x="532" y="320" width="16" height="100" rx="1" />
+        <line x1="600" y1="320" x2="600" y2="500" /><rect x="592" y="360" width="16" height="80" rx="1" />
+      </g>
+      <!-- Cluster 3 (center-right) -->
+      <g opacity="0.45">
+        <line x1="740" y1="150" x2="740" y2="380" /><rect x="732" y="200" width="16" height="110" rx="1" />
+        <line x1="800" y1="200" x2="800" y2="400" /><rect x="792" y="250" width="16" height="90" rx="1" />
+        <line x1="860" y1="120" x2="860" y2="310" /><rect x="852" y="160" width="16" height="100" rx="1" />
+        <line x1="920" y1="170" x2="920" y2="360" /><rect x="912" y="210" width="16" height="95" rx="1" />
+      </g>
+      <!-- Cluster 4 (right) -->
+      <g opacity="0.35">
+        <line x1="1040" y1="400" x2="1040" y2="620" /><rect x="1032" y="450" width="16" height="100" rx="1" />
+        <line x1="1100" y1="440" x2="1100" y2="650" /><rect x="1092" y="490" width="16" height="90" rx="1" />
+        <line x1="1160" y1="380" x2="1160" y2="580" /><rect x="1152" y="420" width="16" height="100" rx="1" />
+        <line x1="1220" y1="420" x2="1220" y2="610" /><rect x="1212" y="460" width="16" height="85" rx="1" />
+        <line x1="1280" y1="360" x2="1280" y2="540" /><rect x="1272" y="400" width="16" height="80" rx="1" />
+        <line x1="1340" y1="390" x2="1340" y2="570" /><rect x="1332" y="430" width="16" height="85" rx="1" />
+      </g>
+      <!-- Trend lines -->
+      <path d="M40,280 Q250,200 500,250 Q750,180 1000,220 Q1200,200 1400,240" stroke-dasharray="6,4" opacity="0.3" />
+      <path d="M0,550 Q300,480 600,520 Q900,450 1200,490 Q1350,470 1400,480" stroke-dasharray="6,4" opacity="0.2" />
+      <!-- Math symbols scattered across full area -->
+      <text x="80" y="450" font-size="32" font-family="serif" style="fill: currentColor; stroke: none;" opacity="0.4">&alpha;</text>
+      <text x="350" y="180" font-size="28" font-family="serif" style="fill: currentColor; stroke: none;" opacity="0.3">&beta;</text>
+      <text x="650" y="550" font-size="36" font-family="serif" style="fill: currentColor; stroke: none;" opacity="0.4">&Sigma;</text>
+      <text x="950" y="120" font-size="30" font-family="serif" style="fill: currentColor; stroke: none;" opacity="0.3">&mu;</text>
+      <text x="1100" y="300" font-size="32" font-family="serif" style="fill: currentColor; stroke: none;" opacity="0.35">&sigma;</text>
+      <text x="200" y="650" font-size="26" font-family="serif" style="fill: currentColor; stroke: none;" opacity="0.25">&Delta;</text>
+      <text x="500" y="700" font-size="28" font-family="serif" style="fill: currentColor; stroke: none;" opacity="0.25">&lambda;</text>
+      <text x="800" y="700" font-size="30" font-family="serif" style="fill: currentColor; stroke: none;" opacity="0.25">&rho;</text>
+      <text x="1300" y="700" font-size="26" font-family="serif" style="fill: currentColor; stroke: none;" opacity="0.2">&theta;</text>
+    </svg>
+  </div>
   <div class="narrative fade-in">
     <h2>Distinctive Features</h2>
     <p>
@@ -1332,8 +1775,90 @@ footer .disclaimer {
   </div>
 </section>
 
+<!-- Chapter Card: HFT -->
+<div class="chapter-card section-dark fade-in">
+  <div class="chapter-card-number">05</div>
+  <div class="chapter-card-title">High-Frequency Trading in China</div>
+  <div class="chapter-card-line"></div>
+</div>
+
 <!-- ===================== HIGH-FREQUENCY TRADING IN CHINA (PDF p.20-28) ===================== -->
 <section class="section-dark" id="hft">
+  <!-- Circuit Board / Data Transmission Pattern -->
+  <div class="section-bg-art" style="color: var(--red-light); opacity: 0.04;">
+    <svg viewBox="0 0 1000 800" style="top: 0; left: 0; width: 100%; height: 100%;" preserveAspectRatio="xMidYMid slice" stroke-width="1">
+      <!-- Horizontal traces -->
+      <line x1="0" y1="100" x2="300" y2="100" />
+      <line x1="350" y1="100" x2="600" y2="100" />
+      <line x1="0" y1="250" x2="200" y2="250" />
+      <line x1="250" y1="250" x2="500" y2="250" />
+      <line x1="550" y1="250" x2="800" y2="250" />
+      <line x1="0" y1="400" x2="150" y2="400" />
+      <line x1="200" y1="400" x2="450" y2="400" />
+      <line x1="500" y1="400" x2="700" y2="400" />
+      <line x1="750" y1="400" x2="1000" y2="400" />
+      <line x1="100" y1="550" x2="400" y2="550" />
+      <line x1="450" y1="550" x2="700" y2="550" />
+      <line x1="0" y1="700" x2="350" y2="700" />
+      <line x1="400" y1="700" x2="650" y2="700" />
+      <line x1="700" y1="700" x2="1000" y2="700" />
+      <!-- Vertical traces -->
+      <line x1="300" y1="100" x2="300" y2="200" />
+      <line x1="300" y1="200" x2="350" y2="200" />
+      <line x1="350" y1="200" x2="350" y2="100" />
+      <line x1="200" y1="250" x2="200" y2="350" />
+      <line x1="200" y1="350" x2="250" y2="350" />
+      <line x1="250" y1="350" x2="250" y2="250" />
+      <line x1="500" y1="250" x2="500" y2="400" />
+      <line x1="550" y1="250" x2="550" y2="350" />
+      <line x1="700" y1="400" x2="700" y2="550" />
+      <line x1="150" y1="400" x2="150" y2="500" />
+      <line x1="150" y1="500" x2="200" y2="500" />
+      <line x1="200" y1="500" x2="200" y2="400" />
+      <line x1="450" y1="400" x2="450" y2="550" />
+      <line x1="400" y1="550" x2="400" y2="700" />
+      <line x1="650" y1="550" x2="650" y2="650" />
+      <line x1="650" y1="650" x2="700" y2="650" />
+      <line x1="700" y1="650" x2="700" y2="700" />
+      <!-- Right side vertical traces -->
+      <line x1="800" y1="250" x2="800" y2="400" />
+      <line x1="850" y1="100" x2="850" y2="250" />
+      <line x1="850" y1="250" x2="1000" y2="250" />
+      <line x1="900" y1="550" x2="900" y2="700" />
+      <!-- Circuit nodes (small circles at junctions) -->
+      <circle cx="300" cy="100" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="350" cy="100" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="200" cy="250" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="250" cy="250" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="500" cy="250" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="550" cy="250" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="150" cy="400" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="200" cy="400" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="450" cy="400" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="500" cy="400" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="700" cy="400" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="750" cy="400" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="400" cy="550" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="450" cy="550" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="700" cy="700" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="800" cy="250" r="5" style="fill: currentColor; stroke: none;" />
+      <circle cx="850" cy="100" r="4" style="fill: currentColor; stroke: none;" />
+      <!-- IC chip outlines -->
+      <rect x="280" y="140" width="90" height="50" rx="3" />
+      <rect x="430" y="320" width="90" height="50" rx="3" />
+      <rect x="620" y="470" width="90" height="50" rx="3" />
+      <rect x="130" y="430" width="90" height="50" rx="3" />
+      <!-- Small pins on chips -->
+      <line x1="290" y1="140" x2="290" y2="130" />
+      <line x1="310" y1="140" x2="310" y2="130" />
+      <line x1="330" y1="140" x2="330" y2="130" />
+      <line x1="350" y1="140" x2="350" y2="130" />
+      <line x1="290" y1="190" x2="290" y2="200" />
+      <line x1="310" y1="190" x2="310" y2="200" />
+      <line x1="330" y1="190" x2="330" y2="200" />
+      <line x1="350" y1="190" x2="350" y2="200" />
+    </svg>
+  </div>
   <div class="narrative fade-in">
     <h2>High-Frequency Trading in China</h2>
 
@@ -1368,23 +1893,13 @@ footer .disclaimer {
     </div>
   </div>
 
-  <div class="narrative fade-in no-pad-top">
-    <h3>Distinguishing Characteristics</h3>
-    <p>
-      According to estimates from Bloomberg Intelligence, HFT accounts for approximately 50% of the total trading volume in U.S. equities. In China, as reported by the CSRC, HFT accounts for about 20% of the total market volume in 2023. China's current HFT amount is roughly equivalent to U.S. volumes in 2005. However, due to differences in market structure, trading systems, and regulatory frameworks, it is challenging for HFT in China to reach the same proportion of trading volume that is seen in the U.S. today.
-    </p>
-  </div>
-
-  <div class="chart-container fade-in">
-    <div class="chart-box">
-      <div class="chart-title">Equity Volume by HFT (%) in the US &amp; China</div>
-      <canvas id="chartHFTVolume" height="320"></canvas>
-      <p class="chart-source">Source: TABB Group estimate (before 2012), Bloomberg Intelligence (since 2012)</p>
-    </div>
-  </div>
-
-  <div class="narrative fade-in no-pad-top">
-    <h3>T+1 Trading System</h3>
+  <div class="scrolly-pair fade-in">
+    <div class="scrolly-narrative">
+      <h3>Distinguishing Characteristics</h3>
+      <p>
+        According to estimates from Bloomberg Intelligence, HFT accounts for approximately 50% of the total trading volume in U.S. equities. In China, as reported by the CSRC, HFT accounts for about 20% of the total market volume in 2023. China's current HFT amount is roughly equivalent to U.S. volumes in 2005. However, due to differences in market structure, trading systems, and regulatory frameworks, it is challenging for HFT in China to reach the same proportion of trading volume that is seen in the U.S. today.
+      </p>
+      <h3>T+1 Trading System</h3>
     <p>
       Unlike the T+0 trading system used in the U.S. and Hong Kong stock markets, China's stock market operates under a T+1 system, meaning stocks purchased on a given day can only be sold the next day or later. As a result, HFT in China requires acquiring base stock positions to enable intraday trading. The base stock positions can be obtained by stock borrowing from brokers or holding stocks directly. For the latter, the simplest choice could be a benchmark index constituent, but in reality, it tends to be more complex and are selected by a quant model. In contrast, U.S. HFT typically concludes the trading day with minimal or no positions.
     </p>
@@ -1406,7 +1921,17 @@ footer .disclaimer {
         </ul>
       </li>
     </ul>
+    </div>
+    <div class="scrolly-sticky">
+      <div class="chart-box">
+        <div class="chart-title">Equity Volume by HFT (%) in the US &amp; China</div>
+        <canvas id="chartHFTVolume" height="320"></canvas>
+        <p class="chart-source">Source: TABB Group estimate (before 2012), Bloomberg Intelligence (since 2012)</p>
+      </div>
+    </div>
+  </div>
 
+  <div class="narrative fade-in no-pad-top">
     <h3>China's Markets Are Not Conducive to Market Making or Cross-Exchange Arbitrage Strategies</h3>
     <p>
       In the U.S., the market operates under a market maker system, where high-frequency market-making strategies play a key role in HFT. According to Bloomberg Intelligence estimates, high-frequency market-making strategies account for approximately 60% of all HFT activity. This dominance is largely due to the fragmented market structure, with 10+ exchanges and 50+ dark pools, allowing the same stock to be traded across different venues. The Regulation NMS Act mandates that investors receive the best available price across all exchanges, making the market reliant on market-making strategies to provide liquidity. The primary sources of profit for market makers are exchange rebates and the bid-ask spread.
@@ -1548,30 +2073,78 @@ footer .disclaimer {
   </div>
 </section>
 
+<!-- Chapter Card: Investing -->
+<div class="chapter-card section-gradient fade-in">
+  <div class="chapter-card-number">06</div>
+  <div class="chapter-card-title">Investing in Chinese Quant Strategies</div>
+  <div class="chapter-card-line"></div>
+</div>
+
 <!-- ===================== INVESTING IN CHINESE QUANT STRATEGIES (PDF p.29-35) ===================== -->
 <section class="section-gradient" id="investing">
+  <!-- Great Hall of the People + Seismograph Lines — full bleed -->
+  <div class="section-bg-art" style="color: var(--white); opacity: 0.04;">
+    <svg viewBox="0 0 1400 800" style="top: 0; left: 0; width: 100%; height: 100%;" preserveAspectRatio="xMidYMid slice" stroke-width="1">
+      <!-- Seismograph lines at multiple heights -->
+      <path d="M0,100 L180,100 L198,65 L212,135 L226,45 L240,140 L254,55 L268,125 L282,70 L300,100 L500,100 L516,78 L530,122 L544,72 L558,118 L572,82 L590,100 L800,100 L818,60 L832,130 L846,50 L860,135 L874,60 L892,100 L1100,100 L1118,75 L1132,125 L1146,70 L1160,120 L1180,100 L1400,100" opacity="0.5" />
+      <path d="M0,400 L250,400 L270,370 L285,430 L300,360 L315,440 L330,365 L350,400 L600,400 L620,380 L635,420 L650,375 L665,415 L680,385 L700,400 L1000,400 L1020,365 L1035,435 L1050,355 L1065,440 L1080,370 L1100,400 L1400,400" opacity="0.35" />
+      <path d="M0,680 L300,680 L320,655 L335,705 L350,650 L365,710 L380,660 L400,680 L700,680 L720,660 L735,700 L750,655 L765,695 L780,665 L800,680 L1100,680 L1120,650 L1135,710 L1150,645 L1165,715 L1180,655 L1200,680 L1400,680" opacity="0.25" />
+      <!-- Great Hall colonnade (center, mid-section) -->
+      <g opacity="0.4">
+        <path d="M200,550 L250,520 L700,505 L1150,520 L1200,550" />
+        <path d="M230,550 L280,535 L700,525 L1120,535 L1170,550" />
+        <rect x="250" y="550" width="900" height="80" rx="0" />
+        <line x1="300" y1="550" x2="300" y2="630" />
+        <line x1="370" y1="550" x2="370" y2="630" />
+        <line x1="440" y1="550" x2="440" y2="630" />
+        <line x1="510" y1="550" x2="510" y2="630" />
+        <line x1="580" y1="550" x2="580" y2="630" />
+        <line x1="650" y1="550" x2="650" y2="630" />
+        <line x1="720" y1="550" x2="720" y2="630" />
+        <line x1="790" y1="550" x2="790" y2="630" />
+        <line x1="860" y1="550" x2="860" y2="630" />
+        <line x1="930" y1="550" x2="930" y2="630" />
+        <line x1="1000" y1="550" x2="1000" y2="630" />
+        <line x1="1070" y1="550" x2="1070" y2="630" />
+        <circle cx="700" cy="540" r="12" />
+        <line x1="220" y1="630" x2="1180" y2="630" />
+        <line x1="200" y1="645" x2="1200" y2="645" />
+      </g>
+      <!-- Scattered scale/balance symbols (justice/risk) -->
+      <g opacity="0.15">
+        <line x1="120" y1="230" x2="120" y2="280" />
+        <line x1="80" y1="230" x2="160" y2="230" />
+        <path d="M80,230 Q80,250 100,250" />
+        <path d="M160,230 Q160,250 140,250" />
+        <line x1="1280" y1="250" x2="1280" y2="300" />
+        <line x1="1240" y1="250" x2="1320" y2="250" />
+        <path d="M1240,250 Q1240,270 1260,270" />
+        <path d="M1320,250 Q1320,270 1300,270" />
+      </g>
+    </svg>
+  </div>
   <div class="narrative fade-in">
     <h2>Investing in Chinese Quant Strategies</h2>
-
-    <h3>Attractive Investment Returns</h3>
-    <p>
-      In recent years, onshore Quant Equity EIFs have delivered more attractive excess returns compared to discretionary equity strategies. The chart below shows that, over the past three years through June 2024, the excess returns of various quant strategies have outperformed discretionary strategies, despite a pullback in quant alpha at the beginning of 2024.
-    </p>
   </div>
 
-  <div class="chart-container fade-in">
-    <div class="chart-box">
-      <div class="chart-title">Quants Outperformed Discretionary Offerings Over Last 3 Years</div>
-      <div class="chart-subtitle">Cumulative returns, Jul 2021 &ndash; Jun 2024</div>
-      <canvas id="chartQuantVsDisc" height="360"></canvas>
-      <p class="chart-source">Source: Clocktower created strategy indices (median of onshore funds&rsquo; weekly gross returns, Jul 2021 to Jun 2024)</p>
+  <div class="scrolly-pair fade-in">
+    <div class="scrolly-sticky">
+      <div class="chart-box">
+        <div class="chart-title">Quants Outperformed Discretionary Offerings Over Last 3 Years</div>
+        <div class="chart-subtitle">Cumulative returns, Jul 2021 &ndash; Jun 2024</div>
+        <canvas id="chartQuantVsDisc" height="360"></canvas>
+        <p class="chart-source">Source: Clocktower created strategy indices (median of onshore funds&rsquo; weekly gross returns, Jul 2021 to Jun 2024)</p>
+      </div>
     </div>
-  </div>
-
-  <div class="narrative fade-in no-pad-top">
-    <p>
-      Additionally, quant market-neutral and quant T0 strategies offer a more stable risk-return profile, with median volatilities of 6.38% and 6.57%, respectively, which is significantly lower than the typical 20.55% volatility of discretionary strategies. Moreover, the median Sharpe ratios of 0.55 and 1.83 are much higher than the -0.39 ratio of discretionary strategies. These options cater to investors seeking to minimize market risk exposure.
-    </p>
+    <div class="scrolly-narrative">
+      <h3>Attractive Investment Returns</h3>
+      <p>
+        In recent years, onshore Quant Equity EIFs have delivered more attractive excess returns compared to discretionary equity strategies. The chart below shows that, over the past three years through June 2024, the excess returns of various quant strategies have outperformed discretionary strategies, despite a pullback in quant alpha at the beginning of 2024.
+      </p>
+      <p>
+        Additionally, quant market-neutral and quant T0 strategies offer a more stable risk-return profile, with median volatilities of 6.38% and 6.57%, respectively, which is significantly lower than the typical 20.55% volatility of discretionary strategies. Moreover, the median Sharpe ratios of 0.55 and 1.83 are much higher than the -0.39 ratio of discretionary strategies. These options cater to investors seeking to minimize market risk exposure.
+      </p>
+    </div>
   </div>
 
   <div class="chart-container fade-in">
@@ -1631,26 +2204,27 @@ footer .disclaimer {
     </div>
   </div>
 
-  <div class="narrative fade-in no-pad-top">
-    <h3>Key Investment Considerations</h3>
-    <p>
-      Although China's quant market has become more institutionalized in recent years, careful investor scrutiny is still required during the due diligence process. Key considerations:
-    </p>
-    <ul>
-      <li><strong>Performance Consistency:</strong> The performance of flagship products and customized products (SMAs or Funds of One) using the same strategy may differ significantly due to AUM levels or risk control parameters. Rapid AUM growth can outpace strategy capacity, leading to outsourcing strategies to other teams or using different strategies for different products, sometimes resulting in poor performance consistency. Additionally, consistency between onshore and offshore products should be verified. Investors should closely monitor the consistency across products and determine whether differences in performance can be reasonably explained.</li>
-      <li><strong>AUM and Growth Rate:</strong> Large AUM offers benefits such as more competitive compensation and access to sophisticated technologies. However, rapid AUM growth can result in lagging strategy development, potentially leading to significant alpha drawdowns. For instance, a leading quant fund's AUM soared past 100 billion RMB in 2020, yet its CSI 500 EIF product faced an alpha drawdown of nearly 7% in early 2021. Similarly, two other top quant funds saw their AUM exceed 100 billion RMB in 2021, but their CSI 500 EIF products experienced alpha drawdowns of approximately 10% and 16.5%, respectively, in early 2022.</li>
-      <li><strong>Transparency:</strong> The level of transparency a fund is willing to provide is crucial. Investors should exercise caution if a fund refuses to disclose basic information such as Barra factor tilts and attributions (ideally data should be verified utilizing a fund's custodian analysis report), snapshots of positions, industry tilts, total number of stocks held, or leverage. For instance, in late 2023, a quant hedge fund claiming to employ a market neutral strategy was implicated in a fraud scandal, leading to significant losses for multiple institutional investors, including FOF products managed by a reputable asset management company with assets exceeding 100 billion yuan. Moreover, funds often claim a wide variety of tight risk controls, but these may not be as robust as advertised. Investors are advised to cross-check performance data at higher frequency, such as daily or weekly, along with holdings, risk factors and other relevant information and metrics.</li>
-      <li><strong>Risk Management:</strong> When investing in China, some fund managers and investors consider size and other risk factors as alpha factors. Investors are advised to remain cautious with fund managers who rely heavily on style factors for returns. The ability to "time" risk factors is difficult to validate, and abrupt reversals in style factors can lead to extreme alpha drawdowns. For example, in February 2024, the market crash prompted the government's aggressive purchase of large-cap stocks initially to stabilize the market. This sudden shift in the size factor caused substantial alpha drawdowns for fund managers with less rigorous risk controls. Even among top quantitative managers, some funds experienced alpha drawdowns of approximately -18% between February 2 &ndash; February 7. This period turned out to be a critical test for different managers' style constraints, with those implementing stricter risk controls managing to preserve alpha stability amid extreme market fluctuations.</li>
-      <li><strong>Reference Check:</strong> Reference checks are crucial when investing in China, serving not only to verify details or uncover issues mentioned earlier but also important to confirm the contributions and stability of key investment and research personnel. The reference check process can also help assess team dynamics and ensure alignment of interests between the fund, its employees and investors.</li>
-    </ul>
-  </div>
-
-  <div class="chart-container fade-in">
-    <div class="chart-box">
-      <div class="chart-title">China&rsquo;s Top Quant Managers&rsquo; Alpha During Feb 2024 Quant Quake</div>
-      <div class="chart-subtitle">Each line represents a quant&rsquo;s CSI 500 EIF cumulative alpha</div>
-      <canvas id="chartQuantQuake" height="360"></canvas>
-      <p class="chart-source">Source: CICC</p>
+  <div class="scrolly-pair fade-in">
+    <div class="scrolly-narrative">
+      <h3>Key Investment Considerations</h3>
+      <p>
+        Although China's quant market has become more institutionalized in recent years, careful investor scrutiny is still required during the due diligence process. Key considerations:
+      </p>
+      <ul>
+        <li><strong>Performance Consistency:</strong> The performance of flagship products and customized products (SMAs or Funds of One) using the same strategy may differ significantly due to AUM levels or risk control parameters. Rapid AUM growth can outpace strategy capacity, leading to outsourcing strategies to other teams or using different strategies for different products, sometimes resulting in poor performance consistency. Additionally, consistency between onshore and offshore products should be verified. Investors should closely monitor the consistency across products and determine whether differences in performance can be reasonably explained.</li>
+        <li><strong>AUM and Growth Rate:</strong> Large AUM offers benefits such as more competitive compensation and access to sophisticated technologies. However, rapid AUM growth can result in lagging strategy development, potentially leading to significant alpha drawdowns. For instance, a leading quant fund's AUM soared past 100 billion RMB in 2020, yet its CSI 500 EIF product faced an alpha drawdown of nearly 7% in early 2021. Similarly, two other top quant funds saw their AUM exceed 100 billion RMB in 2021, but their CSI 500 EIF products experienced alpha drawdowns of approximately 10% and 16.5%, respectively, in early 2022.</li>
+        <li><strong>Transparency:</strong> The level of transparency a fund is willing to provide is crucial. Investors should exercise caution if a fund refuses to disclose basic information such as Barra factor tilts and attributions (ideally data should be verified utilizing a fund's custodian analysis report), snapshots of positions, industry tilts, total number of stocks held, or leverage. For instance, in late 2023, a quant hedge fund claiming to employ a market neutral strategy was implicated in a fraud scandal, leading to significant losses for multiple institutional investors, including FOF products managed by a reputable asset management company with assets exceeding 100 billion yuan. Moreover, funds often claim a wide variety of tight risk controls, but these may not be as robust as advertised. Investors are advised to cross-check performance data at higher frequency, such as daily or weekly, along with holdings, risk factors and other relevant information and metrics.</li>
+        <li><strong>Risk Management:</strong> When investing in China, some fund managers and investors consider size and other risk factors as alpha factors. Investors are advised to remain cautious with fund managers who rely heavily on style factors for returns. The ability to "time" risk factors is difficult to validate, and abrupt reversals in style factors can lead to extreme alpha drawdowns. For example, in February 2024, the market crash prompted the government's aggressive purchase of large-cap stocks initially to stabilize the market. This sudden shift in the size factor caused substantial alpha drawdowns for fund managers with less rigorous risk controls. Even among top quantitative managers, some funds experienced alpha drawdowns of approximately -18% between February 2 &ndash; February 7. This period turned out to be a critical test for different managers' style constraints, with those implementing stricter risk controls managing to preserve alpha stability amid extreme market fluctuations.</li>
+        <li><strong>Reference Check:</strong> Reference checks are crucial when investing in China, serving not only to verify details or uncover issues mentioned earlier but also important to confirm the contributions and stability of key investment and research personnel. The reference check process can also help assess team dynamics and ensure alignment of interests between the fund, its employees and investors.</li>
+      </ul>
+    </div>
+    <div class="scrolly-sticky">
+      <div class="chart-box">
+        <div class="chart-title">China&rsquo;s Top Quant Managers&rsquo; Alpha During Feb 2024 Quant Quake</div>
+        <div class="chart-subtitle">Each line represents a quant&rsquo;s CSI 500 EIF cumulative alpha</div>
+        <canvas id="chartQuantQuake" height="360"></canvas>
+        <p class="chart-source">Source: CICC</p>
+      </div>
     </div>
   </div>
 
@@ -1693,8 +2267,88 @@ footer .disclaimer {
   </div>
 </section>
 
+<!-- Chapter Card: Access -->
+<div class="chapter-card section-dark fade-in">
+  <div class="chapter-card-number">07</div>
+  <div class="chapter-card-title">How to Access China's Quant Strategies</div>
+  <div class="chapter-card-line"></div>
+</div>
+
 <!-- ===================== HOW TO ACCESS CHINA'S QUANT STRATEGIES (PDF p.36-38) ===================== -->
 <section class="section-dark" id="access">
+  <!-- Chinese Paifang Gateway Arch — full bleed with path lines -->
+  <div class="section-bg-art" style="color: var(--gold); opacity: 0.04;">
+    <svg viewBox="0 0 1400 800" style="top: 0; left: 0; width: 100%; height: 100%;" preserveAspectRatio="xMidYMid slice" stroke-width="1">
+      <!-- Path/road lines extending from edges to center gate -->
+      <g opacity="0.15">
+        <line x1="0" y1="780" x2="560" y2="620" />
+        <line x1="0" y1="800" x2="560" y2="640" />
+        <line x1="1400" y1="780" x2="840" y2="620" />
+        <line x1="1400" y1="800" x2="840" y2="640" />
+        <line x1="0" y1="400" x2="420" y2="400" stroke-dasharray="12,8" />
+        <line x1="980" y1="400" x2="1400" y2="400" stroke-dasharray="12,8" />
+      </g>
+      <!-- Central paifang gate -->
+      <g opacity="0.6">
+        <!-- Main top roof -->
+        <path d="M460,180 Q520,140 600,150 Q700,130 800,150 Q880,140 940,180" />
+        <path d="M480,190 Q600,155 800,155 Q920,155 920,190" />
+        <!-- Roof ornament -->
+        <line x1="700" y1="125" x2="700" y2="108" />
+        <circle cx="700" cy="103" r="5" />
+        <!-- Upturned eaves -->
+        <path d="M455,180 Q445,175 440,165" />
+        <path d="M945,180 Q955,175 960,165" />
+        <!-- Main beam -->
+        <rect x="470" y="190" width="460" height="12" rx="2" />
+        <!-- Inscription plaque -->
+        <rect x="620" y="208" width="160" height="48" rx="3" />
+        <line x1="636" y1="225" x2="764" y2="225" />
+        <line x1="636" y1="238" x2="764" y2="238" />
+        <!-- Secondary beam -->
+        <rect x="480" y="260" width="440" height="8" rx="1" />
+        <!-- Pillars -->
+        <rect x="500" y="202" width="18" height="420" rx="2" />
+        <rect x="882" y="202" width="18" height="420" rx="2" />
+        <rect x="630" y="202" width="15" height="420" rx="2" />
+        <rect x="755" y="202" width="15" height="420" rx="2" />
+        <!-- Pillar bases -->
+        <ellipse cx="509" cy="622" rx="16" ry="7" />
+        <ellipse cx="891" cy="622" rx="16" ry="7" />
+        <ellipse cx="637" cy="622" rx="13" ry="6" />
+        <ellipse cx="762" cy="622" rx="13" ry="6" />
+        <!-- Cross beams -->
+        <line x1="518" y1="360" x2="630" y2="360" />
+        <line x1="518" y1="460" x2="630" y2="460" />
+        <line x1="770" y1="360" x2="882" y2="360" />
+        <line x1="770" y1="460" x2="882" y2="460" />
+        <!-- Ground -->
+        <line x1="400" y1="625" x2="1000" y2="625" />
+      </g>
+      <!-- Secondary smaller gates (left and right, faded) -->
+      <g opacity="0.15">
+        <!-- Left gate -->
+        <path d="M60,280 Q110,260 180,280" />
+        <rect x="70" y="285" width="100" height="8" rx="1" />
+        <rect x="80" y="293" width="12" height="300" rx="1" />
+        <rect x="148" y="293" width="12" height="300" rx="1" />
+        <line x1="50" y1="595" x2="200" y2="595" />
+        <!-- Right gate -->
+        <path d="M1220,280 Q1270,260 1340,280" />
+        <rect x="1230" y="285" width="100" height="8" rx="1" />
+        <rect x="1240" y="293" width="12" height="300" rx="1" />
+        <rect x="1308" y="293" width="12" height="300" rx="1" />
+        <line x1="1200" y1="595" x2="1360" y2="595" />
+      </g>
+      <!-- Scattered cloud motifs (traditional Chinese) -->
+      <g opacity="0.1">
+        <path d="M200,100 Q220,80 240,100 Q260,80 280,100" />
+        <path d="M1100,120 Q1120,100 1140,120 Q1160,100 1180,120" />
+        <path d="M350,700 Q370,680 390,700 Q410,680 430,700" />
+        <path d="M1000,720 Q1020,700 1040,720 Q1060,700 1080,720" />
+      </g>
+    </svg>
+  </div>
   <div class="narrative fade-in">
     <h2>How to Access China's Quant Strategies</h2>
     <p>
@@ -1745,45 +2399,174 @@ footer .disclaimer {
   </div>
 </section>
 
+<!-- Chapter Card: AI -->
+<div class="chapter-card section-gradient fade-in">
+  <div class="chapter-card-number">08</div>
+  <div class="chapter-card-title">Artificial Intelligence</div>
+  <div class="chapter-card-line"></div>
+</div>
+
 <!-- ===================== RESEARCH FOCUS — AI (PDF p.39-40) ===================== -->
 <section class="section-gradient" id="ai">
+  <!-- Neural Network Diagram — full bleed -->
+  <div class="section-bg-art" style="color: var(--gold); opacity: 0.045;">
+    <svg viewBox="0 0 1400 800" style="top: 0; left: 0; width: 100%; height: 100%;" preserveAspectRatio="xMidYMid slice" stroke-width="0.7">
+      <!-- Main network (right side) — Input(4) → H1(6) → H2(5) → Out(2) -->
+      <g opacity="0.6">
+        <!-- Input layer -->
+        <circle cx="750" cy="140" r="14" /><circle cx="750" cy="300" r="14" />
+        <circle cx="750" cy="460" r="14" /><circle cx="750" cy="620" r="14" />
+        <!-- Hidden 1 -->
+        <circle cx="920" cy="80" r="12" /><circle cx="920" cy="200" r="12" />
+        <circle cx="920" cy="320" r="12" /><circle cx="920" cy="440" r="12" />
+        <circle cx="920" cy="560" r="12" /><circle cx="920" cy="680" r="12" />
+        <!-- Hidden 2 -->
+        <circle cx="1090" cy="130" r="12" /><circle cx="1090" cy="270" r="12" />
+        <circle cx="1090" cy="410" r="12" /><circle cx="1090" cy="550" r="12" />
+        <circle cx="1090" cy="690" r="12" />
+        <!-- Output -->
+        <circle cx="1260" cy="290" r="16" /><circle cx="1260" cy="490" r="16" />
+        <!-- Connections I→H1 -->
+        <line x1="764" y1="140" x2="908" y2="80" /><line x1="764" y1="140" x2="908" y2="200" />
+        <line x1="764" y1="140" x2="908" y2="320" /><line x1="764" y1="300" x2="908" y2="200" />
+        <line x1="764" y1="300" x2="908" y2="320" /><line x1="764" y1="300" x2="908" y2="440" />
+        <line x1="764" y1="460" x2="908" y2="320" /><line x1="764" y1="460" x2="908" y2="440" />
+        <line x1="764" y1="460" x2="908" y2="560" /><line x1="764" y1="620" x2="908" y2="440" />
+        <line x1="764" y1="620" x2="908" y2="560" /><line x1="764" y1="620" x2="908" y2="680" />
+        <!-- Connections H1→H2 -->
+        <line x1="932" y1="80" x2="1078" y2="130" /><line x1="932" y1="80" x2="1078" y2="270" />
+        <line x1="932" y1="200" x2="1078" y2="130" /><line x1="932" y1="200" x2="1078" y2="270" />
+        <line x1="932" y1="320" x2="1078" y2="270" /><line x1="932" y1="320" x2="1078" y2="410" />
+        <line x1="932" y1="440" x2="1078" y2="410" /><line x1="932" y1="440" x2="1078" y2="550" />
+        <line x1="932" y1="560" x2="1078" y2="410" /><line x1="932" y1="560" x2="1078" y2="550" />
+        <line x1="932" y1="680" x2="1078" y2="550" /><line x1="932" y1="680" x2="1078" y2="690" />
+        <!-- Connections H2→Out -->
+        <line x1="1102" y1="130" x2="1244" y2="290" /><line x1="1102" y1="270" x2="1244" y2="290" />
+        <line x1="1102" y1="410" x2="1244" y2="290" /><line x1="1102" y1="410" x2="1244" y2="490" />
+        <line x1="1102" y1="550" x2="1244" y2="490" /><line x1="1102" y1="690" x2="1244" y2="490" />
+      </g>
+      <!-- Scattered disconnected nodes (left side, filling space) -->
+      <g opacity="0.15">
+        <circle cx="80" cy="120" r="8" /><circle cx="150" cy="300" r="6" />
+        <circle cx="60" cy="480" r="9" /><circle cx="200" cy="600" r="7" />
+        <circle cx="300" cy="150" r="5" /><circle cx="350" cy="400" r="8" />
+        <circle cx="250" cy="700" r="6" /><circle cx="450" cy="200" r="7" />
+        <circle cx="500" cy="500" r="5" /><circle cx="400" cy="650" r="8" />
+        <circle cx="550" cy="350" r="6" /><circle cx="120" cy="700" r="7" />
+        <circle cx="600" cy="100" r="5" /><circle cx="650" cy="700" r="6" />
+        <!-- Faint connecting lines between scattered nodes -->
+        <line x1="80" y1="120" x2="150" y2="300" /><line x1="150" y1="300" x2="300" y2="150" />
+        <line x1="60" y1="480" x2="200" y2="600" /><line x1="350" y1="400" x2="500" y2="500" />
+        <line x1="450" y1="200" x2="550" y2="350" /><line x1="250" y1="700" x2="400" y2="650" />
+        <line x1="300" y1="150" x2="450" y2="200" /><line x1="500" y1="500" x2="650" y2="700" />
+      </g>
+    </svg>
+  </div>
   <div class="narrative fade-in">
     <h2>Research Focus &mdash; Artificial Intelligence</h2>
-    <p>
-      Beginning in 2018, some domestic quant managers in China have been assessing machine learning models as a replacement for traditional multi-factor models. The applications have evolved from basic machine learning models like Lasso and Ridge to more sophisticated neural networks such as Deep Neural Networks (DNN) and Graph Neural Networks (GNN). Reinforcement learning is also used to optimize portfolios. A 2021 survey conducted by QuantUp revealed that 10.16% of institutions, including hedge funds, proprietary trading desks, and asset management divisions of securities firms, were utilizing AI in over ten distinct areas throughout the investment research processes, with AI contributing to 30% of their total investment activities.
-    </p>
-    <p>
-      Typically, in China's quant industry, the larger the company, the greater its investment and enthusiasm towards artificial intelligence. For example, Ubiquant Investment has established a Data Lab, AI Lab, and Waterdrop Lab to explore the applications of AI in data, algorithms, and trade execution. Meanwhile, High-Flyer Capital Management has invested over a billion yuan, purchased 11,000 GPUs, and rented nearly 2,000 square meters of office space to independently develop a deep learning training platform.
-    </p>
-    <p>
-      According to the "2023 China Quantitative Investment White Paper", 55% of institutions use AI for automated factor discovery and portfolio optimization to support alpha generation. AI can assist researchers in uncovering hidden information within vast datasets, sparking fresh ideas and perspectives, particularly in an environment where strategies are becoming more homogenous. Additionally, AI can help extract relational information between stocks from a model-driven perspective, thereby providing additional insights for return forecasting. Nearly half of the institutions use AI for Natural Language Processing (NLP) and data collection, with many adopting or even developing their own general AI models, such as ChatGPT, to enhance efficiency in tasks like data processing and debugging.
-    </p>
-    <p>
-      In North America, quant institutions share the same enthusiasm for AI. According to Invesco's "2023 Global Quantitative Investment Research", 90% of institutions believe AI will play an equally or more important role compared to traditional research strategies in the next decade. The proportion of institutions extensively applying AI throughout the research and investment process is similar in both North America and the Asia-Pacific region, at approximately 10%. However, North American institutions use AI slightly less across various processes compared to those in Asia-Pacific. For example, in portfolio optimization and risk management, the usage rates are 39% and 46%, respectively, in North America and Asia-Pacific.
-    </p>
   </div>
 
-  <div class="chart-container fade-in">
-    <div class="chart-box">
-      <div class="chart-title">AI&rsquo;s Role In An Investment Process</div>
-      <div class="chart-subtitle">APAC vs North America</div>
-      <canvas id="chartAIRole" height="340"></canvas>
-      <p class="chart-source">Source: Invesco&rsquo;s Global Systematic Investing Study 2023</p>
+  <div class="scrolly-pair fade-in">
+    <div class="scrolly-sticky">
+      <div class="chart-box">
+        <div class="chart-title">AI&rsquo;s Role In An Investment Process</div>
+        <div class="chart-subtitle">APAC vs North America</div>
+        <canvas id="chartAIRole" height="340"></canvas>
+        <p class="chart-source">Source: Invesco&rsquo;s Global Systematic Investing Study 2023</p>
+      </div>
     </div>
-  </div>
-
-  <div class="narrative fade-in no-pad-top">
-    <p>
-      Although AI can assist in generating effective research and has historically aided in achieving solid investment returns, it still faces many unresolved challenges, such as issues related to complexity and interpretability of the models and the quality of available data. Additionally, factors like parameter selection and initial model conditions can significantly impact performance, while common issues like noise and overfitting can greatly reduce prediction accuracy. The high noise and volatility characteristics of financial data further amplify these weaknesses, leading to a decline in the performance of some AI-driven strategies. Many managers have found that AI-driven strategies tend to lose effectiveness faster than traditional ones.
-    </p>
-    <p>
-      Overall, the application and prevalence of AI in quant markets both within China and the United States is widespread and continues to grow. The future evolution for AI-driven quant strategies is expected to focus on feature engineering, algorithm upgrades, and objective optimization. This will involve incorporating human knowledge, integrating multiple models, and refining optimization for different parameters such as Information Coefficient (IC), Information Ratio (IR), and the Sharpe ratio. As breakthroughs continue in fields like deep reinforcement learning, the long-standing challenges of interpretability and overfitting in complex models in quant strategies may also be addressed.
-    </p>
+    <div class="scrolly-narrative">
+      <p>
+        Beginning in 2018, some domestic quant managers in China have been assessing machine learning models as a replacement for traditional multi-factor models. The applications have evolved from basic machine learning models like Lasso and Ridge to more sophisticated neural networks such as Deep Neural Networks (DNN) and Graph Neural Networks (GNN). Reinforcement learning is also used to optimize portfolios. A 2021 survey conducted by QuantUp revealed that 10.16% of institutions, including hedge funds, proprietary trading desks, and asset management divisions of securities firms, were utilizing AI in over ten distinct areas throughout the investment research processes, with AI contributing to 30% of their total investment activities.
+      </p>
+      <p>
+        Typically, in China's quant industry, the larger the company, the greater its investment and enthusiasm towards artificial intelligence. For example, Ubiquant Investment has established a Data Lab, AI Lab, and Waterdrop Lab to explore the applications of AI in data, algorithms, and trade execution. Meanwhile, High-Flyer Capital Management has invested over a billion yuan, purchased 11,000 GPUs, and rented nearly 2,000 square meters of office space to independently develop a deep learning training platform.
+      </p>
+      <p>
+        According to the "2023 China Quantitative Investment White Paper", 55% of institutions use AI for automated factor discovery and portfolio optimization to support alpha generation. AI can assist researchers in uncovering hidden information within vast datasets, sparking fresh ideas and perspectives, particularly in an environment where strategies are becoming more homogenous. Additionally, AI can help extract relational information between stocks from a model-driven perspective, thereby providing additional insights for return forecasting. Nearly half of the institutions use AI for Natural Language Processing (NLP) and data collection, with many adopting or even developing their own general AI models, such as ChatGPT, to enhance efficiency in tasks like data processing and debugging.
+      </p>
+      <p>
+        In North America, quant institutions share the same enthusiasm for AI. According to Invesco's "2023 Global Quantitative Investment Research", 90% of institutions believe AI will play an equally or more important role compared to traditional research strategies in the next decade. The proportion of institutions extensively applying AI throughout the research and investment process is similar in both North America and the Asia-Pacific region, at approximately 10%. However, North American institutions use AI slightly less across various processes compared to those in Asia-Pacific. For example, in portfolio optimization and risk management, the usage rates are 39% and 46%, respectively, in North America and Asia-Pacific.
+      </p>
+      <p>
+        Although AI can assist in generating effective research and has historically aided in achieving solid investment returns, it still faces many unresolved challenges, such as issues related to complexity and interpretability of the models and the quality of available data. Additionally, factors like parameter selection and initial model conditions can significantly impact performance, while common issues like noise and overfitting can greatly reduce prediction accuracy. The high noise and volatility characteristics of financial data further amplify these weaknesses, leading to a decline in the performance of some AI-driven strategies. Many managers have found that AI-driven strategies tend to lose effectiveness faster than traditional ones.
+      </p>
+      <p>
+        Overall, the application and prevalence of AI in quant markets both within China and the United States is widespread and continues to grow. The future evolution for AI-driven quant strategies is expected to focus on feature engineering, algorithm upgrades, and objective optimization. This will involve incorporating human knowledge, integrating multiple models, and refining optimization for different parameters such as Information Coefficient (IC), Information Ratio (IR), and the Sharpe ratio. As breakthroughs continue in fields like deep reinforcement learning, the long-standing challenges of interpretability and overfitting in complex models in quant strategies may also be addressed.
+      </p>
+    </div>
   </div>
 </section>
 
+<!-- Chapter Card: Glossary -->
+<div class="chapter-card section-dark fade-in">
+  <div class="chapter-card-number">09</div>
+  <div class="chapter-card-title">Glossary</div>
+  <div class="chapter-card-line"></div>
+</div>
+
 <!-- ===================== GLOSSARY (PDF p.41-49) ===================== -->
 <section class="section-dark" id="glossary">
+  <!-- Chinese Bamboo Scroll (Jiance) — full bleed -->
+  <div class="section-bg-art" style="color: var(--gold); opacity: 0.035;">
+    <svg viewBox="0 0 1400 800" style="top: 0; left: 0; width: 100%; height: 100%;" preserveAspectRatio="xMidYMid slice" stroke-width="0.8">
+      <!-- Vertical bamboo strips spanning full height, spread across width -->
+      <g opacity="0.5">
+        <!-- Left cluster (tilted slightly) -->
+        <g transform="rotate(-3, 150, 400)">
+          <rect x="40" y="0" width="12" height="800" rx="2" />
+          <rect x="60" y="0" width="12" height="800" rx="2" />
+          <rect x="80" y="0" width="12" height="800" rx="2" />
+          <rect x="100" y="0" width="12" height="800" rx="2" />
+          <rect x="120" y="0" width="12" height="800" rx="2" />
+          <rect x="140" y="0" width="12" height="800" rx="2" />
+          <rect x="160" y="0" width="12" height="800" rx="2" />
+          <rect x="180" y="0" width="12" height="800" rx="2" />
+          <rect x="200" y="0" width="12" height="800" rx="2" />
+          <rect x="220" y="0" width="12" height="800" rx="2" />
+          <line x1="35" y1="120" x2="235" y2="120" stroke-width="1.5" />
+          <line x1="35" y1="380" x2="235" y2="380" stroke-width="1.5" />
+          <line x1="35" y1="640" x2="235" y2="640" stroke-width="1.5" />
+        </g>
+        <!-- Center cluster -->
+        <g opacity="0.35">
+          <rect x="560" y="0" width="10" height="800" rx="2" />
+          <rect x="578" y="0" width="10" height="800" rx="2" />
+          <rect x="596" y="0" width="10" height="800" rx="2" />
+          <rect x="614" y="0" width="10" height="800" rx="2" />
+          <rect x="632" y="0" width="10" height="800" rx="2" />
+          <rect x="650" y="0" width="10" height="800" rx="2" />
+          <rect x="668" y="0" width="10" height="800" rx="2" />
+          <line x1="555" y1="200" x2="680" y2="200" stroke-width="1.2" />
+          <line x1="555" y1="500" x2="680" y2="500" stroke-width="1.2" />
+        </g>
+        <!-- Right cluster (tilted opposite) -->
+        <g transform="rotate(2, 1200, 400)" opacity="0.3">
+          <rect x="1120" y="0" width="12" height="800" rx="2" />
+          <rect x="1140" y="0" width="12" height="800" rx="2" />
+          <rect x="1160" y="0" width="12" height="800" rx="2" />
+          <rect x="1180" y="0" width="12" height="800" rx="2" />
+          <rect x="1200" y="0" width="12" height="800" rx="2" />
+          <rect x="1220" y="0" width="12" height="800" rx="2" />
+          <rect x="1240" y="0" width="12" height="800" rx="2" />
+          <rect x="1260" y="0" width="12" height="800" rx="2" />
+          <rect x="1280" y="0" width="12" height="800" rx="2" />
+          <line x1="1115" y1="160" x2="1295" y2="160" stroke-width="1.2" />
+          <line x1="1115" y1="440" x2="1295" y2="440" stroke-width="1.2" />
+          <line x1="1115" y1="700" x2="1295" y2="700" stroke-width="1.2" />
+        </g>
+      </g>
+      <!-- Faint text marks on strips -->
+      <g opacity="0.15">
+        <line x1="46" y1="160" x2="46" y2="180" /><line x1="46" y1="200" x2="46" y2="220" />
+        <line x1="66" y1="160" x2="66" y2="180" /><line x1="66" y1="200" x2="66" y2="220" />
+        <line x1="86" y1="160" x2="86" y2="180" /><line x1="86" y1="200" x2="86" y2="220" />
+        <line x1="106" y1="160" x2="106" y2="180" /><line x1="106" y1="200" x2="106" y2="220" />
+        <line x1="566" y1="240" x2="566" y2="260" /><line x1="584" y1="240" x2="584" y2="260" />
+        <line x1="602" y1="240" x2="602" y2="260" /><line x1="620" y1="240" x2="620" y2="260" />
+      </g>
+    </svg>
+  </div>
   <div class="narrative fade-in">
     <h2>Glossary</h2>
 
@@ -2810,6 +3593,19 @@ document.querySelectorAll('.fade-in').forEach(el => {
     });
   }
 })();
+
+// Parallax on section background art
+const bgArts = document.querySelectorAll('.section-bg-art');
+window.addEventListener('scroll', () => {
+  requestAnimationFrame(() => {
+    bgArts.forEach(art => {
+      const section = art.parentElement;
+      const rect = section.getBoundingClientRect();
+      const offset = rect.top * -0.15;
+      art.style.transform = `translateY(${offset}px)`;
+    });
+  });
+});
 </script>
 </body>
 </html>
