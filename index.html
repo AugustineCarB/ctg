@@ -9,9 +9,9 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --navy: #1a0a0a;
-  --dark: #2a0f0f;
-  --charcoal: #1c1010;
+  --navy: #2a1212;
+  --dark: #3a1818;
+  --charcoal: #2c1616;
   --slate: #3a2020;
   --mid-gray: #8b7070;
   --light-gray: #d4c4c4;
@@ -48,7 +48,7 @@ body::before {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: url('assets/China_flag.png') center center / cover no-repeat;
-  filter: brightness(0.12) saturate(0.6);
+  filter: brightness(0.28) saturate(0.85);
   z-index: -2;
 }
 
@@ -56,7 +56,7 @@ body::after {
   content: '';
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(26, 10, 10, 0.55);
+  background: rgba(26, 10, 10, 0.25);
   z-index: -1;
 }
 
@@ -346,7 +346,7 @@ section {
 
 /* ===== NARRATIVE BLOCK ===== */
 .narrative {
-  max-width: 720px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 8rem 2rem;
 }
@@ -411,7 +411,7 @@ section {
 
 /* ===== SECTION DIVIDER ===== */
 .divider {
-  max-width: 720px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -437,7 +437,7 @@ footer p {
   color: var(--mid-gray);
   font-size: 0.8rem;
   line-height: 2;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -460,9 +460,25 @@ footer .disclaimer {
   transform: translateY(0);
 }
 
+.scroll-reveal-img {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  max-width: 100%;
+  border-radius: 8px;
+}
+.scroll-reveal-img.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.scroll-reveal-img.hidden {
+  opacity: 0;
+  transform: translateY(-40px);
+}
+
 /* ===== CHART CONTAINERS ===== */
 .chart-container {
-  max-width: 800px;
+  max-width: 1100px;
   margin: 2.5rem auto;
   padding: 0 2rem;
 }
@@ -499,6 +515,22 @@ footer .disclaimer {
 
 .chart-box canvas {
   max-width: 100%;
+  max-height: 380px;
+}
+
+.chart-pair {
+  display: flex;
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 2.5rem auto;
+  padding: 0 2rem;
+}
+
+.chart-pair > .chart-container {
+  flex: 1;
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 .chart-row {
@@ -558,9 +590,9 @@ footer .disclaimer {
 
 /* ===== TIMELINE COMPONENT ===== */
 .timeline-wrapper {
-  max-width: 900px;
+  max-width: 100%;
   margin: 2.5rem auto;
-  padding: 0 2rem;
+  padding: 0 3rem;
 }
 
 .timeline {
@@ -583,6 +615,11 @@ footer .disclaimer {
   flex: 1;
   position: relative;
   padding: 0 0.75rem;
+  transition: flex 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timeline-stage.tl-active {
+  flex: 1.35;
 }
 
 .timeline-stage-header {
@@ -597,6 +634,12 @@ footer .disclaimer {
   letter-spacing: 0.08em;
   color: var(--gold);
   margin-bottom: 0.25rem;
+  transition: font-size 0.4s ease, color 0.4s ease;
+}
+
+.tl-active .timeline-stage-label {
+  font-size: 0.8rem;
+  color: var(--gold-light);
 }
 
 .timeline-stage-years {
@@ -612,6 +655,12 @@ footer .disclaimer {
   border: 2px solid var(--gold);
   border-radius: 50%;
   margin: 0 auto;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.tl-active .timeline-dot {
+  transform: scale(1.4);
+  box-shadow: 0 0 12px rgba(198, 40, 40, 0.6);
 }
 
 .timeline-stage-content {
@@ -620,6 +669,13 @@ footer .disclaimer {
   border-radius: 8px;
   padding: 1rem;
   margin-top: 1rem;
+  transition: background 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
+}
+
+.tl-active .timeline-stage-content {
+  background: rgba(42, 15, 15, 0.6);
+  border-color: rgba(198, 40, 40, 0.35);
+  transform: scale(1.03);
 }
 
 .timeline-stage-content ul {
@@ -715,6 +771,17 @@ footer .disclaimer {
   text-align: center;
   padding: 4rem 2rem;
   position: relative;
+  overflow: hidden;
+}
+
+.chapter-card canvas.entropy-bg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .chapter-card-number {
@@ -725,6 +792,8 @@ footer .disclaimer {
   opacity: 0.12;
   line-height: 1;
   margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
 .chapter-card-title {
@@ -734,6 +803,8 @@ footer .disclaimer {
   color: var(--white);
   letter-spacing: 0.02em;
   max-width: 600px;
+  position: relative;
+  z-index: 1;
 }
 
 .chapter-card-line {
@@ -742,6 +813,8 @@ footer .disclaimer {
   background: linear-gradient(90deg, var(--red), var(--gold));
   border-radius: 2px;
   margin: 1.5rem auto 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* ===== STICKY SCROLLY PAIRS ===== */
@@ -760,7 +833,19 @@ footer .disclaimer {
   position: sticky;
   top: 100px;
   align-self: flex-start;
-  max-width: 520px;
+  max-width: 560px;
+}
+
+.scrolly-sticky .chart-box {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.scrolly-sticky .chart-box canvas {
+  flex: 1;
+  min-height: 320px;
 }
 
 .scrolly-narrative {
@@ -813,6 +898,7 @@ footer .disclaimer {
   .timeline::before { display: none; }
   .chart-row { flex-direction: column; align-items: center; }
   .chart-row .chart-half { max-width: 100%; }
+  .chart-pair { flex-direction: column; }
   .scrolly-pair { flex-direction: column; }
   .scrolly-sticky { position: static; max-width: 100%; }
   .chapter-card { min-height: 40vh; }
@@ -880,6 +966,7 @@ footer .disclaimer {
 
 <!-- Chapter Card: Overview -->
 <div class="chapter-card section-dark fade-in">
+  <canvas class="entropy-bg"></canvas>
   <div class="chapter-card-number">01</div>
   <div class="chapter-card-title">Overview</div>
   <div class="chapter-card-line"></div>
@@ -1004,6 +1091,7 @@ footer .disclaimer {
 
 <!-- Chapter Card: History -->
 <div class="chapter-card section-gradient fade-in">
+  <canvas class="entropy-bg"></canvas>
   <div class="chapter-card-number">02</div>
   <div class="chapter-card-title">Quantitative Hedge Fund History</div>
   <div class="chapter-card-line"></div>
@@ -1084,9 +1172,11 @@ footer .disclaimer {
         </div>
         <div class="timeline-stage-content">
           <ul>
-            <li>Modern Portfolio Theory, Efficient Market Hypothesis, Option Pricing Theory</li>
-            <li>1969: First quant fund (Princeton Newport Partners)</li>
-            <li>1971: First passive quant fund (Barclays)</li>
+            <li>Modern Portfolio Theory</li>
+            <li>Efficient Market Hypothesis</li>
+            <li>Option Pricing Theory</li>
+            <li>1969, first quant fund, PNP</li>
+            <li>1971, first passive quant fund</li>
           </ul>
         </div>
       </div>
@@ -1098,10 +1188,11 @@ footer .disclaimer {
         </div>
         <div class="timeline-stage-content">
           <ul>
-            <li>AUM grew from ~$108B (1989) to ~$400B (2007)</li>
-            <li>Advancements in computer technology &amp; electronic trading</li>
-            <li>Statistical arbitrage, trend following, multi-factor models</li>
-            <li>Key firms: Renaissance, D.E. Shaw, Citadel, Two Sigma</li>
+            <li>Rapid AUM growth: ~10B USD in 1989 to ~400B USD in 2007</li>
+            <li>Advancements in computer tech</li>
+            <li>Policy support</li>
+            <li>Late 80s: statistical arbitrage, trend following strategies</li>
+            <li>After the 90s: multi-factor models and algorithmic trading</li>
           </ul>
         </div>
       </div>
@@ -1113,10 +1204,8 @@ footer .disclaimer {
         </div>
         <div class="timeline-stage-content">
           <ul>
-            <li>Aug 2007: Quant Quake &mdash; losses of 5%&ndash;30%</li>
-            <li>2008: Global financial crisis, AUM shrank ~20%</li>
-            <li>Citadel flagship funds saw 55% drawdown</li>
-            <li>Medallion Fund posted +80% return in 2008</li>
+            <li>Aug 2007 &ndash; quant quake</li>
+            <li>2008 &ndash; financial crisis</li>
           </ul>
         </div>
       </div>
@@ -1128,10 +1217,10 @@ footer .disclaimer {
         </div>
         <div class="timeline-stage-content">
           <ul>
-            <li>Stricter regulations &amp; enhanced risk management</li>
-            <li>Dodd-Frank Act (2010)</li>
-            <li>Alternative data &amp; AI adoption</li>
-            <li>Renaissance, AQR, Two Sigma each exceed $50B AUM</li>
+            <li>Stricter regulations &amp; enhanced risk management: Dodd-Frank</li>
+            <li>Alternative data and AI</li>
+            <li>Smart beta</li>
+            <li>Renaissance, AQR, Two Sigma are all over 50B USD</li>
           </ul>
         </div>
       </div>
@@ -1221,9 +1310,8 @@ footer .disclaimer {
         </div>
         <div class="timeline-stage-content">
           <ul>
-            <li>April 2010: Launch of CSI 300 Index Futures (IF)</li>
-            <li>Quant market-neutral strategies grew rapidly</li>
-            <li>Size factor continuously contributing alpha</li>
+            <li>April 2010: Launch of CSI 300 Index Futures (IF), providing short instrument</li>
+            <li>Quant Market-Neutral strategies grew rapidly with sizing factor continuously contributing</li>
             <li>Most models built around multi-factor frameworks</li>
           </ul>
         </div>
@@ -1236,10 +1324,10 @@ footer .disclaimer {
         </div>
         <div class="timeline-stage-content">
           <ul>
-            <li>AUM grew from ~$13B (2015) to ~$214B (2022)</li>
-            <li>April 2015: Launch of SSE 50 &amp; CSI 500 Index Futures</li>
-            <li>Products evolved from MN to EIF to multi-strategy</li>
-            <li>Transition from higher to lower frequency; ML &amp; AI adoption</li>
+            <li>AUM Rapid Growth: ~$13B in 2015 to ~$214B in 2022</li>
+            <li>April 2015: Launch of SSE 50 and CSI 500 Index Futures</li>
+            <li>Quant products quickly evolved &ndash; from MN to EIF to multi-strategy</li>
+            <li>Quant strategies transitioned rapidly &ndash; from higher to lower frequency, incorporating alternative data, ML &amp; AI</li>
           </ul>
         </div>
       </div>
@@ -1251,9 +1339,8 @@ footer .disclaimer {
         </div>
         <div class="timeline-stage-content">
           <ul>
-            <li>Series of regulations issued targeting quant industry</li>
-            <li>Feb 2024: &ldquo;Quant Quake&rdquo; hit China</li>
-            <li>Top quants&rsquo; CSI 500 EIFs saw ~9% avg alpha drawdown in one week</li>
+            <li>Beginning in early 2023, a series of regulations were issued regarding the quant industry.</li>
+            <li>In February 2024, the &ldquo;Quant Quake&rdquo; hit. During the week of February 8th, top quant funds saw their CSI 500 Enhanced Indexing Fund suffer average alpha drawdowns of around 9%.</li>
           </ul>
         </div>
       </div>
@@ -1265,9 +1352,9 @@ footer .disclaimer {
         </div>
         <div class="timeline-stage-content">
           <ul>
-            <li>Tight regulations on quant space will become the norm</li>
-            <li>Industry consolidation &mdash; big funds will become bigger</li>
-            <li>Winner takes all: survival of the most resilient</li>
+            <li>Tight regulations on the quant space will become a norm</li>
+            <li>Industry consolidation &ndash; big funds will become bigger</li>
+            <li>Winner takes all &ndash; who survived from the last rounds</li>
           </ul>
         </div>
       </div>
@@ -1308,6 +1395,7 @@ footer .disclaimer {
 
 <!-- Chapter Card: China vs Global -->
 <div class="chapter-card section-dark fade-in">
+  <canvas class="entropy-bg"></canvas>
   <div class="chapter-card-number">03</div>
   <div class="chapter-card-title">China vs. Global</div>
   <div class="chapter-card-line"></div>
@@ -1400,21 +1488,22 @@ footer .disclaimer {
     </p>
   </div>
 
-  <div class="chart-container fade-in">
-    <div class="chart-box">
-      <div class="chart-title">Global Quantitative Hedge Funds AUM ($bn)</div>
-      <div class="chart-subtitle">Total non-quant vs quant strategies, 1990&ndash;2016</div>
-      <canvas id="chartGlobalAUM" height="320"></canvas>
-      <p class="chart-source">Source: Hedge Fund Research</p>
+  <div class="chart-pair fade-in">
+    <div class="chart-container">
+      <div class="chart-box">
+        <div class="chart-title">Global Quantitative Hedge Funds AUM ($bn)</div>
+        <div class="chart-subtitle">Total non-quant vs quant strategies, 1990&ndash;2016</div>
+        <canvas id="chartGlobalAUM" height="320"></canvas>
+        <p class="chart-source">Source: Hedge Fund Research</p>
+      </div>
     </div>
-  </div>
-
-  <div class="chart-container fade-in">
-    <div class="chart-box">
-      <div class="chart-title">China Quant Rapid Development</div>
-      <div class="chart-subtitle">Discretionary vs Quant Fund AUM (USD bn) &amp; cumulative quant fund launches, 2016&ndash;2023Q3</div>
-      <canvas id="chartChinaAUM" height="320"></canvas>
-      <p class="chart-source">Source: CICC AM, CITIC Securities, AMAC, simuwang.com</p>
+    <div class="chart-container">
+      <div class="chart-box">
+        <div class="chart-title">China Quant Rapid Development</div>
+        <div class="chart-subtitle">Discretionary vs Quant Fund AUM (USD bn) &amp; cumulative quant fund launches, 2016&ndash;2023Q3</div>
+        <canvas id="chartChinaAUM" height="320"></canvas>
+        <p class="chart-source">Source: CICC AM, CITIC Securities, AMAC, simuwang.com</p>
+      </div>
     </div>
   </div>
 
@@ -1525,6 +1614,7 @@ footer .disclaimer {
 
 <!-- Chapter Card: Distinctive Features -->
 <div class="chapter-card section-gradient fade-in">
+  <canvas class="entropy-bg"></canvas>
   <div class="chapter-card-number">04</div>
   <div class="chapter-card-title">Distinctive Features</div>
   <div class="chapter-card-line"></div>
@@ -1598,8 +1688,8 @@ footer .disclaimer {
 
   <div class="chart-container fade-in">
     <div class="chart-box">
-      <div class="chart-title">Quant Institutions&rsquo; Research Coverage in Asset Class</div>
-      <div class="chart-subtitle">A-shares &amp; Futures Are The Main Investment Research Focus in China</div>
+      <div class="chart-title">A-shares &amp; Futures Are The Main Investment Research Focus in China</div>
+      <div class="chart-subtitle">Quant Institutions&rsquo; Research Coverage in Asset Class</div>
       <canvas id="chartResearchFocus" height="340"></canvas>
       <p class="chart-source">Source: &ldquo;2023 China Quant Investment White Paper&rdquo;</p>
     </div>
@@ -1636,7 +1726,7 @@ footer .disclaimer {
     <div class="chart-box">
       <div class="chart-title">Barra Factor Cumulative Returns in China</div>
       <div class="chart-subtitle">Dec 2020 &ndash; Dec 2023</div>
-      <canvas id="chartBarraFactors" height="360"></canvas>
+      <img src="charts/page-15.png" alt="Barra Factor Cumulative Returns in China" class="scroll-reveal-img" style="width:100%;">
       <p class="chart-source">Source: MSCI Barra</p>
     </div>
   </div>
@@ -1656,7 +1746,8 @@ footer .disclaimer {
 
   <div class="chart-container fade-in">
     <div class="chart-box">
-      <div class="chart-title">EIFs Breakdown (by number of products)</div>
+      <div class="chart-title">Broad-based Index EIFs are Dominant &amp; The CSI 500 EIF is Mainstream</div>
+      <div class="chart-subtitle">EIFs Breakdown (by number of products)</div>
       <div class="chart-row" style="margin-top: 1.5rem;">
         <div class="chart-half">
           <div class="chart-subtitle">EIF Categories</div>
@@ -1664,10 +1755,10 @@ footer .disclaimer {
         </div>
         <div class="chart-half">
           <div class="chart-subtitle">Broad-based Index Detail (65%)</div>
-          <canvas id="chartEIFDetail" height="280"></canvas>
+          <canvas id="chartEIFDetailBar" height="280"></canvas>
         </div>
       </div>
-      <p class="chart-source">Source: Simupaipai. China Quant Investment Quarterly Report &mdash; 2023 Fall.</p>
+      <p class="chart-source">Source: Simupaipai as of July 2023. China Quant Investment Quarterly Report &ndash; 2023 Fall.</p>
     </div>
   </div>
 
@@ -1777,6 +1868,7 @@ footer .disclaimer {
 
 <!-- Chapter Card: HFT -->
 <div class="chapter-card section-dark fade-in">
+  <canvas class="entropy-bg"></canvas>
   <div class="chapter-card-number">05</div>
   <div class="chapter-card-title">High-Frequency Trading in China</div>
   <div class="chapter-card-line"></div>
@@ -1881,11 +1973,11 @@ footer .disclaimer {
       <div class="chart-title">High Frequency Trading Definitions</div>
       <div style="overflow-x: auto;">
         <table class="data-table">
-          <thead><tr><th>Regulator</th><th>Definition / Criteria</th></tr></thead>
+          <thead><tr><th>Source</th><th>Definition</th></tr></thead>
           <tbody>
-            <tr><td class="row-label">U.S. CFTC</td><td>Algorithmic trading using computer programs for generating, routing, and executing orders; uses low-latency technology to minimize response time; high message rates (orders, quotes, or cancellations)</td></tr>
-            <tr><td class="row-label">U.S. SEC</td><td>Use of extraordinarily high-speed and sophisticated programs for generating, routing, and executing orders; co-location services and individual data feeds to minimize network latency; very short timeframes for establishing and liquidating positions</td></tr>
-            <tr><td class="row-label">China CSRC</td><td>A single account exceeding 300 order submissions or cancellations per second, or more than 20,000 orders in a single day</td></tr>
+            <tr><td class="row-label">U.S. Commodity Futures Trading Commission (CFTC)</td><td><ul style="margin:0;padding-left:1.2rem;"><li>Algorithms for decision making, order initiation, generation, routing, or execution, for each individual transaction without human direction.</li><li>Low-latency technology that is designed to minimize response times, including proximity and co-location services.</li><li>High speed connections to markets for order entry.</li><li>High message rates (orders, quotes or cancellations)</li></ul></td></tr>
+            <tr><td class="row-label">U.S. Securities and Exchange Commission (SEC)</td><td><ul style="margin:0;padding-left:1.2rem;"><li>Use of extraordinarily high speed and sophisticated programs for generating, routing, and executing orders.</li><li>Use of co-location services and individual data feeds offered by exchanges and others to minimize network and other latencies.</li><li>Very short time-frames for establishing and liquidating positions.</li><li>Submission of numerous orders that are cancelled shortly after submission.</li><li>Ending the trading day in as close to a flat position as possible.</li></ul></td></tr>
+            <tr><td class="row-label">China Securities Regulatory Commission (CSRC)</td><td><ul style="margin:0;padding-left:1.2rem;"><li>HFT is a type of algorithmic trading involving a high number and frequency of order submissions and cancellations within a short period.</li><li>Specifically, order submission and cancellation over 300 orders per second or over 20,000 orders per day.</li></ul></td></tr>
           </tbody>
         </table>
       </div>
@@ -1899,7 +1991,18 @@ footer .disclaimer {
       <p>
         According to estimates from Bloomberg Intelligence, HFT accounts for approximately 50% of the total trading volume in U.S. equities. In China, as reported by the CSRC, HFT accounts for about 20% of the total market volume in 2023. China's current HFT amount is roughly equivalent to U.S. volumes in 2005. However, due to differences in market structure, trading systems, and regulatory frameworks, it is challenging for HFT in China to reach the same proportion of trading volume that is seen in the U.S. today.
       </p>
-      <h3>T+1 Trading System</h3>
+    </div>
+    <div class="scrolly-sticky">
+      <div class="chart-box">
+        <div class="chart-title">Equity Volume by HFT (%) in the US &amp; China</div>
+        <canvas id="chartHFTVolume" height="320"></canvas>
+        <p class="chart-source">Source: TABB Group estimate (before 2012), Bloomberg Intelligence (since 2012)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>T+1 Trading System</h3>
     <p>
       Unlike the T+0 trading system used in the U.S. and Hong Kong stock markets, China's stock market operates under a T+1 system, meaning stocks purchased on a given day can only be sold the next day or later. As a result, HFT in China requires acquiring base stock positions to enable intraday trading. The base stock positions can be obtained by stock borrowing from brokers or holding stocks directly. For the latter, the simplest choice could be a benchmark index constituent, but in reality, it tends to be more complex and are selected by a quant model. In contrast, U.S. HFT typically concludes the trading day with minimal or no positions.
     </p>
@@ -1921,14 +2024,6 @@ footer .disclaimer {
         </ul>
       </li>
     </ul>
-    </div>
-    <div class="scrolly-sticky">
-      <div class="chart-box">
-        <div class="chart-title">Equity Volume by HFT (%) in the US &amp; China</div>
-        <canvas id="chartHFTVolume" height="320"></canvas>
-        <p class="chart-source">Source: TABB Group estimate (before 2012), Bloomberg Intelligence (since 2012)</p>
-      </div>
-    </div>
   </div>
 
   <div class="narrative fade-in no-pad-top">
@@ -1956,13 +2051,13 @@ footer .disclaimer {
       <div class="chart-subtitle">China Auction System vs U.S. Market-Making System</div>
       <div style="overflow-x: auto;">
         <table class="data-table">
-          <thead><tr><th>Dimension</th><th>China (Auction System)</th><th>U.S. (Market-Making System)</th></tr></thead>
+          <thead><tr><th></th><th>China (Mainly Auction Trading System (or Order-driven Trading System))</th><th>U.S. (Mainly Market-Making System)</th></tr></thead>
           <tbody>
-            <tr><td class="row-label">Definition</td><td>Orders matched directly based on price and time priority among investors through a centralized process</td><td>Market makers provide continuous bid and ask quotes, facilitating trades between buyers and sellers</td></tr>
-            <tr><td class="row-label">Primary Profit Mechanism</td><td>No exchange rebates; no market maker required</td><td>Exchange rebates and bid-ask spread capture</td></tr>
-            <tr><td class="row-label">Transparency</td><td>High &mdash; all orders visible in centralized order book</td><td>Lower &mdash; fragmented across 10+ exchanges and 50+ dark pools</td></tr>
-            <tr><td class="row-label">Liquidity</td><td>Provided by all market participants directly</td><td>Primarily provided by designated market makers</td></tr>
-            <tr><td class="row-label">Transaction Costs</td><td>Lower; simpler fee structure</td><td>More complex; maker/taker fees vary by venue</td></tr>
+            <tr><td class="row-label">Definition</td><td>System where orders are matched based on price and time priority in centralized exchanges. It is further divided into:<br><br><strong>Continuous Auction:</strong> Suited for intraday trading.<br><strong>Batch Auction:</strong> Used to determine opening and closing prices.<br>For example, the Shenzhen Stock Exchange schedule includes:<br>&bull; Opening batch auction: 9:15&ndash;9:25<br>&bull; Continuous auction sessions: 9:30&ndash;11:30 and 13:00&ndash;14:57<br>&bull; Closing batch auction: 14:57&ndash;15:00</td><td>System where market makers provide continuous buy and sell quotes, ensuring liquidity and facilitating immediate trades.</td></tr>
+            <tr><td class="row-label">Primary Profit Mechanism</td><td>No dedicated market-making profiting mechanism</td><td>Market makers can profit from bid-ask spreads, exchange rebates and trade execution advantages.</td></tr>
+            <tr><td class="row-label">Transparency</td><td>There is greater transparency within the market, information is publicly available regarding buyer and seller quotes and transaction details.</td><td><strong>Lower transparency:</strong> market makers have informational advantages over other investors, reducing market transparency. Market makers&rsquo; privileged position and greater access to information increases their ability to exploit the market.</td></tr>
+            <tr><td class="row-label">Liquidity</td><td><strong>Dark pools and iceberg orders are not officially available in mainland China.</strong> The auction market is fully centralized and transparent, with all orders displayed. To reduce market impact from large orders, similar functions are provided in China:<br><br><strong>Block Trading Mechanism:</strong> Allows large trades exceeding certain thresholds to be conducted on the exchange at specified times, rules, with information publicly displayed.<br><br><strong>Algorithms:</strong> Brokers offer algorithms to split large trades into smaller parts, minimizing market impact.<br><br>Variable liquidity depending on auction periods and order accumulation.</td><td>High liquidity due to continuous market-making activities.</td></tr>
+            <tr><td class="row-label">Transaction Costs</td><td><strong>Lower transaction costs:</strong> Buyer and seller quotes are matched based on specific rules, reducing costs beyond traditional market spreads.</td><td><strong>Higher transaction costs:</strong> Increased trading costs are part of the profit earned by market makers.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1975,16 +2070,16 @@ footer .disclaimer {
       <div class="chart-title">Applicability of HFT Strategies in China</div>
       <div style="overflow-x: auto;">
         <table class="data-table">
-          <thead><tr><th>Strategy</th><th>Applicable?</th><th>Key Constraints</th></tr></thead>
+          <thead><tr><th>HFT Strategy</th><th>Strategy Description</th><th>Feasibility</th><th>Reason for Constraints in China</th></tr></thead>
           <tbody>
-            <tr><td class="row-label">Market Making</td><td class="heat-very-low" style="text-align:center;">Limited</td><td>Auction system; no exchange rebates; no designated market makers</td></tr>
-            <tr><td class="row-label">Liquidity Detection</td><td class="heat-mid" style="text-align:center;">Partial</td><td>Centralized order book provides some transparency</td></tr>
-            <tr><td class="row-label">Cross-Exchange Arbitrage</td><td class="heat-very-low" style="text-align:center;">Not Feasible</td><td>Each stock listed on only one exchange</td></tr>
-            <tr><td class="row-label">Momentum Ignition</td><td class="heat-very-low" style="text-align:center;">Restricted</td><td>Considered abnormal trading; closely monitored by regulators</td></tr>
-            <tr><td class="row-label">Quote Stuffing / Spoofing</td><td class="heat-very-low" style="text-align:center;">Prohibited</td><td>Excessive order placement/cancellation triggers regulatory action</td></tr>
-            <tr><td class="row-label">Statistical Arbitrage</td><td class="heat-high" style="text-align:center;">Applicable</td><td>Similar to U.S.; constrained by T+1 settlement</td></tr>
-            <tr><td class="row-label">Event Arbitrage</td><td class="heat-high" style="text-align:center;">Applicable</td><td>Similar to U.S.</td></tr>
-            <tr><td class="row-label">Order Flow Prediction</td><td class="heat-mid" style="text-align:center;">Partial</td><td>Limited by speed constraints and regulatory oversight</td></tr>
+            <tr><td class="row-label">Market Making</td><td>Provides liquidity by simultaneously placing buy and sell orders to capture the bid-ask spread.</td><td class="heat-very-low" style="text-align:center;" rowspan="5">Implementation of these HFT strategies is constrained in China&rsquo;s equity stock market</td><td>Auction trading system, T+1 rule, and restrictions on excessively frequent order placements and cancellations.</td></tr>
+            <tr><td class="row-label">Liquidity Detection</td><td>Aims to detect and exploit hidden liquidity in the market, such as large orders in dark pools or iceberg orders.</td><td>Dark pools and iceberg orders are not officially available in mainland China&rsquo;s centralized and transparent auction market. However, the strategy can still be adapted by analyzing visible order flows and market depth to detect potential large trades.</td></tr>
+            <tr><td class="row-label">Cross-Exchange Arbitrage</td><td>Capitalizes on small price differences for the same asset across multiple exchanges.</td><td>Each stock is listed and traded on one exchange only.</td></tr>
+            <tr><td class="row-label">Momentum Ignition</td><td>Attempts to trigger other traders to buy or sell by placing and canceling a series of orders to create artificial price momentum.</td><td rowspan="2">Excessively frequent order placement and cancellation are regulated and treated as abnormal trading practices in China. In the U.S., Momentum Ignition and Spoofing are also considered illegal, as they are considered to be market manipulation.</td></tr>
+            <tr><td class="row-label">Quote Stuffing / Spoofing</td><td>Places a large number of orders quickly to create a false appearance of demand or supply, then cancels them.</td></tr>
+            <tr><td class="row-label">Statistical Arbitrage (Stat Arb)</td><td>Uses statistical methods to identify pricing inefficiencies between correlated assets, typically involving mean reversion or co-integration strategies.</td><td class="heat-high" style="text-align:center;" rowspan="2">Not Constrained</td><td></td></tr>
+            <tr><td class="row-label">Event Arbitrage</td><td>Responds to news events, earnings releases, or economic reports that cause temporary price movements.</td><td></td></tr>
+            <tr><td class="row-label">Order Flow Prediction</td><td>Analyzes patterns in order flow to predict short-term price movements.</td><td class="heat-mid" style="text-align:center;">Constrained</td><td>Limited by speed constraints and regulatory oversight.</td></tr>
           </tbody>
         </table>
       </div>
@@ -2009,12 +2104,12 @@ footer .disclaimer {
       <div class="chart-title">Trading Speed Improvements &mdash; U.S. HFT Firms</div>
       <div style="overflow-x: auto;">
         <table class="data-table">
-          <thead><tr><th>Firm</th><th>Method</th><th>Cost</th><th>Time Saved</th><th>Improvement</th></tr></thead>
+          <thead><tr><th>Organization</th><th>Jump Trading</th><th>Spread Networks</th><th>Arctic Fibre Inc.</th><th>Anova Financial Networks</th></tr></thead>
           <tbody>
-            <tr><td class="row-label">Jump Trading</td><td>Purchase microwave tower from CME data center</td><td>$14 million</td><td>0.07ms</td><td>4.25ms to 4.18ms</td></tr>
-            <tr><td class="row-label">Spread Networks</td><td>Fiber optic cables crossing the Appalachian Mountains directly connecting to NYSE</td><td>$300 million</td><td>3ms</td><td>7ms to 4ms</td></tr>
-            <tr><td class="row-label">Arctic Fibre Inc.</td><td>Submarine fiber optic cables between Japan Exchange Group (JPX) and London Stock Exchange (LSE)</td><td>$1.5 billion</td><td>60ms</td><td>230ms to 170ms</td></tr>
-            <tr><td class="row-label">Anova Financial Networks</td><td>Laser network between NYSE and Nasdaq</td><td>Millions of dollars</td><td>0.18ms</td><td>Twice as fast as fiber optics</td></tr>
+            <tr><td class="row-label">Method</td><td>Purchase micro-wave tower from CME data center</td><td>Fiber optic cables crossing the Appalachian Mountains directly connecting to the New York Stock Exchange (NYSE)</td><td>Submarine fiber optic cables between Japan Exchange Group (JPX) and London Stock Exchange (LSE)</td><td>Laser network between NYSE and Nasdaq</td></tr>
+            <tr><td class="row-label">Cost</td><td>$14 million</td><td>$300 million</td><td>$1.5 billion</td><td>Millions of dollars</td></tr>
+            <tr><td class="row-label">Time Saved</td><td>0.07 ms</td><td>3 ms</td><td>60 ms</td><td>0.18 ms</td></tr>
+            <tr><td class="row-label">Improvement</td><td>4.25 ms to 4.18 ms</td><td>7 ms to 4 ms</td><td>230 ms to 170 ms</td><td>Twice as fast as fiber optics</td></tr>
           </tbody>
         </table>
       </div>
@@ -2046,15 +2141,14 @@ footer .disclaimer {
       <div class="chart-title">HFT Comparison | U.S. and China</div>
       <div style="overflow-x: auto;">
         <table class="data-table">
-          <thead><tr><th>Dimension</th><th>United States</th><th>China</th></tr></thead>
+          <thead><tr><th></th><th>United States</th><th>China</th></tr></thead>
           <tbody>
-            <tr><td class="row-label">Settlement System</td><td>T+0</td><td>T+1</td></tr>
-            <tr><td class="row-label">Short-Selling</td><td>Well-developed; broad access to securities lending</td><td>Restricted; securities lending heavily regulated since 2024</td></tr>
-            <tr><td class="row-label">Trading System</td><td>Market-maker based across 10+ exchanges, 50+ dark pools</td><td>Auction-based on 2 major exchanges (Shanghai, Shenzhen)</td></tr>
-            <tr><td class="row-label">Cross-Exchange Arbitrage</td><td>Widely used; same stock tradable on multiple venues</td><td>Not feasible; each stock on one exchange only</td></tr>
-            <tr><td class="row-label">Leverage</td><td>Virtually unrestricted; 10x+ intraday common</td><td>DMA limited to 2x since April 2024</td></tr>
-            <tr><td class="row-label">Speed Investment</td><td>Multi-million dollar infrastructure arms race</td><td>Less extreme; state-provided infrastructure, few ms differences</td></tr>
-            <tr><td class="row-label">HFT Volume Share</td><td>~50% of equity volume</td><td>~20% of equity volume</td></tr>
+            <tr><td class="row-label">Settlement System</td><td><strong>T+0</strong><br>Market-making strategies generally avoid holding positions overnight, though some signals with overnight predictive capability may hold certain overnight positions.</td><td><strong>T+1</strong><br>Investors must hold a base stock position to execute intraday transactions (buying and selling the same stock on the same day).</td></tr>
+            <tr><td class="row-label">Short-Selling Mechanism</td><td>Very few restrictions on short-selling through broker cooperation.</td><td>Historically, HFT could use securities lending for short selling, but this practice was banned in 2024.</td></tr>
+            <tr><td class="row-label">Trading System</td><td>Primarily a market-maker system. High-frequency market-making strategies account for 60% of HFT strategies.</td><td>Primarily an auction trading system. There are almost no high-frequency market-making strategies.</td></tr>
+            <tr><td class="row-label">Cross-Exchange Arbitrage</td><td>Cross-exchange arbitrage strategies are possible.</td><td>Stocks can only be traded on one exchange, so cross-exchange arbitrage is not feasible.</td></tr>
+            <tr><td class="row-label">Leverage</td><td>Leverage is virtually unrestricted. Some HFT strategies finance with leverage of more than ten times intraday.</td><td>Leverage can be added through methods such as DMA. Historically, DMA could provide nearly 4 times leverage, but the 2024 guidelines limit DMA leverage to no more than 2 times.</td></tr>
+            <tr><td class="row-label">Trade Speed Improvements</td><td>Major institutions are willing to invest tens of millions of dollars to shave off mere fractions of a millisecond in delays which has fueled an arms race for speed.</td><td>China&rsquo;s market structure is relatively simple and most of the infrastructure is state provided, so improvement measures are less extreme. Therefore, the steps and costs involved in improving speed are far lower in China.</td></tr>
           </tbody>
         </table>
       </div>
@@ -2075,6 +2169,7 @@ footer .disclaimer {
 
 <!-- Chapter Card: Investing -->
 <div class="chapter-card section-gradient fade-in">
+  <canvas class="entropy-bg"></canvas>
   <div class="chapter-card-number">06</div>
   <div class="chapter-card-title">Investing in Chinese Quant Strategies</div>
   <div class="chapter-card-line"></div>
@@ -2132,7 +2227,7 @@ footer .disclaimer {
       <div class="chart-box">
         <div class="chart-title">Quants Outperformed Discretionary Offerings Over Last 3 Years</div>
         <div class="chart-subtitle">Cumulative returns, Jul 2021 &ndash; Jun 2024</div>
-        <canvas id="chartQuantVsDisc" height="360"></canvas>
+        <img src="charts/page-29.png" alt="Quants Outperformed Discretionary Offerings Over Last 3 Years" class="scroll-reveal-img" style="width:100%;">
         <p class="chart-source">Source: Clocktower created strategy indices (median of onshore funds&rsquo; weekly gross returns, Jul 2021 to Jun 2024)</p>
       </div>
     </div>
@@ -2150,16 +2245,7 @@ footer .disclaimer {
   <div class="chart-container fade-in">
     <div class="chart-box">
       <div class="chart-title">Quant MN &amp; T0 Provides Lower Volatility &amp; Higher Sharpe Ratios</div>
-      <div class="chart-row" style="margin-top: 1.5rem;">
-        <div class="chart-half">
-          <div class="chart-subtitle">Annualized Volatility</div>
-          <canvas id="chartVolBoxplot" height="280"></canvas>
-        </div>
-        <div class="chart-half">
-          <div class="chart-subtitle">Sharpe Ratio</div>
-          <canvas id="chartSharpeBoxplot" height="280"></canvas>
-        </div>
-      </div>
+      <img src="charts/page-30-1.png" alt="Quant MN and T0 Provides Lower Volatility and Higher Sharpe Ratios" class="scroll-reveal-img" style="width:100%;">
       <p class="chart-source">Source: Annualized volatility and Sharpe ratio based on weekly gross return data from Jul 2021 to Jun 2024. 78 funds Quant MN, 13 funds Quant T0.</p>
     </div>
   </div>
@@ -2199,7 +2285,7 @@ footer .disclaimer {
     <div class="chart-box">
       <div class="chart-title">EIF Annual Alpha Distribution (2020&ndash;2023)</div>
       <div class="chart-subtitle">Box plots showing declining alpha trend across all EIF types</div>
-      <canvas id="chartEIFAlphaBoxplot" height="360"></canvas>
+      <img src="charts/page-31.png" alt="EIF Annual Alpha Distribution 2020-2023" class="scroll-reveal-img" style="width:100%;">
       <p class="chart-source">Source: CITICS, Clocktower calculated. Including 29 CSI 300 EIF products, 112 CSI 500 EIF products, 76 CSI 1000 EIF products.</p>
     </div>
   </div>
@@ -2269,6 +2355,7 @@ footer .disclaimer {
 
 <!-- Chapter Card: Access -->
 <div class="chapter-card section-dark fade-in">
+  <canvas class="entropy-bg"></canvas>
   <div class="chapter-card-number">07</div>
   <div class="chapter-card-title">How to Access China's Quant Strategies</div>
   <div class="chapter-card-line"></div>
@@ -2383,14 +2470,14 @@ footer .disclaimer {
       <div class="chart-title">Onshore Access vs Offshore Access: Pros and Cons</div>
       <div style="overflow-x: auto;">
         <table class="data-table">
-          <thead><tr><th>Dimension</th><th>Onshore</th><th>Offshore</th></tr></thead>
+          <thead><tr><th>Criteria</th><th>Onshore Access</th><th>Offshore Access</th></tr></thead>
           <tbody>
-            <tr><td class="row-label">Brokerage Fees</td><td class="heat-high">~0.01% &mdash; lower (1/5 to 1/3 of offshore)</td><td class="heat-low">~0.03&ndash;0.05% &mdash; higher</td></tr>
-            <tr><td class="row-label">Latency</td><td class="heat-high">Lower &mdash; direct exchange access</td><td class="heat-low">Tens to ~100ms higher than onshore</td></tr>
-            <tr><td class="row-label">Trading Days</td><td class="heat-high">More days &mdash; mainland holidays only</td><td class="heat-low">~8&ndash;20 fewer days (HK + mainland holidays)</td></tr>
-            <tr><td class="row-label">Leverage &amp; Shorting</td><td class="heat-low">Restricted &mdash; DMA max 2x; limited securities lending</td><td class="heat-high">More accessible &mdash; flexible leverage and short selling</td></tr>
-            <tr><td class="row-label">FX Impact</td><td class="heat-high">Only at subscription/redemption; timing control</td><td class="heat-low">Real-time FX fluctuations during transactions</td></tr>
-            <tr><td class="row-label">Capital Inflow</td><td class="heat-low">Funds must enter mainland China (QFII or broker swap)</td><td class="heat-high">Funds remain offshore</td></tr>
+            <tr><td class="row-label">Brokerage Fees</td><td class="heat-high"><strong>Lower fees:</strong> ~0.01%, significantly lower than offshore fees. Investors can save 2-4% in annual fees with high turnover rates around 100 times per year.</td><td class="heat-low"><strong>Higher fees:</strong> Approximately 0.02%-0.03%, making it more costly, especially for high-frequency strategies that are sensitive to transaction costs.</td></tr>
+            <tr><td class="row-label">Latency</td><td class="heat-high"><strong>Lower latency:</strong> Faster execution with lower latency, suitable for high-frequency and ultra-high-frequency trading.</td><td class="heat-low"><strong>Higher latency:</strong> Generally, 10-100 ms slower than onshore, affecting high-frequency strategies due to alpha erosion; recent and potential regulatory measures targeting HFT may reduce this impact.</td></tr>
+            <tr><td class="row-label">Trading Days</td><td class="heat-high"><strong>More trading days:</strong> Not affected by holidays and weather related closures in Hong Kong, offering more trading days annually.</td><td class="heat-low"><strong>Fewer trading days:</strong> Stock Connect trading is subject to both Hong Kong and mainland China holidays and weather related closures in Hong Kong, resulting in around 8 fewer trading days yearly. The government is working on this issue. Trading through QFII with a PB is another solution, though it is generally more expensive.</td></tr>
+            <tr><td class="row-label">Leverage and Securities Lending</td><td class="heat-low"><strong>Restricted:</strong> Limited options for leverage and securities lending onshore, limiting certain strategy flexibility.</td><td class="heat-high"><strong>More accessible:</strong> Easier to use leverage and access securities lending, favoring leveraged market-neutral and short-focused quant strategies.</td></tr>
+            <tr><td class="row-label">FX Impact</td><td class="heat-high"><strong>Simpler FX impact:</strong> Only impacted during subscription and redemption periods, allowing investors to choose currency conversion timing.</td><td class="heat-low"><strong>More complicated FX impact:</strong> Real-time FX fluctuations affect offshore investors due to foreign exchange settlements when realizing profits with investment in RMB assets.</td></tr>
+            <tr><td class="row-label">Capital Inflow Requirement</td><td class="heat-low"><strong>Funds must enter mainland China:</strong> Whether through a QFII license or a broker&rsquo;s QFII/RQFII channels via swap structure, this approach essentially involves transferring funds into China.</td><td class="heat-high"><strong>No direct inflow required:</strong> Offshore access does not require direct fund inflows into mainland China, providing greater flexibility for capital management.</td></tr>
           </tbody>
         </table>
       </div>
@@ -2401,6 +2488,7 @@ footer .disclaimer {
 
 <!-- Chapter Card: AI -->
 <div class="chapter-card section-gradient fade-in">
+  <canvas class="entropy-bg"></canvas>
   <div class="chapter-card-number">08</div>
   <div class="chapter-card-title">Artificial Intelligence</div>
   <div class="chapter-card-line"></div>
@@ -2500,6 +2588,7 @@ footer .disclaimer {
 
 <!-- Chapter Card: Glossary -->
 <div class="chapter-card section-dark fade-in">
+  <canvas class="entropy-bg"></canvas>
   <div class="chapter-card-number">09</div>
   <div class="chapter-card-title">Glossary</div>
   <div class="chapter-card-line"></div>
@@ -2709,28 +2798,28 @@ footer .disclaimer {
         <div class="index-bar" style="background: rgba(198, 40, 40, 0.2);">
           <div class="index-bar-label">CSI 300</div>
           <div class="index-bar-fill" style="background: linear-gradient(90deg, rgba(198,40,40,0.6), rgba(198,40,40,0.3)); width: 20%;">
-            <span class="index-bar-text">Stocks 1&ndash;300</span>
+            <span class="index-bar-text">Top 1&ndash;300</span>
           </div>
           <div class="index-bar-cap">Large-cap</div>
         </div>
         <div class="index-bar" style="background: rgba(212, 160, 23, 0.15);">
           <div class="index-bar-label">CSI 500</div>
           <div class="index-bar-fill" style="background: linear-gradient(90deg, rgba(212,160,23,0.5), rgba(212,160,23,0.25)); width: 33%;">
-            <span class="index-bar-text">Stocks 301&ndash;800</span>
+            <span class="index-bar-text">Top 301&ndash;800</span>
           </div>
           <div class="index-bar-cap">Mid-cap</div>
         </div>
         <div class="index-bar" style="background: rgba(6, 214, 160, 0.1);">
           <div class="index-bar-label">CSI 1000</div>
           <div class="index-bar-fill" style="background: linear-gradient(90deg, rgba(6,214,160,0.4), rgba(6,214,160,0.2)); width: 60%;">
-            <span class="index-bar-text">Stocks 801&ndash;1800</span>
+            <span class="index-bar-text">Top 1001&ndash;1800</span>
           </div>
           <div class="index-bar-cap">Small-cap</div>
         </div>
         <div class="index-bar" style="background: rgba(167, 139, 250, 0.1);">
           <div class="index-bar-label">CSI 2000</div>
           <div class="index-bar-fill" style="background: linear-gradient(90deg, rgba(167,139,250,0.4), rgba(167,139,250,0.2)); width: 100%;">
-            <span class="index-bar-text">Stocks 1801&ndash;3800</span>
+            <span class="index-bar-text">Top 1801&ndash;3800</span>
           </div>
           <div class="index-bar-cap">Micro-cap</div>
         </div>
@@ -2821,6 +2910,23 @@ const fadeObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.fade-in').forEach(el => {
   fadeObserver.observe(el);
+});
+
+// Scroll-reveal observer for screenshot images (fade in on enter, fade out on leave)
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      entry.target.classList.remove('hidden');
+    } else if (entry.target.classList.contains('visible')) {
+      entry.target.classList.add('hidden');
+      entry.target.classList.remove('visible');
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.scroll-reveal-img').forEach(el => {
+  revealObserver.observe(el);
 });
 
 // ===== SCROLL-TO-EXPAND HERO (Component 2) =====
@@ -3072,6 +3178,152 @@ document.querySelectorAll('.fade-in').forEach(el => {
   draw();
 })();
 
+// ===== CHAPTER CARD ENTROPY ANIMATIONS =====
+(function() {
+  const cards = document.querySelectorAll('.chapter-card');
+  const gridSize = 40;
+  const influenceRadius = 180;
+  const instances = [];
+
+  cards.forEach(card => {
+    const canvas = card.querySelector('canvas.entropy-bg');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let mouseX = -1000, mouseY = -1000;
+
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    });
+    card.addEventListener('mouseleave', () => {
+      mouseX = -1000;
+      mouseY = -1000;
+    });
+
+    function resize() {
+      canvas.width = card.offsetWidth;
+      canvas.height = card.offsetHeight;
+    }
+
+    resize();
+    const w = canvas.width, h = canvas.height;
+    const cols = Math.ceil(w / gridSize);
+    const rows = Math.ceil(h / gridSize);
+    const particles = [];
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        particles.push({
+          x: i * gridSize + gridSize / 2,
+          y: j * gridSize + gridSize / 2,
+          baseX: i * gridSize + gridSize / 2,
+          baseY: j * gridSize + gridSize / 2,
+          size: Math.random() * 1.5 + 0.5,
+          phase: Math.random() * Math.PI * 2,
+          vx: 0, vy: 0,
+        });
+      }
+    }
+
+    instances.push({ canvas, ctx, particles, card, getMouse: () => ({ x: mouseX, y: mouseY }), resize });
+  });
+
+  let time = 0;
+  function drawAll() {
+    time += 0.008;
+    instances.forEach(inst => {
+      const { canvas, ctx, particles, card, getMouse } = inst;
+      const rect = card.getBoundingClientRect();
+      const inView = rect.bottom > 0 && rect.top < window.innerHeight;
+      if (!inView) return;
+
+      if (canvas.width !== card.offsetWidth || canvas.height !== card.offsetHeight) {
+        inst.resize();
+      }
+
+      const mouse = getMouse();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach(p => {
+        const dx = mouse.x - p.baseX;
+        const dy = mouse.y - p.baseY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        let targetX = p.baseX, targetY = p.baseY;
+
+        if (dist < influenceRadius) {
+          const force = (1 - dist / influenceRadius);
+          const angle = Math.atan2(dy, dx);
+          const push = force * 25;
+          targetX = p.baseX - Math.cos(angle) * push + Math.sin(time * 2 + p.phase) * force * 8;
+          targetY = p.baseY - Math.sin(angle) * push + Math.cos(time * 2 + p.phase) * force * 8;
+        } else {
+          targetX = p.baseX + Math.sin(time * 0.5 + p.phase) * 1.5;
+          targetY = p.baseY + Math.cos(time * 0.5 + p.phase) * 1.5;
+        }
+
+        p.vx += (targetX - p.x) * 0.08;
+        p.vy += (targetY - p.y) * 0.08;
+        p.vx *= 0.85;
+        p.vy *= 0.85;
+        p.x += p.vx;
+        p.y += p.vy;
+
+        const chaos = dist < influenceRadius ? (1 - dist / influenceRadius) : 0;
+        const alpha = 0.12 + chaos * 0.6;
+        const size = p.size * (1 + chaos * 2);
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+        ctx.fill();
+      });
+
+      if (particles.length < 400) {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx2 = particles[i].x - particles[j].x;
+            const dy2 = particles[i].y - particles[j].y;
+            const d = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+            if (d < gridSize * 1.8) {
+              const a = (1 - d / (gridSize * 1.8)) * 0.06;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = 'rgba(255, 255, 255, ' + a + ')';
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+    });
+    requestAnimationFrame(drawAll);
+  }
+  drawAll();
+
+  window.addEventListener('resize', () => {
+    instances.forEach(inst => inst.resize());
+  });
+})();
+
+// ===== TIMELINE SCROLL-ACTIVE STAGES =====
+(function() {
+  const stages = document.querySelectorAll('.timeline-stage');
+  if (!stages.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('tl-active');
+      } else {
+        entry.target.classList.remove('tl-active');
+      }
+    });
+  }, { threshold: 0.6, rootMargin: '-10% 0px -30% 0px' });
+
+  stages.forEach(s => observer.observe(s));
+})();
+
 // ===== CHART.JS INITIALIZATION =====
 (function() {
   const fontFamily = "'Calibri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
@@ -3116,21 +3368,28 @@ document.querySelectorAll('.fade-in').forEach(el => {
   // -- Languages pie chart
   new Chart(document.getElementById('chartLanguages'), doughnutConfig(
     ['Chinese', 'Spanish', 'Japanese', 'Other'],
-    [51, 33, 9, 7],
+    [51, 9, 7, 33],
     [red, gold, green, purple]
   ));
 
-  // -- China Quant Concentration
-  new Chart(document.getElementById('chartChinaConcentration'), doughnutConfig(
-    ['>10bn RMB', '5-10bn RMB', '2-5bn RMB', '1-2bn RMB', '500mn-1bn RMB', '<500mn RMB'],
-    [32, 23, 40, 51, 63, 480],
-    [red, redLight, gold, goldLight, green, '#8b7070']
-  ));
+  // -- China Quant Concentration (show counts, not %)
+  new Chart(document.getElementById('chartChinaConcentration'), {
+    type: 'doughnut',
+    data: { labels: ['>10bn RMB', '5-10bn RMB', '2-5bn RMB', '1-2bn RMB', '500mn-1bn RMB', '<500mn RMB'], datasets: [{ data: [32, 23, 40, 51, 63, 480], backgroundColor: [red, redLight, gold, goldLight, green, '#8b7070'], borderColor: 'rgba(26,10,10,0.8)', borderWidth: 2 }] },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 8 } },
+        datalabels: { color: '#fff', font: { size: 11, weight: 'bold' }, formatter: (v) => v, display: (ctx) => ctx.dataset.data[ctx.dataIndex] / ctx.dataset.data.reduce((a,b) => a+b, 0) > 0.04 }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
 
   // -- China Strategy Allocation
   new Chart(document.getElementById('chartStrategyCN'), doughnutConfig(
-    ['EIF (Long-Only)', 'Equity MN', 'Equity L/S & Index-Free', 'CTA', 'Quant Macro', 'Stat Arb', 'Multi-strategy'],
-    [39, 33, 9, 8, 4, 4, 3],
+    ['EIF (Long-Only)', 'Equity MN', 'CTA', 'Equity L/S & Index-Free', 'Quant Macro', 'Multi-strategy', 'Stat Arb'],
+    [39, 33, 9, 8, 5, 4, 3],
     [red, redLight, gold, goldLight, green, purple, orange]
   ));
 
@@ -3148,18 +3407,37 @@ document.querySelectorAll('.fade-in').forEach(el => {
     [red, gold, '#8b7070']
   ));
 
-  // -- EIF Detail (broad-based breakdown)
-  new Chart(document.getElementById('chartEIFDetail'), doughnutConfig(
-    ['CSI 500', 'CSI 1000', 'CSI 300', 'Others'],
-    [45, 13, 6, 1],
-    [red, redLight, gold, '#8b7070']
-  ));
+  // -- EIF Detail (broad-based breakdown) — stacked bar
+  new Chart(document.getElementById('chartEIFDetailBar'), {
+    type: 'bar',
+    data: {
+      labels: ['Broad-based Index'],
+      datasets: [
+        { label: 'CSI 500', data: [45], backgroundColor: 'rgba(6,150,136,0.8)', borderWidth: 0 },
+        { label: 'CSI 1000', data: [13], backgroundColor: 'rgba(198,40,40,0.7)', borderWidth: 0 },
+        { label: 'CSI 300', data: [6], backgroundColor: 'rgba(233,30,99,0.6)', borderWidth: 0 },
+        { label: 'Others', data: [1], backgroundColor: 'rgba(139,112,112,0.5)', borderWidth: 0 }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { stacked: true, grid: { display: false }, display: false },
+        y: { stacked: true, grid: { color: gridColor }, title: { display: true, text: '%', color: textColor }, max: 70 }
+      },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 8 } },
+        datalabels: { color: '#fff', font: { size: 11, weight: 'bold' }, formatter: v => v + '%', display: (ctx) => ctx.dataset.data[ctx.dataIndex] > 3 }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
 
   // -- Global Quant AUM stacked bar
   const globalYears = [];
   for (let y = 1990; y <= 2016; y++) globalYears.push(y.toString());
-  const quantPct = [20,29,23,24,28,35,34,33,33,30,27,27,29,27,28,26,21,23,26,23,24,28,25,28,28,28,30];
-  const totalAUM = [50,60,70,100,120,140,180,250,300,350,400,450,460,520,700,850,1100,1500,1600,1100,1200,1300,1400,1600,1900,2200,2800];
+  const quantPct = [20,29,23,24,28,35,34,33,33,30,27,27,29,27,28,26,21,23,26,23,24,25,28,28,28,28,30];
+  const totalAUM = [50,60,70,100,120,140,180,250,300,350,400,450,460,520,700,850,1100,1500,1600,1200,1300,1400,1500,1600,1900,2200,2800];
   const quantAUM = totalAUM.map((t, i) => Math.round(t * quantPct[i] / 100));
   const nonQuantAUM = totalAUM.map((t, i) => t - quantAUM[i]);
 
@@ -3190,55 +3468,132 @@ document.querySelectorAll('.fade-in').forEach(el => {
     }
   });
 
-  // -- China Quant Rapid Development (dual axis)
+  // -- China Quant Rapid Development (stacked bar with % labels + line)
   const cnYears = ['2016','2017','2018','2019','2020','2021','2022','2023Q3'];
-  const discAUM = [520,550,510,480,530,580,540,520];
-  const quantAUMCN = [16,30,40,60,100,170,214,190];
+  const discAUM = [400,350,360,330,640,800,580,520];
+  const quantAUMCN = [13,22,31,57,150,250,214,190];
   const cumLaunches = [200,350,500,700,1100,1800,2500,3200];
   const quantShareCN = [3,6,8,17,19,24,27,27];
 
-  new Chart(document.getElementById('chartChinaAUM'), {
+  const chinaAUMChart = new Chart(document.getElementById('chartChinaAUM'), {
     type: 'bar',
     data: {
       labels: cnYears,
       datasets: [
-        { label: 'Discretionary AUM ($bn)', data: discAUM, backgroundColor: 'rgba(139,112,112,0.5)', borderWidth: 0, yAxisID: 'y' },
-        { label: 'Quant AUM ($bn)', data: quantAUMCN, backgroundColor: 'rgba(198,40,40,0.7)', borderWidth: 0, yAxisID: 'y' },
-        { label: 'Cum. Quant Launches', data: cumLaunches, type: 'line', borderColor: gold, backgroundColor: 'transparent', pointBackgroundColor: gold, pointRadius: 4, borderWidth: 2, yAxisID: 'y1' }
+        { label: 'Discretionary Fund AUM (USD bn)', data: discAUM, backgroundColor: 'rgba(139,112,112,0.5)', borderWidth: 0, stack: 'stack0', yAxisID: 'y' },
+        { label: 'Quant Fund AUM (USD bn)', data: quantAUMCN, backgroundColor: 'rgba(167,60,130,0.7)', borderWidth: 0, stack: 'stack0', yAxisID: 'y' },
+        { label: 'Cum No of Quant LOs Launched since 2016', data: cumLaunches, type: 'line', borderColor: gold, backgroundColor: 'transparent', pointBackgroundColor: gold, pointRadius: 4, borderWidth: 2, yAxisID: 'y1', stack: false }
       ]
     },
     options: {
       responsive: true,
       scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-        y: { position: 'left', grid: { color: gridColor }, title: { display: true, text: 'AUM ($bn)', color: textColor }, ticks: { font: { size: 10 } } },
-        y1: { position: 'right', grid: { display: false }, title: { display: true, text: 'Cumulative Launches', color: gold }, ticks: { color: gold, font: { size: 10 } } }
-      },
-      plugins: { legend: { position: 'top' }, datalabels: { display: false } }
-    }
-  });
-
-  // -- Top 10 AUM Comparison
-  new Chart(document.getElementById('chartTop10AUM'), {
-    type: 'bar',
-    data: {
-      labels: ['China Top 10', 'Global Top 10'],
-      datasets: [{ data: [55, 735], backgroundColor: [red, gold], borderWidth: 0 }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      scales: {
-        x: { grid: { color: gridColor }, title: { display: true, text: 'AUM ($bn)', color: textColor } },
-        y: { grid: { display: false } }
+        x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { stacked: true, position: 'left', grid: { color: gridColor }, title: { display: true, text: 'AUM (USD bn)', color: textColor }, ticks: { font: { size: 10 } } },
+        y1: { position: 'right', grid: { display: false }, title: { display: true, text: 'No. of Funds', color: gold }, ticks: { color: gold, font: { size: 10 } } }
       },
       plugins: {
-        legend: { display: false },
-        datalabels: { anchor: 'end', align: 'end', color: '#fff', font: { size: 13, weight: 'bold' }, formatter: v => '$' + v + 'B' }
+        legend: { position: 'top' },
+        datalabels: {
+          display: function(ctx) { return ctx.datasetIndex === 1; },
+          anchor: 'end', align: 'top', color: textColor, font: { size: 11, weight: 'bold' },
+          formatter: function(v, ctx) { return quantShareCN[ctx.dataIndex] + '%'; }
+        }
       }
     },
     plugins: [ChartDataLabels]
   });
+
+  // -- Top 10 AUM Comparison (vertical stacked bar with fund segments)
+  const chinaFunds = [
+    { name: 'Tianyan', aum: 3 }, { name: 'Wenbo', aum: 3 }, { name: 'High-Flyer', aum: 4 },
+    { name: 'Century Frontier', aum: 4 }, { name: 'Wizardquant', aum: 5 }, { name: 'Chengqi', aum: 6 },
+    { name: 'Lingjun', aum: 7 }, { name: 'Yanfu', aum: 8 }, { name: 'Ubiquant', aum: 8 }, { name: 'Minghong', aum: 8 }
+  ];
+  const globalFunds = [
+    { name: 'DBi', aum: 20 }, { name: 'PanAgora', aum: 32 }, { name: 'D.E. Shaw', aum: 46 },
+    { name: 'Citadel', aum: 52 }, { name: 'Marshall Wace', aum: 64 }, { name: 'Two Sigma', aum: 67 },
+    { name: 'Squarepoint', aum: 76 }, { name: 'AQR', aum: 95 }, { name: 'Renaissance', aum: 106 }, { name: 'Man', aum: 178 }
+  ];
+  const top10Colors = [red, redLight, gold, goldLight, green, purple, orange, '#87ceeb', '#8b7070', coral];
+  const top10Datasets = [];
+  for (let i = 0; i < 10; i++) {
+    top10Datasets.push({
+      label: chinaFunds[i].name + ' / ' + globalFunds[i].name,
+      data: [chinaFunds[i].aum, globalFunds[i].aum],
+      backgroundColor: top10Colors[i],
+      borderWidth: 0
+    });
+  }
+  const top10Chart = new Chart(document.getElementById('chartTop10AUM'), {
+    type: 'bar',
+    data: { labels: ['China Top 10', 'Global Top 10'], datasets: top10Datasets },
+    options: {
+      responsive: true,
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: { stacked: true, grid: { color: gridColor }, title: { display: true, text: 'Billion USD', color: textColor }, max: 800 }
+      },
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          color: '#fff', font: { size: 9, weight: 'bold' },
+          display: function(ctx) { return ctx.dataset.data[ctx.dataIndex] >= 20; },
+          formatter: function(v, ctx) {
+            const idx = ctx.dataIndex;
+            const fundList = idx === 0 ? chinaFunds : globalFunds;
+            return fundList[ctx.datasetIndex].name + ', ' + v;
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              const idx = ctx.dataIndex;
+              const fundList = idx === 0 ? chinaFunds : globalFunds;
+              return fundList[ctx.datasetIndex].name + ': $' + ctx.raw + 'B';
+            }
+          }
+        }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+  // Add total labels via custom plugin
+  const top10AnnotationPlugin = {
+    id: 'top10Totals',
+    afterDraw: function(chart) {
+      const ctx = chart.ctx;
+      const meta = chart.getDatasetMeta(9);
+      if (!meta || !meta.data) return;
+      ctx.save();
+      ctx.font = 'bold 14px Calibri';
+      ctx.fillStyle = green;
+      ctx.textAlign = 'center';
+      meta.data.forEach(function(bar, i) {
+        const total = i === 0 ? 55 : 735;
+        ctx.fillText(total, bar.x, bar.y - 8);
+      });
+      // Draw 13x annotation
+      if (meta.data.length >= 2) {
+        const x1 = meta.data[0].x, y1 = meta.data[0].y - 20;
+        const x2 = meta.data[1].x, y2 = meta.data[1].y - 20;
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        ctx.strokeStyle = '#c62828';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        ctx.fillStyle = '#c62828';
+        ctx.font = 'bold 20px Calibri';
+        ctx.fillText('13x', mx, my - 10);
+      }
+      ctx.restore();
+    }
+  };
+  top10Chart.config.plugins.push(top10AnnotationPlugin);
+  top10Chart.update();
 
   // -- Quant Participation Rate
   new Chart(document.getElementById('chartParticipation'), {
@@ -3269,9 +3624,9 @@ document.querySelectorAll('.fade-in').forEach(el => {
     data: {
       labels: ['2020', '2021', '2022', '2023'],
       datasets: [
-        { label: 'CSI 300 EIF Alpha', data: [18, 19, 10, 7], backgroundColor: 'rgba(198,40,40,0.6)' },
-        { label: 'CSI 500 EIF Alpha', data: [25, 18, 11, 11], backgroundColor: 'rgba(212,160,23,0.6)' },
-        { label: 'CSI 1000 EIF Alpha', data: [31, 23, 16, 16], backgroundColor: 'rgba(6,214,160,0.5)' },
+        { label: 'CSI 300 EIF Median Alpha', data: [18, 19, 10, 7], backgroundColor: 'rgba(198,40,40,0.6)' },
+        { label: 'CSI 500 EIF Median Alpha', data: [25, 18, 11, 11], backgroundColor: 'rgba(212,160,23,0.6)' },
+        { label: 'CSI 1000 EIF Median Alpha', data: [31, 23, 16, 16], backgroundColor: 'rgba(6,214,160,0.5)' },
         { label: 'US Quant EMN Return', data: [-15, 13, 5, 9], backgroundColor: 'rgba(167,139,250,0.6)' }
       ]
     },
@@ -3307,41 +3662,7 @@ document.querySelectorAll('.fade-in').forEach(el => {
     }
   });
 
-  // -- Barra Factor Cumulative Returns (multi-line)
-  const barraLabels = ['Dec 2020','Mar 2021','Jun 2021','Sep 2021','Dec 2021','Mar 2022','Jun 2022','Sep 2022','Dec 2022','Mar 2023','Jun 2023','Sep 2023','Dec 2023'];
-  const barraData = {
-    'Beta':            [0, 5, 10, 15, 18, 12, 15, 18, 20, 22, 23, 24, 25],
-    'Momentum':        [0, 3, 8, 12, 14, 10, 12, 14, 15, 17, 18, 19, 20],
-    'Size':            [0, 2, 4, 5, 6, 4, 3, 4, 5, 5, 5, 5, 5],
-    'Earnings Yield':  [0, 1, 2, 3, 4, 3, 3, 4, 4, 5, 5, 5, 5],
-    'Resid. Vol':      [0, 3, 5, 2, -2, -5, -3, -1, 0, 1, 0, 0, 0],
-    'Growth':          [0, 2, 3, 1, -1, -3, -2, 0, 0, 1, 0, 0, 0],
-    'Book-to-Price':   [0, -1, -2, -3, -5, -7, -8, -9, -10, -10, -10, -10, -10],
-    'Leverage':        [0, -2, -4, -6, -8, -10, -12, -13, -14, -14, -15, -15, -15],
-    'Liquidity':       [0, -3, -5, -8, -10, -13, -15, -17, -18, -19, -20, -20, -20],
-    'Non-linear Size': [0, -4, -7, -10, -13, -16, -19, -21, -23, -24, -25, -25, -25]
-  };
-  const barraColors = [red, redLight, gold, goldLight, '#87ceeb', orange, '#9acd32', '#8b0000', '#654321', purple];
-
-  new Chart(document.getElementById('chartBarraFactors'), {
-    type: 'line',
-    data: {
-      labels: barraLabels,
-      datasets: Object.keys(barraData).map((key, i) => ({
-        label: key, data: barraData[key], borderColor: barraColors[i], backgroundColor: 'transparent',
-        borderWidth: 2, pointRadius: 0, tension: 0.3
-      }))
-    },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      scales: {
-        x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 9 } } },
-        y: { grid: { color: gridColor }, title: { display: true, text: 'Cumulative Return (%)', color: textColor } }
-      },
-      plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8 } }, datalabels: { display: false } }
-    }
-  });
+  // -- Barra Factor chart replaced with screenshot image
 
   // -- HFT Volume
   const hftYears = [];
@@ -3368,38 +3689,7 @@ document.querySelectorAll('.fade-in').forEach(el => {
     }
   });
 
-  // -- Quants vs Discretionary (multi-line)
-  const qvdLabels = ['Jul 2021','Oct 2021','Jan 2022','Apr 2022','Jul 2022','Oct 2022','Jan 2023','Apr 2023','Jul 2023','Oct 2023','Jan 2024','Apr 2024','Jun 2024'];
-  const qvdData = {
-    '300 EIF Alpha':      [0, 5, 10, 12, 15, 18, 22, 25, 28, 32, 38, 35, 40],
-    '500 EIF Alpha':      [0, 6, 12, 14, 16, 19, 23, 26, 29, 32, 37, 33, 37],
-    '1000 EIF Alpha':     [0, 8, 15, 18, 21, 25, 30, 33, 36, 40, 48, 42, 47],
-    'Index-free EIF':     [0, 5, 10, 12, 14, 17, 20, 23, 25, 28, 34, 30, 35],
-    'Quant EMN':          [0, 3, 6, 7, 8, 10, 13, 15, 17, 19, 22, 20, 22],
-    'Quant T0':           [0, 4, 8, 10, 12, 15, 18, 21, 23, 25, 29, 27, 30],
-    'Disc. Equity Alpha': [0, 2, 0, -3, -5, -4, -2, 0, -1, -3, -5, -3, -2]
-  };
-  const qvdColors = [red, gold, green, redLight, purple, orange, '#8b7070'];
-
-  new Chart(document.getElementById('chartQuantVsDisc'), {
-    type: 'line',
-    data: {
-      labels: qvdLabels,
-      datasets: Object.keys(qvdData).map((key, i) => ({
-        label: key, data: qvdData[key], borderColor: qvdColors[i], backgroundColor: 'transparent',
-        borderWidth: 2, pointRadius: 0, tension: 0.3, borderDash: key.includes('Disc') ? [5,5] : []
-      }))
-    },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      scales: {
-        x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 9 } } },
-        y: { grid: { color: gridColor }, title: { display: true, text: 'Cumulative Return (%)', color: textColor } }
-      },
-      plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8 } }, datalabels: { display: false } }
-    }
-  });
+  // -- Quants vs Discretionary chart replaced with screenshot image
 
   // -- Quant Quake drawdown (16 managers)
   const qqDates = ['Feb 1','Feb 2','Feb 5','Feb 6','Feb 7','Feb 8'];
@@ -3451,7 +3741,7 @@ document.querySelectorAll('.fade-in').forEach(el => {
   new Chart(document.getElementById('chartAIRole'), {
     type: 'bar',
     data: {
-      labels: ['Identify Patterns\n& Trends', 'Optimize Portfolio\n& Risk Mgmt', 'Develop & Test\nStrategies', 'Monitor & Adjust\nPositions', 'Sentiment\nAnalysis', 'Automate Trading\nDecisions'],
+      labels: ['Identify patterns\nand trends in\nmarket behaviour', 'Optimize portfolio\nallocation and\nrisk management', 'Develop and test\ninvestment\nstrategies', 'Monitor and adjust\ninvestment positions\nin real-time', 'Perform sentiment\nanalysis on news,\nearnings calls\nand social media', 'Automate timing\nof trading\ndecisions'],
       datasets: [
         { label: 'APAC', data: [65, 46, 31, 35, 31, 12], backgroundColor: 'rgba(198,40,40,0.7)' },
         { label: 'North America', data: [48, 39, 34, 20, 23, 11], backgroundColor: 'rgba(212,160,23,0.6)' }
@@ -3498,99 +3788,7 @@ document.querySelectorAll('.fade-in').forEach(el => {
       }
     });
 
-    // -- Volatility box plot
-    new Chart(document.getElementById('chartVolBoxplot'), {
-      type: 'boxplot',
-      data: {
-        labels: ['Quant MN', 'Quant T0', 'Disc. Equity'],
-        datasets: [{
-          label: 'Annualized Volatility',
-          backgroundColor: ['rgba(198,40,40,0.3)', 'rgba(212,160,23,0.3)', 'rgba(139,112,112,0.3)'],
-          borderColor: [red, gold, '#8b7070'],
-          borderWidth: 2,
-          data: [
-            { min: 3, q1: 5, median: 6.38, q3: 10, max: 20 },
-            { min: 3, q1: 5, median: 6.57, q3: 9, max: 10 },
-            { min: 8, q1: 15, median: 20.55, q3: 25, max: 40, outliers: [55, 65] }
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: { grid: { display: false } },
-          y: { grid: { color: gridColor }, title: { display: true, text: 'Vol (%)', color: textColor } }
-        },
-        plugins: { legend: { display: false }, datalabels: { display: false } }
-      }
-    });
-
-    // -- Sharpe box plot
-    new Chart(document.getElementById('chartSharpeBoxplot'), {
-      type: 'boxplot',
-      data: {
-        labels: ['Quant MN', 'Quant T0', 'Disc. Equity'],
-        datasets: [{
-          label: 'Sharpe Ratio',
-          backgroundColor: ['rgba(198,40,40,0.3)', 'rgba(212,160,23,0.3)', 'rgba(139,112,112,0.3)'],
-          borderColor: [red, gold, '#8b7070'],
-          borderWidth: 2,
-          data: [
-            { min: -2, q1: 0, median: 0.55, q3: 1, max: 2, outliers: [2.5] },
-            { min: 0, q1: 1.5, median: 1.83, q3: 2.5, max: 5 },
-            { min: -3, q1: -0.5, median: -0.39, q3: 0.5, max: 2 }
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: { grid: { display: false } },
-          y: { grid: { color: gridColor }, title: { display: true, text: 'Sharpe', color: textColor } }
-        },
-        plugins: { legend: { display: false }, datalabels: { display: false } }
-      }
-    });
-
-    // -- EIF Annual Alpha Box Plots
-    new Chart(document.getElementById('chartEIFAlphaBoxplot'), {
-      type: 'boxplot',
-      data: {
-        labels: ['300\n2020', '300\n2021', '300\n2022', '300\n2023', '500\n2020', '500\n2021', '500\n2022', '500\n2023', '1000\n2020', '1000\n2021', '1000\n2022', '1000\n2023'],
-        datasets: [{
-          label: 'Annual Alpha',
-          backgroundColor: [
-            'rgba(198,40,40,0.3)','rgba(198,40,40,0.3)','rgba(198,40,40,0.3)','rgba(198,40,40,0.3)',
-            'rgba(212,160,23,0.3)','rgba(212,160,23,0.3)','rgba(212,160,23,0.3)','rgba(212,160,23,0.3)',
-            'rgba(6,214,160,0.3)','rgba(6,214,160,0.3)','rgba(6,214,160,0.3)','rgba(6,214,160,0.3)'
-          ],
-          borderColor: [red,red,red,red,gold,gold,gold,gold,green,green,green,green],
-          borderWidth: 2,
-          data: [
-            { min: -10, q1: 12, median: 18, q3: 28, max: 50 },
-            { min: 0, q1: 13, median: 19, q3: 25, max: 30 },
-            { min: -5, q1: 5, median: 10, q3: 15, max: 25 },
-            { min: 0, q1: 3, median: 7, q3: 12, max: 15 },
-            { min: -20, q1: 18, median: 25, q3: 33, max: 45 },
-            { min: -10, q1: 12, median: 18, q3: 25, max: 35 },
-            { min: 0, q1: 7, median: 11, q3: 18, max: 30, outliers: [68] },
-            { min: -5, q1: 7, median: 11, q3: 16, max: 25, outliers: [40] },
-            { min: 10, q1: 24, median: 31, q3: 40, max: 50 },
-            { min: 10, q1: 18, median: 23, q3: 30, max: 40 },
-            { min: 5, q1: 12, median: 16, q3: 20, max: 25 },
-            { min: 5, q1: 12, median: 16, q3: 20, max: 25 }
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 9 } } },
-          y: { grid: { color: gridColor }, title: { display: true, text: 'Annual Alpha (%)', color: textColor } }
-        },
-        plugins: { legend: { display: false }, datalabels: { display: false } }
-      }
-    });
+    // -- Volatility, Sharpe, and EIF Alpha boxplots replaced with screenshot images
   }
 })();
 
