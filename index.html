@@ -233,7 +233,6 @@ nav.scrolled {
 
 .hero-split-title h1 {
   font-family: var(--font-sans);
-  font-size: clamp(3rem, 7vw, 6rem);
   font-weight: 900;
   line-height: 1.05;
   background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
@@ -242,6 +241,20 @@ nav.scrolled {
   background-clip: text;
   white-space: nowrap;
   will-change: transform;
+}
+
+.hero-split-title h1#splitLeft {
+  font-size: clamp(5rem, 12vw, 11rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-split-title h1#splitRight {
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  opacity: 0.7;
 }
 
 .hero-subtitle {
@@ -474,6 +487,20 @@ footer .disclaimer {
 .scroll-reveal-img.hidden {
   opacity: 0;
   transform: translateY(-40px);
+}
+.scroll-reveal-img { cursor: zoom-in; }
+.lightbox-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,0.9);
+  display: flex; align-items: center; justify-content: center;
+  cursor: zoom-out;
+  opacity: 0; transition: opacity 0.3s;
+}
+.lightbox-overlay.active { opacity: 1; }
+.lightbox-overlay img {
+  max-width: 92vw; max-height: 92vh;
+  border-radius: 4px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.5);
 }
 
 /* ===== CHART CONTAINERS ===== */
@@ -1310,7 +1337,7 @@ footer .disclaimer {
         </div>
         <div class="timeline-stage-content">
           <ul>
-            <li>April 2010: Launch of CSI 300 Index Futures (IF), providing short instrument</li>
+            <li>April 2010: Launch of CSI 300 Index Futures (IF futures), providing short instrument</li>
             <li>Quant Market-Neutral strategies grew rapidly with sizing factor continuously contributing</li>
             <li>Most models built around multi-factor frameworks</li>
           </ul>
@@ -1365,7 +1392,7 @@ footer .disclaimer {
   <div class="narrative fade-in no-pad-top">
     <h4>Emerging Stage (2010&ndash;2015)</h4>
     <ul>
-      <li>On April 16, 2010, China launched its first stock index futures, the CSI 300 Index Futures (IF), marking the beginning of short-selling and leveraged trading. Many talented managers with overseas quant trading experience returned to China, kicking off a rapid boom in the domestic quant investing industry, fueled by the lucrative alpha in the Chinese quant market.</li>
+      <li>On April 16, 2010, China launched its first stock index futures, the CSI 300 Index Futures (IF futures), marking the beginning of short-selling and leveraged trading. Many talented managers with overseas quant trading experience returned to China, kicking off a rapid boom in the domestic quant investing industry, fueled by the lucrative alpha in the Chinese quant market.</li>
       <li>This was a prime era for profiting from quant market-neutral strategies. On the one hand, small-cap stocks consistently outperformed the CSI 300 Index; on the other hand, IF futures have often traded at a premium. Consequently, some market-neutral strategies generated profits by holding a basket of small-cap stocks while hedging with IF futures, capitalizing on both the size factor and the premium from IF hedging. During this period, the size factor was widely regarded as a key source of alpha, leading to the rapid scaling of market-neutral strategies.</li>
     </ul>
 
@@ -1777,8 +1804,8 @@ footer .disclaimer {
           <thead><tr><th></th><th>CSI 300</th><th>CSI 500</th><th>CSI 1000</th><th>CSI 2000</th></tr></thead>
           <tbody>
             <tr><td class="row-label">Inception Date</td><td>4/8/2005</td><td>1/15/2007</td><td>10/17/2014</td><td>8/11/2023</td></tr>
-            <tr><td class="row-label">Futures Listing Date</td><td>4/16/2010</td><td>4/16/2015</td><td>7/22/2022</td><td>&mdash;</td></tr>
-            <tr><td class="row-label">Top 10 Stocks Weight</td><td>22.39%</td><td>6.09%</td><td>3.48%</td><td>2.37%</td></tr>
+            <tr><td class="row-label">Index Futures Listing Date</td><td>4/16/2010</td><td>4/16/2015</td><td>7/22/2022</td><td>&mdash;</td></tr>
+            <tr><td class="row-label">Concentration: Top 10 Stocks Weight</td><td>22.39%</td><td>6.09%</td><td>3.48%</td><td>2.37%</td></tr>
             <tr><td class="row-label">Avg Daily Volume (CNY)</td><td>228B (32B USD)</td><td>142B (20B USD)</td><td>172B (24B USD)</td><td>210B (29B USD)</td></tr>
             <tr><td class="row-label">Annualized Volatility (5Y)</td><td class="heat-low" style="text-align:center;">18%</td><td class="heat-mid" style="text-align:center;">20%</td><td class="heat-high" style="text-align:center;">23%</td><td class="heat-very-high" style="text-align:center;">25%</td></tr>
             <tr><td class="row-label">Median Market Cap (B CNY)</td><td>85</td><td>21</td><td>9</td><td>3</td></tr>
@@ -1961,7 +1988,7 @@ footer .disclaimer {
     <ul>
       <li>A type of algorithmic trading that requires a high-speed trading infrastructure.</li>
       <li>Typically, HFT investments have time horizons of less than one day (certain HFT signals can predict overnight).</li>
-      <li>Generally, HFT strategies aim to end the day with small to no positions (which can be defined as no active trading position/exposure in China due to the T+1 trading rule, which requires investors to hold a certain level of stock positions on T0 in order to complete both buy and sell transactions on T1).</li>
+      <li>Generally, HFT strategies aim to end the day with small to no positions (which can be defined as no active trading positions in China due to the T+1 trading rule, which requires investors to hold a certain level of stock positions on T0 in order to complete both buy and sell transactions on T1).</li>
     </ul>
     <p>
       Currently, the China Securities Regulatory Commission (CSRC) classifies a single account as engaging in HFT when it exceeds 300 order submissions or cancellations per second, or more than 20,000 orders in a single day. Fund managers in China can split their orders across multiple accounts to reduce the number of submissions per account, thereby staying below the thresholds set by stock exchanges and circumventing market regulations.
@@ -2055,8 +2082,8 @@ footer .disclaimer {
           <tbody>
             <tr><td class="row-label">Definition</td><td>System where orders are matched based on price and time priority in centralized exchanges. It is further divided into:<br><br><strong>Continuous Auction:</strong> Suited for intraday trading.<br><strong>Batch Auction:</strong> Used to determine opening and closing prices.<br>For example, the Shenzhen Stock Exchange schedule includes:<br>&bull; Opening batch auction: 9:15&ndash;9:25<br>&bull; Continuous auction sessions: 9:30&ndash;11:30 and 13:00&ndash;14:57<br>&bull; Closing batch auction: 14:57&ndash;15:00</td><td>System where market makers provide continuous buy and sell quotes, ensuring liquidity and facilitating immediate trades.</td></tr>
             <tr><td class="row-label">Primary Profit Mechanism</td><td>No dedicated market-making profiting mechanism</td><td>Market makers can profit from bid-ask spreads, exchange rebates and trade execution advantages.</td></tr>
-            <tr><td class="row-label">Transparency</td><td>There is greater transparency within the market, information is publicly available regarding buyer and seller quotes and transaction details.</td><td><strong>Lower transparency:</strong> market makers have informational advantages over other investors, reducing market transparency. Market makers&rsquo; privileged position and greater access to information increases their ability to exploit the market.</td></tr>
-            <tr><td class="row-label">Liquidity</td><td><strong>Dark pools and iceberg orders are not officially available in mainland China.</strong> The auction market is fully centralized and transparent, with all orders displayed. To reduce market impact from large orders, similar functions are provided in China:<br><br><strong>Block Trading Mechanism:</strong> Allows large trades exceeding certain thresholds to be conducted on the exchange at specified times, rules, with information publicly displayed.<br><br><strong>Algorithms:</strong> Brokers offer algorithms to split large trades into smaller parts, minimizing market impact.<br><br>Variable liquidity depending on auction periods and order accumulation.</td><td>High liquidity due to continuous market-making activities.</td></tr>
+            <tr><td class="row-label">Transparency</td><td>There is greater transparency within the market, information is publicly available regarding buyer and seller quotes and transaction details.<br><br><strong>Dark pools and iceberg orders are not officially available in mainland China.</strong> The auction market is fully centralized and transparent, with all orders displayed. To reduce market impact from large orders, similar functions are provided in China:<br><br><strong>Block Trading Mechanism:</strong> Allows large trades exceeding certain thresholds to be conducted on the exchange at specified times, rules, with information publicly displayed.<br><br><strong>Algorithms:</strong> Brokers offer algorithms to split large trades into smaller parts, minimizing market impact.</td><td><strong>Lower transparency:</strong> market makers have informational advantages over other investors, reducing market transparency. Market makers&rsquo; privileged position and greater access to information increases their ability to exploit the market.</td></tr>
+            <tr><td class="row-label">Liquidity</td><td>Variable liquidity depending on auction periods and order accumulation.</td><td>High liquidity due to continuous market-making activities.</td></tr>
             <tr><td class="row-label">Transaction Costs</td><td><strong>Lower transaction costs:</strong> Buyer and seller quotes are matched based on specific rules, reducing costs beyond traditional market spreads.</td><td><strong>Higher transaction costs:</strong> Increased trading costs are part of the profit earned by market makers.</td></tr>
           </tbody>
         </table>
@@ -2290,27 +2317,24 @@ footer .disclaimer {
     </div>
   </div>
 
-  <div class="scrolly-pair fade-in">
-    <div class="scrolly-narrative">
-      <h3>Key Investment Considerations</h3>
-      <p>
-        Although China's quant market has become more institutionalized in recent years, careful investor scrutiny is still required during the due diligence process. Key considerations:
-      </p>
-      <ul>
-        <li><strong>Performance Consistency:</strong> The performance of flagship products and customized products (SMAs or Funds of One) using the same strategy may differ significantly due to AUM levels or risk control parameters. Rapid AUM growth can outpace strategy capacity, leading to outsourcing strategies to other teams or using different strategies for different products, sometimes resulting in poor performance consistency. Additionally, consistency between onshore and offshore products should be verified. Investors should closely monitor the consistency across products and determine whether differences in performance can be reasonably explained.</li>
-        <li><strong>AUM and Growth Rate:</strong> Large AUM offers benefits such as more competitive compensation and access to sophisticated technologies. However, rapid AUM growth can result in lagging strategy development, potentially leading to significant alpha drawdowns. For instance, a leading quant fund's AUM soared past 100 billion RMB in 2020, yet its CSI 500 EIF product faced an alpha drawdown of nearly 7% in early 2021. Similarly, two other top quant funds saw their AUM exceed 100 billion RMB in 2021, but their CSI 500 EIF products experienced alpha drawdowns of approximately 10% and 16.5%, respectively, in early 2022.</li>
-        <li><strong>Transparency:</strong> The level of transparency a fund is willing to provide is crucial. Investors should exercise caution if a fund refuses to disclose basic information such as Barra factor tilts and attributions (ideally data should be verified utilizing a fund's custodian analysis report), snapshots of positions, industry tilts, total number of stocks held, or leverage. For instance, in late 2023, a quant hedge fund claiming to employ a market neutral strategy was implicated in a fraud scandal, leading to significant losses for multiple institutional investors, including FOF products managed by a reputable asset management company with assets exceeding 100 billion yuan. Moreover, funds often claim a wide variety of tight risk controls, but these may not be as robust as advertised. Investors are advised to cross-check performance data at higher frequency, such as daily or weekly, along with holdings, risk factors and other relevant information and metrics.</li>
-        <li><strong>Risk Management:</strong> When investing in China, some fund managers and investors consider size and other risk factors as alpha factors. Investors are advised to remain cautious with fund managers who rely heavily on style factors for returns. The ability to "time" risk factors is difficult to validate, and abrupt reversals in style factors can lead to extreme alpha drawdowns. For example, in February 2024, the market crash prompted the government's aggressive purchase of large-cap stocks initially to stabilize the market. This sudden shift in the size factor caused substantial alpha drawdowns for fund managers with less rigorous risk controls. Even among top quantitative managers, some funds experienced alpha drawdowns of approximately -18% between February 2 &ndash; February 7. This period turned out to be a critical test for different managers' style constraints, with those implementing stricter risk controls managing to preserve alpha stability amid extreme market fluctuations.</li>
-        <li><strong>Reference Check:</strong> Reference checks are crucial when investing in China, serving not only to verify details or uncover issues mentioned earlier but also important to confirm the contributions and stability of key investment and research personnel. The reference check process can also help assess team dynamics and ensure alignment of interests between the fund, its employees and investors.</li>
-      </ul>
-    </div>
-    <div class="scrolly-sticky">
-      <div class="chart-box">
-        <div class="chart-title">China&rsquo;s Top Quant Managers&rsquo; Alpha During Feb 2024 Quant Quake</div>
-        <div class="chart-subtitle">Each line represents a quant&rsquo;s CSI 500 EIF cumulative alpha</div>
-        <canvas id="chartQuantQuake" height="360"></canvas>
-        <p class="chart-source">Source: CICC</p>
-      </div>
+  <div class="narrative fade-in">
+    <h3>Key Investment Considerations</h3>
+    <p>
+      Although China's quant market has become more institutionalized in recent years, careful investor scrutiny is still required during the due diligence process. Key considerations:
+    </p>
+    <ul>
+      <li><strong>Performance Consistency:</strong> The performance of flagship products and customized products (SMAs or Funds of One) using the same strategy may differ significantly due to AUM levels or risk control parameters. Rapid AUM growth can outpace strategy capacity, leading to outsourcing strategies to other teams or using different strategies for different products, sometimes resulting in poor performance consistency. Additionally, consistency between onshore and offshore products should be verified. Investors should closely monitor the consistency across products and determine whether differences in performance can be reasonably explained.</li>
+      <li><strong>AUM and Growth Rate:</strong> Large AUM offers benefits such as more competitive compensation and access to sophisticated technologies. However, rapid AUM growth can result in lagging strategy development, potentially leading to significant alpha drawdowns. For instance, a leading quant fund's AUM soared past 100 billion RMB in 2020, yet its CSI 500 EIF product faced an alpha drawdown of nearly 7% in early 2021. Similarly, two other top quant funds saw their AUM exceed 100 billion RMB in 2021, but their CSI 500 EIF products experienced alpha drawdowns of approximately 10% and 16.5%, respectively, in early 2022.</li>
+      <li><strong>Transparency:</strong> The level of transparency a fund is willing to provide is crucial. Investors should exercise caution if a fund refuses to disclose basic information such as Barra factor tilts and attributions (ideally data should be verified utilizing a fund's custodian analysis report), snapshots of positions, industry tilts, total number of stocks held, or leverage. For instance, in late 2023, a quant hedge fund claiming to employ a market neutral strategy was implicated in a fraud scandal, leading to significant losses for multiple institutional investors, including FOF products managed by a reputable asset management company with assets exceeding 100 billion yuan. Moreover, funds often claim a wide variety of tight risk controls, but these may not be as robust as advertised. Investors are advised to cross-check performance data at higher frequency, such as daily or weekly, along with holdings, risk factors and other relevant information and metrics.</li>
+      <li><strong>Risk Management:</strong> When investing in China, some fund managers and investors consider size and other risk factors as alpha factors. Investors are advised to remain cautious with fund managers who rely heavily on style factors for returns. The ability to "time" risk factors is difficult to validate, and abrupt reversals in style factors can lead to extreme alpha drawdowns. For example, in February 2024, the market crash prompted the government's aggressive purchase of large-cap stocks initially to stabilize the market. This sudden shift in the size factor caused substantial alpha drawdowns for fund managers with less rigorous risk controls. Even among top quantitative managers, some funds experienced alpha drawdowns of approximately -18% between February 2 &ndash; February 7. This period turned out to be a critical test for different managers' style constraints, with those implementing stricter risk controls managing to preserve alpha stability amid extreme market fluctuations.</li>
+      <li><strong>Reference Check:</strong> Reference checks are crucial when investing in China, serving not only to verify details or uncover issues mentioned earlier but also important to confirm the contributions and stability of key investment and research personnel. The reference check process can also help assess team dynamics and ensure alignment of interests between the fund, its employees and investors.</li>
+    </ul>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <img src="charts/page-32.png" alt="China's Top Quant Managers' Alpha Performance during Feb 2024 China Quant Quake" class="scroll-reveal-img" style="width:100%;">
+      <p class="chart-source">Source: CICC</p>
     </div>
   </div>
 
@@ -2322,7 +2346,7 @@ footer .disclaimer {
     <ul>
       <li>On September 1, 2023, the Shanghai and Shenzhen stock exchanges issued two notices, establishing a specialized reporting system and corresponding regulatory arrangements for quantitative trading, which took effect on October 9, 2023.</li>
       <li>On February 20, 2024, the exchanges announced that the reporting system had been successfully implemented and that further regulatory measures for quantitative trading would be established. On the same day, the exchange publicly reprimanded Lingjun Investment for violating algorithmic trading rules and suspended its trading account for three days.</li>
-      <li>On April 12, 2024, the CSRC drafted a memo for new regulations, which mentioned that northbound programmatic trading would be included in the reporting system following the principle of equal treatment for domestic and foreign investors. The exchanges were required to clarify the criteria for identifying high-frequency trading and implement stricter regulations, including: 1) Differential pricing with higher transaction fees, order cancellation fees, and increased data fees, and 2) Additional reporting requirements, such as the location of servers for high-frequency trading systems, system test reports, and emergency response plans for system failures. After gathering feedback, the regulations were officially issued on May 15, 2024, and will take effect on October 8, 2024.</li>
+      <li>On April 12, 2024, the China Securities Regulatory Commission (CSRC) drafted a memo for new regulations, which mentioned that northbound programmatic trading would be included in the reporting system following the principle of equal treatment for domestic and foreign investors. The exchanges were required to clarify the criteria for identifying high-frequency trading and implement stricter regulations, including: 1) Differential pricing with higher transaction fees, order cancellation fees, and increased data fees, and 2) Additional reporting requirements, such as the location of servers for high-frequency trading systems, system test reports, and emergency response plans for system failures. After gathering feedback, the regulations were officially issued on May 15, 2024, and will take effect on October 8, 2024.</li>
       <li>On June 7, 2024, the exchanges released a draft of the implementation rules for public comment. It clarifies four types of algorithmic trading irregularities subject to key monitoring and defined high-frequency trading as: 1) A single account submitting or canceling more than 300 orders per second, 2) A single account submitting or canceling more than 20,000 orders per day, and 3) Other scenarios determined by the exchange.</li>
     </ul>
     <p>
@@ -2477,7 +2501,7 @@ footer .disclaimer {
             <tr><td class="row-label">Trading Days</td><td class="heat-high"><strong>More trading days:</strong> Not affected by holidays and weather related closures in Hong Kong, offering more trading days annually.</td><td class="heat-low"><strong>Fewer trading days:</strong> Stock Connect trading is subject to both Hong Kong and mainland China holidays and weather related closures in Hong Kong, resulting in around 8 fewer trading days yearly. The government is working on this issue. Trading through QFII with a PB is another solution, though it is generally more expensive.</td></tr>
             <tr><td class="row-label">Leverage and Securities Lending</td><td class="heat-low"><strong>Restricted:</strong> Limited options for leverage and securities lending onshore, limiting certain strategy flexibility.</td><td class="heat-high"><strong>More accessible:</strong> Easier to use leverage and access securities lending, favoring leveraged market-neutral and short-focused quant strategies.</td></tr>
             <tr><td class="row-label">FX Impact</td><td class="heat-high"><strong>Simpler FX impact:</strong> Only impacted during subscription and redemption periods, allowing investors to choose currency conversion timing.</td><td class="heat-low"><strong>More complicated FX impact:</strong> Real-time FX fluctuations affect offshore investors due to foreign exchange settlements when realizing profits with investment in RMB assets.</td></tr>
-            <tr><td class="row-label">Capital Inflow Requirement</td><td class="heat-low"><strong>Funds must enter mainland China:</strong> Whether through a QFII license or a broker&rsquo;s QFII/RQFII channels via swap structure, this approach essentially involves transferring funds into China.</td><td class="heat-high"><strong>No direct inflow required:</strong> Offshore access does not require direct fund inflows into mainland China, providing greater flexibility for capital management.</td></tr>
+            <tr><td class="row-label">Capital Inflow Requirement</td><td class="heat-low"><strong>Funds must enter mainland China:</strong> Weather through a QFII license or a broker&rsquo;s QFII/RQFII channels via swap structure, this approach essentially involves transferring funds into China.</td><td class="heat-high"><strong>No direct inflow required:</strong> Offshore access does not require direct fund inflows into mainland China, providing greater flexibility for capital management.</td></tr>
           </tbody>
         </table>
       </div>
@@ -2565,7 +2589,7 @@ footer .disclaimer {
     </div>
     <div class="scrolly-narrative">
       <p>
-        Beginning in 2018, some domestic quant managers in China have been assessing machine learning models as a replacement for traditional multi-factor models. The applications have evolved from basic machine learning models like Lasso and Ridge to more sophisticated neural networks such as Deep Neural Networks (DNN) and Graph Neural Networks (GNN). Reinforcement learning is also used to optimize portfolios. A 2021 survey conducted by QuantUp revealed that 10.16% of institutions, including hedge funds, proprietary trading desks, and asset management divisions of securities firms, were utilizing AI in over ten distinct areas throughout the investment research processes, with AI contributing to 30% of their total investment activities.
+        Beginning in 2018, some domestic quant managers in China have been assessing machine learning models as a replacement for traditional multi-factor models. The applications have evolved from basic machine learning models like Lasso and Ridge to more sophisticated neural networks such as Deep Neural Networks (DNN) and Graph Neural Network (GNN). Reinforcement learning is also used to optimize portfolios. A 2021 survey conducted by QuantUp revealed that 10.16% of institutions, including hedge funds, proprietary trading desks, and asset management divisions of securities firms, were utilizing AI in over ten distinct areas throughout the investment research processes, with AI contributing to 30% of their total investment activities.
       </p>
       <p>
         Typically, in China's quant industry, the larger the company, the greater its investment and enthusiasm towards artificial intelligence. For example, Ubiquant Investment has established a Data Lab, AI Lab, and Waterdrop Lab to explore the applications of AI in data, algorithms, and trade execution. Meanwhile, High-Flyer Capital Management has invested over a billion yuan, purchased 11,000 GPUs, and rented nearly 2,000 square meters of office space to independently develop a deep learning training platform.
@@ -2693,7 +2717,7 @@ footer .disclaimer {
           </tbody>
         </table>
       </div>
-      <p class="chart-source">Source: Clocktower Group</p>
+      <p class="chart-source">Source: organized by Clocktower</p>
     </div>
   </div>
 
@@ -2725,7 +2749,7 @@ footer .disclaimer {
     <p>The Commodity Exchange Act (CEA) is a U.S. federal law enacted in 1936 that regulates the trading of commodity futures and options markets to ensure market transparency and prevent fraud, manipulation, and abusive practices. It provides the legal framework for oversight by the Commodity Futures Trading Commission (CFTC), which enforces the Act's provisions. The CEA mandates registration of market participants and establishes rules to prevent market manipulation and promotes transparency through reporting and record-keeping requirements. It also protects investors and was significantly expanded by the Dodd-Frank Act in 2010 to include oversight of swaps and other derivatives.</p>
 
     <h4>Consolidated Audit Trail</h4>
-    <p>The Consolidated Audit Trail (CAT) is a regulatory system established by the U.S. Securities and Exchange Commission (SEC) to track and record all trading activity in the equity and options markets. It creates a centralized database that captures detailed information on orders, quotes and trades across multiple exchanges and market participants. The CAT was developed to enhance market transparency, improve oversight, and help regulators detect market manipulation or unusual trading patterns. It was introduced following the 2010 &ldquo;Flash Crash&rdquo; to address gaps in monitoring fragmented markets and to better protect investors.</p>
+    <p>The Consolidated Audit Trail (CAT) is a regulatory system established by the U.S. Securities and Exchange Commission (SEC) to track and record all trading activity in the equity and options markets. It creates a centralized database that captures detailed information on orders, quotes, and trades across multiple exchanges and market participants. The CAT was developed to enhance market transparency, improve oversight, and help regulators detect market manipulation or unusual trading patterns. It was introduced following the 2010 &ldquo;Flash Crash&rdquo; to address gaps in monitoring fragmented markets and to better protect investors.</p>
 
     <h4>Rule 15c3-5</h4>
     <p>Rule 15c3-5, also known as the Market Access Rule, is a regulation implemented by the U.S. Securities and Exchange Commission (SEC) in 2010 to ensure that broker-dealers providing direct market access to clients have robust risk management controls in place. The rule requires broker-dealers to implement pre-trade risk controls, such as monitoring for compliance with financial and regulatory requirements, and to set credit and capital limits for clients. It also mandates that broker-dealers maintain control over their trading infrastructure to prevent market disruptions from erroneous trades or excessive risk exposure. The rule aims to enhance market stability and prevent systemic risks.</p>
@@ -2833,7 +2857,7 @@ footer .disclaimer {
     <ol>
       <li>It involves algorithmic trading and requires a high-speed trading infrastructure.</li>
       <li>It typically has investment time horizons of less than one day (certain HFT signals can predict overnight).</li>
-      <li>It generally aims to end the day with small or no positions (which can be defined as no active trading position/exposure in China due to the T+1 trading rule, which requires investors to hold a certain level of stock positions on T0 in order to complete both buy and sell transactions on T1).</li>
+      <li>It generally aims to end the day with small or no positions (which can be defined as no active trading positions in China due to the T+1 trading rule, which requires investors to hold a certain level of stock positions on T0 in order to complete both buy and sell transactions on T1).</li>
     </ol>
 
     <h4>T0 Strategy (including Quant T0 &amp; Manual T0)</h4>
@@ -2928,6 +2952,27 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll('.scroll-reveal-img').forEach(el => {
   revealObserver.observe(el);
 });
+
+// Lightbox for screenshot images
+(function() {
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  const lbImg = document.createElement('img');
+  overlay.appendChild(lbImg);
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function() {
+    overlay.classList.remove('active');
+    setTimeout(function() { overlay.style.display = 'none'; }, 300);
+  });
+  document.querySelectorAll('.scroll-reveal-img').forEach(function(img) {
+    img.addEventListener('click', function() {
+      lbImg.src = img.src;
+      lbImg.alt = img.alt;
+      overlay.style.display = 'flex';
+      requestAnimationFrame(function() { overlay.classList.add('active'); });
+    });
+  });
+})();
 
 // ===== SCROLL-TO-EXPAND HERO (Component 2) =====
 (function() {
@@ -3470,9 +3515,9 @@ document.querySelectorAll('.scroll-reveal-img').forEach(el => {
 
   // -- China Quant Rapid Development (stacked bar with % labels + line)
   const cnYears = ['2016','2017','2018','2019','2020','2021','2022','2023Q3'];
-  const discAUM = [400,350,360,330,640,800,580,520];
-  const quantAUMCN = [13,22,31,57,150,250,214,190];
-  const cumLaunches = [200,350,500,700,1100,1800,2500,3200];
+  const discAUM = [417,345,357,312,640,800,579,514];
+  const quantAUMCN = [13,22,31,64,150,253,214,190];
+  const cumLaunches = [200,350,500,700,1050,1900,2500,3100];
   const quantShareCN = [3,6,8,17,19,24,27,27];
 
   const chinaAUMChart = new Chart(document.getElementById('chartChinaAUM'), {
@@ -3482,15 +3527,15 @@ document.querySelectorAll('.scroll-reveal-img').forEach(el => {
       datasets: [
         { label: 'Discretionary Fund AUM (USD bn)', data: discAUM, backgroundColor: 'rgba(139,112,112,0.5)', borderWidth: 0, stack: 'stack0', yAxisID: 'y' },
         { label: 'Quant Fund AUM (USD bn)', data: quantAUMCN, backgroundColor: 'rgba(167,60,130,0.7)', borderWidth: 0, stack: 'stack0', yAxisID: 'y' },
-        { label: 'Cum No of Quant LOs Launched since 2016', data: cumLaunches, type: 'line', borderColor: gold, backgroundColor: 'transparent', pointBackgroundColor: gold, pointRadius: 4, borderWidth: 2, yAxisID: 'y1', stack: false }
+        { label: 'Cum No of Quant LOs Launched since 2016', data: cumLaunches, type: 'line', borderColor: gold, backgroundColor: gold, pointBackgroundColor: gold, pointRadius: 5, borderWidth: 2, yAxisID: 'y1', fill: false, order: 0 }
       ]
     },
     options: {
       responsive: true,
       scales: {
         x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
-        y: { stacked: true, position: 'left', grid: { color: gridColor }, title: { display: true, text: 'AUM (USD bn)', color: textColor }, ticks: { font: { size: 10 } } },
-        y1: { position: 'right', grid: { display: false }, title: { display: true, text: 'No. of Funds', color: gold }, ticks: { color: gold, font: { size: 10 } } }
+        y: { stacked: true, position: 'left', grid: { color: gridColor }, title: { display: true, text: 'AUM (USD bn)', color: textColor }, max: 1200, ticks: { font: { size: 10 } } },
+        y1: { position: 'right', grid: { display: false }, title: { display: true, text: 'No. of Funds', color: gold }, max: 3500, ticks: { color: gold, font: { size: 10 } } }
       },
       plugins: {
         legend: { position: 'top' },
@@ -3691,51 +3736,7 @@ document.querySelectorAll('.scroll-reveal-img').forEach(el => {
 
   // -- Quants vs Discretionary chart replaced with screenshot image
 
-  // -- Quant Quake drawdown (16 managers)
-  const qqDates = ['Feb 1','Feb 2','Feb 5','Feb 6','Feb 7','Feb 8'];
-  const qqColors = [];
-  for (let i = 0; i < 16; i++) {
-    const t = i / 15;
-    qqColors.push('rgba(' + Math.round(198 - t * 160) + ',' + Math.round(40 + t * 100) + ',' + Math.round(40 + t * 120) + ',0.7)');
-  }
-  const qqData = [
-    [0, -0.5, -2, -3, -3.5, -3],
-    [0, -0.3, -1.5, -3, -4, -4.5],
-    [0, -0.8, -3, -4.5, -5, -5],
-    [0, -0.5, -2.5, -5, -6, -6.5],
-    [0, -1, -3.5, -6, -7, -7],
-    [0, -0.7, -3, -6, -7.5, -8],
-    [0, -1.2, -4, -7, -8.5, -8.5],
-    [0, -1, -4.5, -7.5, -9, -9],
-    [0, -1.5, -5, -8, -10, -10],
-    [0, -1.2, -5, -8.5, -11, -11.5],
-    [0, -1.5, -5.5, -9, -12, -12],
-    [0, -2, -6, -10, -13, -13],
-    [0, -2, -7, -11, -14, -14.5],
-    [0, -2.5, -7.5, -12, -15, -15],
-    [0, -3, -8, -13, -16, -17],
-    [0, -3.5, -9, -14, -17, -18]
-  ];
-
-  new Chart(document.getElementById('chartQuantQuake'), {
-    type: 'line',
-    data: {
-      labels: qqDates,
-      datasets: qqData.map((d, i) => ({
-        label: 'Manager ' + (i + 1), data: d, borderColor: qqColors[i], backgroundColor: 'transparent',
-        borderWidth: 1.5, pointRadius: 2, pointBackgroundColor: qqColors[i], tension: 0.3
-      }))
-    },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      scales: {
-        x: { grid: { display: false } },
-        y: { grid: { color: gridColor }, title: { display: true, text: 'Cumulative Alpha (%)', color: textColor } }
-      },
-      plugins: { legend: { display: false }, datalabels: { display: false } }
-    }
-  });
+  // -- Quant Quake chart replaced with screenshot image
 
   // -- AI's Role
   new Chart(document.getElementById('chartAIRole'), {
