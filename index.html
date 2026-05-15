@@ -1,0 +1,2815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>China Quant Deep Dive — Clocktower Group</title>
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --navy: #1a0a0a;
+  --dark: #2a0f0f;
+  --charcoal: #1c1010;
+  --slate: #3a2020;
+  --mid-gray: #8b7070;
+  --light-gray: #d4c4c4;
+  --off-white: #f5f0f0;
+  --white: #ffffff;
+
+  --red: #c62828;
+  --red-dark: #8b0000;
+  --red-light: #ef5350;
+  --gold: #d4a017;
+  --gold-light: #ffd54f;
+  --gold-dark: #a67c00;
+  --coral: #ff6b6b;
+  --green: #06d6a0;
+  --purple: #a78bfa;
+  --orange: #fb923c;
+
+  --font-sans: 'Calibri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  color: var(--white);
+  background: var(--navy);
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('assets/China_flag.png') center center / cover no-repeat;
+  filter: brightness(0.12) saturate(0.6);
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(26, 10, 10, 0.55);
+  z-index: -1;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--gold));
+  z-index: 1000;
+  transition: width 0.1s linear;
+  width: 0%;
+}
+
+/* ===== NAV ===== */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.3s, backdrop-filter 0.3s;
+}
+
+nav.scrolled {
+  background: rgba(10, 22, 40, 0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--white);
+}
+
+.nav-logo img {
+  height: 55px;
+  width: auto;
+  filter: invert(1) brightness(2);
+}
+
+.ctg-logo {
+  height: 80px;
+  width: auto;
+  filter: invert(1) brightness(2);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--light-gray);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover { color: var(--red); }
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('assets/China_flag.png') center center / cover no-repeat;
+  filter: brightness(0.25) saturate(0.8);
+  z-index: 0;
+  transition: opacity 0.15s ease;
+}
+
+.hero-bg-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(26, 10, 10, 0.3) 0%,
+    rgba(26, 10, 10, 0.1) 40%,
+    rgba(26, 10, 10, 0.3) 80%,
+    rgba(26, 10, 10, 0.7) 100%
+  );
+  z-index: 1;
+}
+
+/* Expanding media container */
+.expand-media {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+  background: rgba(26, 10, 10, 0.8);
+}
+
+.expand-media .entropy-canvas {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.expand-media-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(198, 40, 40, 0.08) 0%,
+    rgba(26, 10, 10, 0.3) 50%,
+    rgba(212, 160, 23, 0.06) 100%
+  );
+  z-index: 1;
+}
+
+.expand-media-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.expand-media-logo img {
+  height: 180px;
+  width: auto;
+  filter: invert(1) brightness(2);
+  opacity: 0.6;
+}
+
+/* Split title */
+.hero-content {
+  position: relative;
+  z-index: 3;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-split-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.hero-split-title h1 {
+  font-family: var(--font-sans);
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 900;
+  line-height: 1.05;
+  background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--mid-gray);
+  max-width: 600px;
+  margin: 1.5rem auto 0;
+  font-weight: 300;
+  line-height: 1.8;
+  transition: opacity 0.3s ease;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: var(--mid-gray);
+  letter-spacing: 0.05em;
+  margin-top: 2rem;
+  will-change: transform;
+}
+
+.hero-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--mid-gray);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  animation: bounce 2s infinite;
+  z-index: 3;
+  will-change: transform;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+.hero-scroll .arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid var(--mid-gray);
+  border-bottom: 2px solid var(--mid-gray);
+  transform: rotate(45deg);
+}
+
+/* ===== SECTION STYLES ===== */
+section {
+  position: relative;
+}
+
+.section-dark {
+  background: rgba(26, 10, 10, 0.4);
+  color: var(--white);
+}
+
+.section-light {
+  background: rgba(245, 240, 240, 0.05);
+  color: var(--light-gray);
+}
+
+.section-gradient {
+  background: linear-gradient(180deg, rgba(26, 10, 10, 0.5) 0%, rgba(42, 15, 15, 0.5) 100%);
+}
+
+/* ===== NARRATIVE BLOCK ===== */
+.narrative {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 8rem 2rem;
+}
+
+.narrative.no-pad-top { padding-top: 0; }
+.narrative.no-pad-bottom { padding-bottom: 0; }
+.narrative.compact { padding: 2rem; }
+
+.narrative h2 {
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 2rem;
+}
+
+.narrative h3 {
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 3rem 0 1rem;
+  color: var(--gold);
+}
+
+.narrative h4 {
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 2rem 0 0.75rem;
+  color: var(--red-light);
+}
+
+.narrative p {
+  font-size: 1.1rem;
+  line-height: 1.9;
+  margin-bottom: 1.5rem;
+  color: var(--light-gray);
+}
+
+.accent-text {
+  color: var(--red);
+  font-weight: 600;
+}
+
+/* ===== BULLET LIST ===== */
+.narrative ul, .narrative ol {
+  margin: 1rem 0 1.5rem 1.5rem;
+  color: var(--light-gray);
+}
+
+.narrative li {
+  margin-bottom: 0.75rem;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.narrative li strong {
+  color: var(--white);
+}
+
+/* (placeholder styles removed — all charts now native) */
+
+/* ===== SECTION DIVIDER ===== */
+.divider {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.divider-line {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--gold));
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 4rem 2rem;
+  text-align: center;
+  background: rgba(26, 10, 10, 0.6);
+}
+
+footer p {
+  color: var(--mid-gray);
+  font-size: 0.8rem;
+  line-height: 2;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+footer .disclaimer {
+  font-size: 0.7rem;
+  color: var(--slate);
+  margin-top: 2rem;
+  line-height: 1.8;
+}
+
+/* ===== FADE-IN ANIMATION ===== */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== CHART CONTAINERS ===== */
+.chart-container {
+  max-width: 800px;
+  margin: 2.5rem auto;
+  padding: 0 2rem;
+}
+
+.chart-box {
+  background: rgba(42, 15, 15, 0.35);
+  border: 1px solid rgba(198, 40, 40, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.chart-box .chart-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+.chart-box .chart-subtitle {
+  font-size: 0.85rem;
+  color: var(--mid-gray);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-style: italic;
+}
+
+.chart-box .chart-source {
+  font-size: 0.75rem;
+  color: var(--slate);
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.chart-box canvas {
+  max-width: 100%;
+}
+
+.chart-row {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.chart-row .chart-half {
+  flex: 1;
+  min-width: 280px;
+  max-width: 380px;
+}
+
+/* ===== STYLED TABLES ===== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin: 1rem 0;
+}
+
+.data-table th {
+  background: rgba(198, 40, 40, 0.3);
+  color: var(--gold);
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid rgba(198, 40, 40, 0.4);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.data-table td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--light-gray);
+  font-size: 0.85rem;
+}
+
+.data-table tr:hover td {
+  background: rgba(198, 40, 40, 0.08);
+}
+
+.data-table .row-label {
+  color: var(--white);
+  font-weight: 500;
+}
+
+/* Heatmap cell colors */
+.heat-high { background: rgba(6, 214, 160, 0.25); color: var(--green); }
+.heat-mid { background: rgba(212, 160, 23, 0.2); color: var(--gold-light); }
+.heat-low { background: rgba(198, 40, 40, 0.2); color: var(--red-light); }
+.heat-very-high { background: rgba(6, 214, 160, 0.35); color: #4ade80; }
+.heat-very-low { background: rgba(198, 40, 40, 0.3); color: #f87171; }
+
+/* ===== TIMELINE COMPONENT ===== */
+.timeline-wrapper {
+  max-width: 900px;
+  margin: 2.5rem auto;
+  padding: 0 2rem;
+}
+
+.timeline {
+  position: relative;
+  display: flex;
+  gap: 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red-dark), var(--red), var(--gold), var(--gold-dark));
+}
+
+.timeline-stage {
+  flex: 1;
+  position: relative;
+  padding: 0 0.75rem;
+}
+
+.timeline-stage-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-stage-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  margin-bottom: 0.25rem;
+}
+
+.timeline-stage-years {
+  font-size: 0.75rem;
+  color: var(--mid-gray);
+  margin-bottom: 0.5rem;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--red);
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+.timeline-stage-content {
+  background: rgba(42, 15, 15, 0.4);
+  border: 1px solid rgba(198, 40, 40, 0.15);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.timeline-stage-content ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.timeline-stage-content li {
+  font-size: 0.75rem;
+  color: var(--light-gray);
+  margin-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  position: relative;
+  line-height: 1.5;
+}
+
+.timeline-stage-content li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 4px;
+  height: 4px;
+  background: var(--red);
+  border-radius: 50%;
+}
+
+.timeline-source {
+  font-size: 0.75rem;
+  color: var(--slate);
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* ===== INDEX DEFINITION DIAGRAM ===== */
+.index-diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.index-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: transform 0.2s;
+}
+
+.index-bar:hover {
+  transform: translateX(4px);
+}
+
+.index-bar-label {
+  font-weight: 700;
+  font-size: 1rem;
+  min-width: 100px;
+  color: var(--white);
+}
+
+.index-bar-fill {
+  flex: 1;
+  height: 32px;
+  border-radius: 6px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.index-bar-text {
+  font-size: 0.75rem;
+  color: var(--white);
+  font-weight: 500;
+}
+
+.index-bar-cap {
+  font-size: 0.8rem;
+  color: var(--mid-gray);
+  min-width: 90px;
+  text-align: right;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .timeline { flex-direction: column; gap: 1.5rem; }
+  .timeline::before { display: none; }
+  .chart-row { flex-direction: column; align-items: center; }
+  .chart-row .chart-half { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Navigation -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">
+    <img src="assets/ctg_logo.png" alt="Clocktower Group">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#history">History</a></li>
+    <li><a href="#china-vs-global">China vs Global</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#hft">HFT</a></li>
+    <li><a href="#investing">Investing</a></li>
+    <li><a href="#access">Access</a></li>
+    <li><a href="#ai">AI</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+  </ul>
+</nav>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero" id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-bg-overlay"></div>
+
+  <!-- Expanding media rectangle -->
+  <div class="expand-media" id="expandMedia">
+    <canvas class="entropy-canvas" id="entropyCanvas"></canvas>
+    <div class="expand-media-overlay"></div>
+    <div class="expand-media-logo" id="expandLogo">
+      <img src="assets/ctg_logo.png" alt="Clocktower Group">
+    </div>
+  </div>
+
+  <!-- Title that splits apart -->
+  <div class="hero-content" id="heroContent">
+    <div class="hero-split-title">
+      <h1 id="splitLeft">China</h1>
+      <h1 id="splitRight">Quant Deep Dive</h1>
+    </div>
+    <p class="hero-subtitle" id="heroSubtitle">
+      An in-depth examination of the quantitative fund industry in China &mdash; its development, unique characteristics, investment considerations, and how AI is shaping the sector.
+    </p>
+    <div class="hero-meta" id="heroMeta">
+      <span>September 2024</span>
+      <span>|</span>
+      <span>Clocktower Group, L.P.</span>
+    </div>
+  </div>
+
+  <div class="hero-scroll" id="heroScroll">
+    <span>Scroll to explore</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+<!-- ===================== OVERVIEW (PDF p.1) ===================== -->
+<section class="section-dark" id="overview">
+  <div class="narrative fade-in">
+    <h2>Overview</h2>
+    <p>
+      This paper focuses on the quant fund industry in China. Throughout the following pages, we examine the industry's development, unique characteristics, investment considerations, and how AI is shaping the sector. We begin by providing background on the evolution of global quant funds. We subsequently detail the distinctive features of quant fund strategies in China and the investment implications.
+    </p>
+    <p>
+      China's quant industry has several distinctive features. For instance, 75% of quant strategies in China are equity-focused, whereas in the United States, CTAs (35%) and quant macro (25%) strategies dominate. In U.S. equity quant strategies, market-neutral approaches are predominant, while in China, enhanced indexing strategies play a major role. High-frequency trading (HFT) in China is also notably different due to trading rules such as T+1 trading, the auction trading system, limited access to shorting and leverage, and a simplified market and exchange structure.
+    </p>
+    <p>
+      We believe investors should pay close attention to factors such as performance consistency, AUM and growth rates, transparency, risk management, regulatory risks and background checks when investing in China quants. On the surface, these practices are seemingly similar to global investing standards, but there are different items to look out for within each category given the unique investment characteristics, considerations and access mechanisms. To access China's quant hedge fund industry, there are both onshore (within mainland China) and offshore (outside of mainland China) approaches. Onshore, investors can directly invest in domestic quant funds through QFII (Qualified Foreign Institutional Investor) or use brokers' QFII/RQFII (RMB Qualified Foreign Institutional Investor) channels. Offshore, investors can invest in funds using similar strategies or in broker issued index products linked to quant fund performance. Onshore investing typically offers lower brokerage fees, reduced latency, and more trading days, while offshore investing provides easier access to leverage and securities lending. Additionally, beginning in 2018, Chinese quant managers have experimented with machine learning models to replace traditional multi-factor models. Today, the use of AI in quant funds is growing in both China and the U.S., though challenges in implementation remain, given the technology is in its early infancy.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== QUANTITATIVE HEDGE FUND HISTORY (PDF p.2-6) ===================== -->
+<section class="section-gradient" id="history">
+  <div class="narrative fade-in">
+    <h2>Quantitative Hedge Fund History</h2>
+    <p>
+      To understand the current landscape, we must first compare China's history to the global quant industry's development across various dimensions, including talent, assets under management (AUM), strategy, alpha richness, regulation and more. China's quant industry began its rapid development in 2010. Despite its late start, the combination of a strong talent pool and significant capital inflows has accelerated growth in recent years. Strategies have become more sophisticated and diverse, fund managers have become more institutionalized, and the scale of quantitative trading has expanded rapidly. However, since 2023, as government regulations on the quant industry have tightened, the industry is entering a new stage marked by high turbulence. We believe it will transition toward standardized development under regulatory oversight. It is expected to further consolidate due to the increasing cost of regulatory compliance. This mirrors the global tightening of regulations following events like the quant quake of 2007 and the flash crash of 2010.
+    </p>
+
+    <h3>Global History</h3>
+    <p>
+      After an initial period of building out theoretical frameworks and models, the global quant industry experienced a period of rapid development from the 1980s to the early 21st century. However, in 2007, a "Quant Quake" occurred due to massive growth in AUM and strategy crowding, which was eventually followed by the global financial crisis in 2008. After several years of adjustments alongside regulatory reform, the global quant industry has recently entered a relatively mature stage.
+    </p>
+  </div>
+
+  <div class="timeline-wrapper fade-in">
+    <div class="timeline">
+      <div class="timeline-stage">
+        <div class="timeline-stage-header">
+          <div class="timeline-stage-label">Emerging Stage</div>
+          <div class="timeline-stage-years">Pre-1980s</div>
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="timeline-stage-content">
+          <ul>
+            <li>Modern Portfolio Theory, Efficient Market Hypothesis, Option Pricing Theory</li>
+            <li>1969: First quant fund (Princeton Newport Partners)</li>
+            <li>1971: First passive quant fund (Barclays)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-stage">
+        <div class="timeline-stage-header">
+          <div class="timeline-stage-label">Rapid Growth</div>
+          <div class="timeline-stage-years">1980&ndash;2007</div>
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="timeline-stage-content">
+          <ul>
+            <li>AUM grew from ~$108B (1989) to ~$400B (2007)</li>
+            <li>Advancements in computer technology &amp; electronic trading</li>
+            <li>Statistical arbitrage, trend following, multi-factor models</li>
+            <li>Key firms: Renaissance, D.E. Shaw, Citadel, Two Sigma</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-stage">
+        <div class="timeline-stage-header">
+          <div class="timeline-stage-label">High Turbulence</div>
+          <div class="timeline-stage-years">2007&ndash;2008</div>
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="timeline-stage-content">
+          <ul>
+            <li>Aug 2007: Quant Quake &mdash; losses of 5%&ndash;30%</li>
+            <li>2008: Global financial crisis, AUM shrank ~20%</li>
+            <li>Citadel flagship funds saw 55% drawdown</li>
+            <li>Medallion Fund posted +80% return in 2008</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-stage">
+        <div class="timeline-stage-header">
+          <div class="timeline-stage-label">Mature Stage</div>
+          <div class="timeline-stage-years">Post 2008</div>
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="timeline-stage-content">
+          <ul>
+            <li>Stricter regulations &amp; enhanced risk management</li>
+            <li>Dodd-Frank Act (2010)</li>
+            <li>Alternative data &amp; AI adoption</li>
+            <li>Renaissance, AQR, Two Sigma each exceed $50B AUM</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="timeline-source">Source: Clocktower organized information</p>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h4>Emerging Stage (Prior to the 1980s)</h4>
+    <ul>
+      <li>The emergence of quant trading can be traced back to the development of key financial theories, including Modern Portfolio Theory (1950s), Efficient Market Hypothesis (1960s) and Option Pricing Theory (1970s). These theories introduced portfolio optimization, market efficiency, and mathematical models for valuing derivatives, setting the stage for systematic and data-driven trading.</li>
+      <li>In 1969, quant funds emerged, with Princeton Newport Partners (PNP) being the first fund to use mathematical models for trading. In 1971, Barclays launched the first passive quant fund, which applied quantitative methods to track indices, marking the start of modern quantitative finance.</li>
+    </ul>
+
+    <h4>Rapid Growth (1980&ndash;2007)</h4>
+    <ul>
+      <li>1980s: Electronic trading systems rapidly emerged and were subsequently adopted by several major U.S. exchanges, including CME, NYMEX, and NYSE. During this period, statistical arbitrage and trend-following strategies dominated quant trading. During this time, several prominent quant firms were established such as Renaissance Technologies and D.E. Shaw.</li>
+      <li>1990s: The development of trading strategies accelerated, with the emergence of multi-factor models and strategies across various frequencies. Major investment banks and asset management firms began building quant teams.</li>
+      <li>2000s: Policy changes further influenced the quant industry. In 2000, the U.S. adjusted the minimum tick size for stock prices, which increased market liquidity, reduced price distortions caused by wider spreads, and lowered transaction costs. The introduction of the Reg NMS in 2006 further stimulated the development of advanced algorithms and hardware, fueling the growth of high-frequency trading. By 2007, quant funds managed approximately 23% of hedge fund assets, with total AUM exceeding $400 billion.</li>
+    </ul>
+
+    <h4>High Turbulence (2007&ndash;2008)</h4>
+    <ul>
+      <li>After a phase of rapid growth, the U.S. quant industry encountered its most turbulent period between 2007 and 2008, with many quant firms suffering significant setbacks. During the week of August 6, 2007, quant hedge funds experienced losses ranging from 5% to 30%, these losses were largely attributed to strategy overcrowding. The 2008 financial crisis further halted the growth of the quant industry, with total AUM shrinking by nearly 20% within a year. That same year, Citadel's two flagship funds, Wellington and Kensington, saw a 55% drawdown.</li>
+      <li>Despite the turmoil, some quant funds managed to thrive. Renaissance Technologies' Medallion Fund posted an impressive 80% return in 2008. Following this crisis, the quant industry placed a much stronger emphasis on risk management and shifted its focus towards enhancing model stability.</li>
+    </ul>
+
+    <h4>Mature Stage (Post 2008)</h4>
+    <ul>
+      <li>Post 2008, the industry entered a mature stage, marked by the broad adoption of innovative approaches such as alternative data and artificial intelligence. The growth of AI and big data has significantly supported the increasing complexity of quant models. AI-driven quant funds emerged. Additionally, smart beta funds surged in popularity, surpassing $1 trillion in AUM in 2017.</li>
+      <li>Regulatory frameworks have also become more robust. The 2010 Dodd-Frank Act introduced registration and reporting requirements for non-bank entities. It also established the Financial Stability Oversight Council to identify and monitor systemic risks. Additionally, the Act required most financial derivatives to be traded and cleared through central counterparties, enhancing market transparency and enabling more precise risk assessment and management.</li>
+      <li>The scope of quant investing has expanded to markets including cryptocurrencies, leading to greater diversity in strategies and investment directions.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== CHINA HISTORY (PDF p.5-6) ===================== -->
+<section class="section-dark">
+  <div class="narrative fade-in">
+    <h2>China History</h2>
+  </div>
+
+  <div class="timeline-wrapper fade-in">
+    <div class="timeline">
+      <div class="timeline-stage">
+        <div class="timeline-stage-header">
+          <div class="timeline-stage-label">Emerging Stage</div>
+          <div class="timeline-stage-years">2010&ndash;2015</div>
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="timeline-stage-content">
+          <ul>
+            <li>April 2010: Launch of CSI 300 Index Futures (IF)</li>
+            <li>Quant market-neutral strategies grew rapidly</li>
+            <li>Size factor continuously contributing alpha</li>
+            <li>Most models built around multi-factor frameworks</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-stage">
+        <div class="timeline-stage-header">
+          <div class="timeline-stage-label">Rapid Growth</div>
+          <div class="timeline-stage-years">2015&ndash;2022</div>
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="timeline-stage-content">
+          <ul>
+            <li>AUM grew from ~$13B (2015) to ~$214B (2022)</li>
+            <li>April 2015: Launch of SSE 50 &amp; CSI 500 Index Futures</li>
+            <li>Products evolved from MN to EIF to multi-strategy</li>
+            <li>Transition from higher to lower frequency; ML &amp; AI adoption</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-stage">
+        <div class="timeline-stage-header">
+          <div class="timeline-stage-label">High Turbulence</div>
+          <div class="timeline-stage-years">2023&ndash;Present</div>
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="timeline-stage-content">
+          <ul>
+            <li>Series of regulations issued targeting quant industry</li>
+            <li>Feb 2024: &ldquo;Quant Quake&rdquo; hit China</li>
+            <li>Top quants&rsquo; CSI 500 EIFs saw ~9% avg alpha drawdown in one week</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-stage">
+        <div class="timeline-stage-header">
+          <div class="timeline-stage-label">What&rsquo;s Next?</div>
+          <div class="timeline-stage-years">Future</div>
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="timeline-stage-content">
+          <ul>
+            <li>Tight regulations on quant space will become the norm</li>
+            <li>Industry consolidation &mdash; big funds will become bigger</li>
+            <li>Winner takes all: survival of the most resilient</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="timeline-source">Source: Clocktower organized information</p>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h4>Emerging Stage (2010&ndash;2015)</h4>
+    <ul>
+      <li>On April 16, 2010, China launched its first stock index futures, the CSI 300 Index Futures (IF), marking the beginning of short-selling and leveraged trading. Many talented managers with overseas quant trading experience returned to China, kicking off a rapid boom in the domestic quant investing industry, fueled by the lucrative alpha in the Chinese quant market.</li>
+      <li>This was a prime era for profiting from quant market-neutral strategies. On the one hand, small-cap stocks consistently outperformed the CSI 300 Index; on the other hand, IF futures have often traded at a premium. Consequently, some market-neutral strategies generated profits by holding a basket of small-cap stocks while hedging with IF futures, capitalizing on both the size factor and the premium from IF hedging. During this period, the size factor was widely regarded as a key source of alpha, leading to the rapid scaling of market-neutral strategies.</li>
+    </ul>
+
+    <h4>Rapid Growth (2015&ndash;2022)</h4>
+    <ul>
+      <li>The market style shift in 2014 and 2016 led to the decline of some quant funds that heavily favored growth and small-cap factors. This was exacerbated by the 2015 stock market crash and subsequent regulations that restricted the short selling of stock index futures, causing these futures to shift from trading at a premium to an annualized 30%-50% discount, which negatively impacted quant market-neutral strategies.</li>
+      <li>However, there were also positive developments for quant investing in China during this period. In April 2015, the SSE 50 and CSI 500 Index Futures (IC) were launched. In 2019, the China Securities Regulatory Commission (CSRC) further expanded the range of available stock short-selling instruments and pools.</li>
+      <li>Quant strategies evolved from lower to higher frequency around 2018. The sophistication and complexity of quant strategies also improved with the introduction of relatively mature frameworks brought by the increasing return of overseas quant talent.</li>
+      <li>The 2019-2020 market rally and easing restrictions on index futures fueled a boom in the quant industry, especially for Enhanced Indexing Funds (EIFs). Some funds, such as Minghong, Lingjun, and High-Flyer, reached 100 billion RMB in AUM by 2021. As the scale grew, the capacity for high-frequency trading became limited, prompting a shift to lower-frequency strategies and the use of alternative data.</li>
+      <li>Strategy crowding led to significant alpha drawdowns starting in September 2021, causing many quant funds to cap new investments and begin iterating their strategies in 2022. This included combining fundamental quant approaches with discretionary trading and integrating more complex models, such as neural networks and reinforcement learning.</li>
+    </ul>
+
+    <h4>High Turbulence (2023&ndash;present)</h4>
+    <ul>
+      <li>2023 saw steady growth for the quant industry, with quant strategies outperforming many discretionary managers. However, there was growing public resentment, including accusations that quant funds exploit their access to short stocks and trading speed to 'harvest retail investors'.</li>
+      <li>Since 2023, regulators have issued a series of significant regulations targeting the quant sector. The quant industry experienced a significant drawdown in February 2024. During the week of February 8th, the average alpha drawdown of CSI 500 EIF products was around 9%, according to Clocktower's database.</li>
+    </ul>
+
+    <h4>What's Next?</h4>
+    <ul>
+      <li>We believe that moving forward, tight regulations in quant investing will continue to be the norm as authorities aim to manage risks and maintain stability. Tighter regulations that include stricter rules on leverage, transparency, and trading practices will likely increase compliance costs and create challenges for smaller and emerging funds.</li>
+      <li>This will likely drive industry consolidation, with larger funds growing stronger due to better resources and infrastructure, while smaller ones struggle.</li>
+      <li>In this "winner-takes-all" environment, only the most resilient quant funds&mdash;those that are diversified, technologically advanced, and quick to adapt&mdash;will thrive. These survivors will capitalize on the exit of weaker competitors, expanding their market share and reinforcing their dominance in the evolving market landscape.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== QUANT DEVELOPMENT STAGES: CHINA VS. GLOBAL (PDF p.7-12) ===================== -->
+<section class="section-dark" id="china-vs-global">
+  <div class="narrative fade-in">
+    <h2>Quant Development Stages: China vs. Global</h2>
+
+    <h3>Quant Talent</h3>
+    <p>
+      China's quant development started later than the global market, but it has grown rapidly due to a strong talent pool and significant capital inflows. Many Chinese nationals have secured key roles in the global quant industry. Several China-based quant managers have experience at global institutions like Citadel, Two Sigma, Tower Research Capital and proprietary quant teams at sell-side firms such as Deutsche Bank and UBS. As of Q1 2024, six of the top ten Chinese quant firms have founding teams with overseas experience. Talent that has returned to China has not only strengthened the talent pool but also introduced advanced techniques, further accelerating growth in China's quant industry.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Quantitative Analyst Demographics (United States)</div>
+      <div class="chart-row" style="margin-top: 1.5rem;">
+        <div class="chart-half">
+          <div class="chart-subtitle">Ethnicity</div>
+          <canvas id="chartEthnicity" height="260"></canvas>
+        </div>
+        <div class="chart-half">
+          <div class="chart-subtitle">Foreign Languages Spoken</div>
+          <canvas id="chartLanguages" height="260"></canvas>
+        </div>
+      </div>
+      <p class="chart-source">Source: ZIPPIA</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Quant Fund's Prevalence in China</h3>
+    <p>
+      The market share of quant hedge funds in China is similar to that in the global market. In China, quant hedge fund AUM accounts for about 27% of the total AUM in the hedge fund industry as of Q3 2023, whereas global quant hedge funds make up around 30% of the total AUM in the hedge fund industry in 2016.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Global Quantitative Hedge Funds AUM ($bn)</div>
+      <div class="chart-subtitle">Total non-quant vs quant strategies, 1990&ndash;2016</div>
+      <canvas id="chartGlobalAUM" height="320"></canvas>
+      <p class="chart-source">Source: Hedge Fund Research</p>
+    </div>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">China Quant Rapid Development</div>
+      <div class="chart-subtitle">Discretionary vs Quant Fund AUM (USD bn) &amp; cumulative quant fund launches, 2016&ndash;2023Q3</div>
+      <canvas id="chartChinaAUM" height="320"></canvas>
+      <p class="chart-source">Source: CICC AM, CITIC Securities, AMAC, simuwang.com</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Scale</h3>
+    <p>
+      As of November 2023, only around 30 Chinese quant firms had AUM exceeding 10 billion RMB (approximately 1.4 billion USD). This is a relatively small figure compared to leading global quant firms, where AUM typically ranges from 20B to over 100B USD. This is due to several factors, including: a smaller investment universe given a primary focus on the Chinese market, the relatively early stage of industry development, and lower entry barriers. These factors have led to many funds with sub 500 million RMB AUM. China's equity trading infrastructure is state-oriented, centered around two major exchanges located in Shanghai and Shenzhen. This setup limits the advantages of ultra-high-speed trading and reduces the need for the extremely high costs associated with such investments, which allows increased competition from emerging firms entering the market.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Low Concentration of China Quants Within Private Fund Industry</div>
+      <div class="chart-subtitle">Number of Firms by AUM (as of Nov 2023)</div>
+      <div style="max-width: 400px; margin: 0 auto;">
+        <canvas id="chartChinaConcentration" height="300"></canvas>
+      </div>
+      <p class="chart-source">Source: Simupaipai</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <p>
+      However, as regulatory oversight becomes stricter, smaller funds are facing rising compliance costs. In contrast, larger firms, leveraging their extensive talent pools and advanced facilities, are building strong infrastructure, making it more challenging for smaller firms to catch up. Looking ahead, institutionalized and platform-based leaders are likely to become more dominant. However, we also believe there will still be opportunities for smaller firms with niche strategies.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Top 10 Quant Funds AUM Comparison</div>
+      <div class="chart-subtitle">China $55B vs Global $735B &mdash; a 13x gap</div>
+      <canvas id="chartTop10AUM" height="300"></canvas>
+      <p class="chart-source">Source: Clocktower Database (global as of 2024); Guolian Securities (China as of 2024Q1, USDCNY FX 7.2)</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Strategy Diversity</h3>
+    <p>
+      Due to restrictions on short selling, leverage, and the limited availability of financial derivatives, quantitative investing in China is currently concentrated in the equity market, with 75% of strategies focused on quant equities. In contrast, U.S. quant firms operate across a wider range of asset classes and regions. For example, quant macro strategies account for 26% of the U.S. quant market but only account for 4% in China. Similarly, CTA (Commodity Trading Advisor) strategies represent 32% of the U.S. market compared to just 9% in China. Moreover, China's equity market is primarily facilitated through the Shanghai and Shenzhen stock exchanges, while the U.S. has 13 national exchanges and over 300 trading platforms. The diversity in the U.S. market enables a broader array of quant strategies, including cross-exchange arbitrage and dark pool trading.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Quant Strategy Allocation by AUM</div>
+      <div class="chart-row" style="margin-top: 1.5rem;">
+        <div class="chart-half">
+          <div class="chart-subtitle">China (2021)</div>
+          <canvas id="chartStrategyCN" height="280"></canvas>
+        </div>
+        <div class="chart-half">
+          <div class="chart-subtitle">United States (2023)</div>
+          <canvas id="chartStrategyUS" height="280"></canvas>
+        </div>
+      </div>
+      <p class="chart-source">Source: AMAC, CITIC Securities (2021) / Aurum (2023.12)</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Quant Trading Participation Rate</h3>
+    <p>
+      Quant trading accounts for an estimated 20&ndash;30% of Chinese equity market volume, which is lower than the estimated 58% in the U.S. However, stricter regulations and the dominance of auction trading mechanisms in China, limit high-frequency trading and market-making activities, constraining the potential for growth in trading participation. For context, buy-side quant funds in the U.S. contribute only about 17% of the total equity market volume.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Quant Participation Rate in Equity Market Volume</div>
+      <div class="chart-subtitle">China&rsquo;s Quant Participation Rate is Actually Not Low Given its Limited HFT Activity</div>
+      <canvas id="chartParticipation" height="280"></canvas>
+      <p class="chart-source">Source: TF Securities, Bloomberg Intelligence</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Alpha Richness</h3>
+    <p>
+      From an alpha perspective, the Chinese quant market still offers attractive alpha opportunities. The median annualized alpha of quant enhanced index funds (EIFs) in China was around 14% from 2020 to 2023, which was achieved without any leverage. Due to the lack of data on EIFs in the U.S., we compared the returns of the Quant Equity Market Neutral Strategy index, compiled by the hedge fund research firm Aurum. This strategy index returned an annualized return of only 1.23% between 2020 and 2023, with the use of leverage.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">China Quant EIFs Annual Alpha vs U.S. Quant EMN Annual Return</div>
+      <canvas id="chartEIFvsEMN" height="320"></canvas>
+      <p class="chart-source">Source: CITICS, Clocktower calculated. Including 29 CSI 300 EIFs, 112 CSI 500 EIFs, 76 CSI 1000 EIFs. Aurum.</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Quant Quake and Enhanced Regulations</h3>
+    <p>
+      In February 2024, China experienced a "Quant Quake," similar to the one in the U.S. in 2007. The tightening of regulations in the Chinese quant industry, with the publication of the "Regulations on Program Trading in Securities Markets", mirrors the post-2008 U.S. regulatory changes (Dodd-Frank Act). Both countries have focused on increasing transparency, improving risk management, and enhanced market surveillance, with China placing a particular focus on regulating high-frequency trading.
+    </p>
+
+    <h3>New Technology Adoption</h3>
+    <p>
+      China may still lag behind the U.S when it comes to adopting new technologies like AI in quant strategies. Some fund managers have noted that while enthusiasm, acceptance, and usage are higher in China, there is still room to improve and grow in terms of the maturity and complexity of these applications.
+    </p>
+    <p>
+      Overseas, alternative data is highly valued, including public filings, conference call analyses of listed companies, online sentiment analysis, and ESG information. This data is used to analyze factors like executive sentiment, providing insights that help predict stock movements. In China, however, the use of alternative data remains relatively limited. Price-volume signals are still considered the most effective and efficient sources of alpha, and the high cost of alternative data makes some managers hesitant to invest.
+    </p>
+    <p>
+      Nevertheless, the growing adoption of AI models and alternative data is expected to be a key direction for the future of quant strategies. This presents an opportunity for Chinese quant funds to develop further and catch up with their global counterparts.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== DISTINCTIVE FEATURES (PDF p.13-19) ===================== -->
+<section class="section-dark" id="features">
+  <div class="narrative fade-in">
+    <h2>Distinctive Features</h2>
+    <p>
+      In general, quant investment processes and strategies implemented in China are broadly similar to their global counterparts. The primary differences lie in the specific details resulting from factors such as regulations, market mechanisms, and the availability of financial instruments.
+    </p>
+
+    <h3>China Quant Primarily Focuses on Equity</h3>
+    <p>
+      As previously mentioned, 75% of quant strategies in China are equity-focused, while in the U.S., CTA (35%) and quant macro (25%) strategies dominate. This is partly due to the relatively higher alpha potential in China's stock market but also due to China's limited access to a broader range of investment instruments and derivatives available globally, which restricts the diversity of quant strategies compared to the U.S.
+    </p>
+    <p>
+      Zooming in on the survey data, 80% of China quant investment firms conduct research on A-shares, while 58% research futures. Additionally, 36% of institutions research options and 32% cover bonds. Beyond A-shares, 17% of institutions are involved in Hong Kong stocks research and 13% in U.S. stocks. Notably, the percentage of institutions researching digital currencies dropped from 15% in 2022 to 5% in 2023. Another emerging trend is that 25% of institutions are researching OTC derivatives in 2023.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Quant Institutions&rsquo; Research Coverage in Asset Class</div>
+      <div class="chart-subtitle">A-shares &amp; Futures Are The Main Investment Research Focus in China</div>
+      <canvas id="chartResearchFocus" height="340"></canvas>
+      <p class="chart-source">Source: &ldquo;2023 China Quant Investment White Paper&rdquo;</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Popular Quant Product | Enhanced Index Funds (EIFs)</h3>
+    <p>
+      Among U.S. equity quant strategies, market-neutral is the predominant strategy, whereas in China, enhanced indexing strategies play a significant role. In 2021, Enhanced Index Funds (EIFs) represented 39% of quant strategies in China, compared to 33% for market-neutral strategies. The rapid growth in assets under management (AUM) for EIFs in China was largely driven by the bull market from 2019 to 2021. In contrast, the development of market-neutral strategies in China has been constrained by regulatory restrictions on short-selling and leverage. In the U.S., Smart Beta strategies are more common. These strategies are somewhat similar to China's EIFs, and generally offer relatively lower excess returns.
+    </p>
+    <ul>
+      <li><strong>Short-selling and leverage constraints limit China's quant market neutral strategies</strong>
+        <ul>
+          <li><strong>Global:</strong> Well-developed short-selling mechanisms in global markets allow quant models to easily implement long-short strategies, generating alpha on both the long and short sides. Additionally, leverage is more accessible in global markets, enhancing the returns of low-risk strategies.</li>
+          <li><strong>China:</strong> Short selling is often viewed as politically sensitive and has faced frequent regulatory scrutiny. Recent regulations have further tightened the scope and efficiency of securities lending, making it difficult to generate short alpha on individual stocks. As a result, most short positions rely on stock index futures. The cost of hedging with index futures has remained high since 2015. For example, the cost of hedging with CSI 500 index futures has fluctuated around 5% annualized and has occasionally spiked to extreme highs, such as 30-40% annualized in February 2024, severely impacting quant market neutral strategies. Additionally, regulators have generally maintained a restrictive stance on leverage. Models like AB and DMA, which previously achieved gross leverage of around 8x, have been significantly curtailed.</li>
+        </ul>
+      </li>
+      <li><strong>Many investors believe there are still relatively rich alpha opportunities for quant EIF strategies in China</strong>
+        <ul>
+          <li>Unlike the retail-driven market in China, the U.S. stock market is dominated by institutional investors, resulting in fewer opportunities for mispricing and making it more challenging to generate alpha.</li>
+          <li>Some believe that it's difficult for quant EIFs to generate substantial alpha in the U.S. equity market because the indices are heavily influenced by a few dominant companies, such as Tesla, Nvidia, Microsoft, and Google, while many other stocks underperform. A similar situation occurred in China during Q4 2020, where only industry leading companies performed well, while most other stocks lagged. In this situation, without significantly overweighting leading stocks, it is challenging to outperform the index and generate alpha. However, concentrating too heavily on a few stocks undermines the statistical advantage of a quant strategy and could result in significant alpha loss if any of the heavily weighted stocks slump.</li>
+        </ul>
+      </li>
+      <li><strong>Deeming China's alpha opportunity set is "smart beta" or "true alpha" is controversial</strong>
+        <ul>
+          <li>In more mature global markets, merely exposing portfolios to risk factors typically does not offer a significant advantage. However, in China, some factors commonly regarded as risk factors abroad, are still considered alpha by certain quant firms. By exposing to these factors, it is still possible to achieve relatively stable alpha returns over the long term. For example, some Barra factors, such as size, liquidity, residual volatility, and momentum, have consistently served as sources of alpha over certain extended periods.</li>
+          <li>Additionally, given that leverage is limited in China, for example, the gross exposure of Quant Equity Market Neutral (EMN) strategies is typically less than 2x compared to 8x or more in the U.S., quant managers in China tend to not control Barra factor exposures as tightly as in the U.S. In China, maintaining Barra factor exposures, including size and non-linear size factors, within +/-0.3 is considered relatively tight, while in the U.S., exposures are often controlled within +/-0.1 or even less. However, when accounting for leverage differences, total risk exposure could be comparable.</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Barra Factor Cumulative Returns in China</div>
+      <div class="chart-subtitle">Dec 2020 &ndash; Dec 2023</div>
+      <canvas id="chartBarraFactors" height="360"></canvas>
+      <p class="chart-source">Source: MSCI Barra</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Classification of EIFs</h3>
+    <p>
+      Approximately 65% of EIFs use broad-based indices, such as the CSI 300, CSI 500, and CSI 1000, as their benchmarks. Among them, EIFs based on the CSI 500 index are the most popular, accounting for around 45% of the total number of EIFs in China.
+    </p>
+    <p>
+      Beyond these three indices, the CSI 2000 was introduced in August 2023 to better capture small and micro-cap stocks in the rapidly expanding A-share market, providing more comprehensive and supplementary coverage alongside the CSI 1000 index. Similar indices include the CNI 2000 Index, launched in April 2023, and the Wind Micro-Cap Index, introduced in March 2021. Beginning in 2023, several quant firms launched EIFs based on these micro-cap stock indices.
+    </p>
+    <p>
+      In addition to broad-based index EIFs, there are other types of EIFs available, there are 'Index-Free EIFs' (which do not track a specific benchmark), 'sector index-based EIFs', and 'leveraged EIFs'. In 2024, many institutions also launched EIFs based on high-dividend indices to keep up with market trends.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">EIFs Breakdown (by number of products)</div>
+      <div class="chart-row" style="margin-top: 1.5rem;">
+        <div class="chart-half">
+          <div class="chart-subtitle">EIF Categories</div>
+          <canvas id="chartEIFBreakdown" height="280"></canvas>
+        </div>
+        <div class="chart-half">
+          <div class="chart-subtitle">Broad-based Index Detail (65%)</div>
+          <canvas id="chartEIFDetail" height="280"></canvas>
+        </div>
+      </div>
+      <p class="chart-source">Source: Simupaipai. China Quant Investment Quarterly Report &mdash; 2023 Fall.</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Broad-based Index EIFs Performance Comparison</h3>
+    <p>
+      Different indices offer a variety of styles, characteristics, and performance. The CSI 300 Index includes large-cap, value-oriented stocks, concentrated in the finance and consumer sectors. While the CSI 500 Index focuses on mid-cap stocks, with a more balanced industry distribution and market capitalization. The CSI 1000 Index focuses on small-cap and growth-oriented stocks, primarily in the technology and advanced manufacturing sectors. The CSI 2000 Index delves further into micro-cap stocks, characterized by high trading activity, with industry distribution concentrated in the industrial sectors.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">CSI Index Comparison</div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead><tr><th></th><th>CSI 300</th><th>CSI 500</th><th>CSI 1000</th><th>CSI 2000</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">Inception Date</td><td>4/8/2005</td><td>1/15/2007</td><td>10/17/2014</td><td>8/11/2023</td></tr>
+            <tr><td class="row-label">Futures Listing Date</td><td>4/16/2010</td><td>4/16/2015</td><td>7/22/2022</td><td>&mdash;</td></tr>
+            <tr><td class="row-label">Top 10 Stocks Weight</td><td>22.39%</td><td>6.09%</td><td>3.48%</td><td>2.37%</td></tr>
+            <tr><td class="row-label">Avg Daily Volume (CNY)</td><td>228B (32B USD)</td><td>142B (20B USD)</td><td>172B (24B USD)</td><td>210B (29B USD)</td></tr>
+            <tr><td class="row-label">Annualized Volatility (5Y)</td><td class="heat-low" style="text-align:center;">18%</td><td class="heat-mid" style="text-align:center;">20%</td><td class="heat-high" style="text-align:center;">23%</td><td class="heat-very-high" style="text-align:center;">25%</td></tr>
+            <tr><td class="row-label">Median Market Cap (B CNY)</td><td>85</td><td>21</td><td>9</td><td>3</td></tr>
+            <tr style="border-top: 2px solid rgba(198,40,40,0.3);"><td class="row-label" colspan="5" style="color:var(--gold);font-weight:600;">Distribution of Market Cap</td></tr>
+            <tr><td class="row-label">&ge;50B CNY (7B USD)</td><td class="heat-very-high" style="text-align:center;">76.3%</td><td style="text-align:center;">2.2%</td><td style="text-align:center;">0.1%</td><td style="text-align:center;">&mdash;</td></tr>
+            <tr><td class="row-label">10&ndash;50B CNY (1.4&ndash;7B USD)</td><td style="text-align:center;">23.7%</td><td class="heat-very-high" style="text-align:center;">96.0%</td><td class="heat-mid" style="text-align:center;">39.1%</td><td style="text-align:center;">0.5%</td></tr>
+            <tr><td class="row-label">&lt;10B CNY (1.4B USD)</td><td style="text-align:center;">&mdash;</td><td style="text-align:center;">1.8%</td><td class="heat-high" style="text-align:center;">60.8%</td><td class="heat-very-high" style="text-align:center;">99.5%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="chart-source">Source: Wind, as of June 2024</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <p>
+      The CSI 300 tends to be more defensive, exhibiting lower volatility, while the others are relatively more aggressive. Over the past five years, the annualized volatility of the CSI 300 has been around 18%, compared to 20% for the CSI 500, 23% for the CSI 1000, and 25% for the CSI 2000. The CSI 500, CSI 1000, and CSI 2000 indices are generally highly correlated, while the CSI 300 tends to exhibit a lower correlation with these indices.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Correlation Matrix</div>
+      <div class="chart-subtitle">Daily return correlation from Jan 2014 to Jun 2024</div>
+      <table class="data-table" style="max-width: 500px; margin: 1rem auto;">
+        <thead><tr><th></th><th style="text-align:center;">CSI 300</th><th style="text-align:center;">CSI 500</th><th style="text-align:center;">CSI 1000</th><th style="text-align:center;">CSI 2000</th></tr></thead>
+        <tbody>
+          <tr><td class="row-label">CSI 300</td><td class="heat-very-high" style="text-align:center;font-weight:700;">1.00</td><td class="heat-mid" style="text-align:center;">0.84</td><td class="heat-low" style="text-align:center;">0.75</td><td class="heat-very-low" style="text-align:center;">0.69</td></tr>
+          <tr><td class="row-label">CSI 500</td><td class="heat-mid" style="text-align:center;">0.84</td><td class="heat-very-high" style="text-align:center;font-weight:700;">1.00</td><td class="heat-very-high" style="text-align:center;">0.97</td><td class="heat-high" style="text-align:center;">0.92</td></tr>
+          <tr><td class="row-label">CSI 1000</td><td class="heat-low" style="text-align:center;">0.75</td><td class="heat-very-high" style="text-align:center;">0.97</td><td class="heat-very-high" style="text-align:center;font-weight:700;">1.00</td><td class="heat-very-high" style="text-align:center;">0.97</td></tr>
+          <tr><td class="row-label">CSI 2000</td><td class="heat-very-low" style="text-align:center;">0.69</td><td class="heat-high" style="text-align:center;">0.92</td><td class="heat-very-high" style="text-align:center;">0.97</td><td class="heat-very-high" style="text-align:center;font-weight:700;">1.00</td></tr>
+        </tbody>
+      </table>
+      <p class="chart-source">Source: Wind</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <p>
+      Besides the variation of different indices, the alpha generated from EIFs based on each index varies notably. From 2020 to 2023, the median of annual alpha was approximately 11% for the CSI 300 EIF, ~13% for the CSI 500 EIF, and ~17% for the CSI 1000 EIF. The CSI 300 is dominated by large-cap stocks with extensive research coverage and higher industry and stock concentration, the potential for CSI 300 EIFs to generate alpha is more limited. In contrast, the CSI 500 has a more balanced industry distribution, a larger number of holdings, and lower concentration, creating more opportunities for alpha generation. The CSI 1000 could be even more conducive to generating alpha within quantitative trading strategies, given its dispersed holdings, more balanced industry exposures, higher volatility, and larger trading volumes.
+    </p>
+    <p>
+      From a tracking error (TE) perspective, the CSI 300 EIF typically has relatively low TE, with a median value of 4.7% from 2020 to 2023. In contrast, the TE for the CSI 500 and CSI 1000 EIFs were relatively higher, around 7.8% and 7.9%, respectively. This discrepancy may stem from the higher proportion of stock selection within the index components for the CSI 300 EIF, as the CSI 300 benchmark imposes stricter constraints, making it challenging to hold significant positions outside the index without deviating from its style. In comparison, the CSI 500 and CSI 1000 EIFs enjoy more flexibility, allowing them to select a greater number of stocks outside their benchmark components while still maintaining alignment with the benchmark. The weight of the CSI 500 component stocks in CSI 500 EIFs dropped from about 65% in 2020 to around 25% in 2023, with increased allocations to small-cap stocks. However, this trend reversed following the China Quant Quake in 2024.
+    </p>
+    <p>
+      Another common feature across different EIFs is that as competition in the domestic quant industry continues to intensify, the alpha for all EIFs has been gradually decreasing year over year.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">EIF Annual Median Alpha &amp; Tracking Error</div>
+      <div class="chart-row" style="margin-top: 1rem;">
+        <div class="chart-half" style="max-width: 420px;">
+          <div class="chart-subtitle">Annual Median Alpha by Index</div>
+          <table class="data-table">
+            <thead><tr><th></th><th>CSI 300 EIF</th><th>CSI 500 EIF</th><th>CSI 1000 EIF</th></tr></thead>
+            <tbody>
+              <tr><td class="row-label">2020</td><td class="heat-very-high" style="text-align:center;">18%</td><td class="heat-very-high" style="text-align:center;">25%</td><td class="heat-very-high" style="text-align:center;">31%</td></tr>
+              <tr><td class="row-label">2021</td><td class="heat-very-high" style="text-align:center;">19%</td><td class="heat-high" style="text-align:center;">18%</td><td class="heat-very-high" style="text-align:center;">23%</td></tr>
+              <tr><td class="row-label">2022</td><td class="heat-mid" style="text-align:center;">10%</td><td class="heat-mid" style="text-align:center;">11%</td><td class="heat-high" style="text-align:center;">16%</td></tr>
+              <tr><td class="row-label">2023</td><td class="heat-low" style="text-align:center;">7%</td><td class="heat-mid" style="text-align:center;">11%</td><td class="heat-high" style="text-align:center;">16%</td></tr>
+              <tr style="border-top: 2px solid rgba(198,40,40,0.3);"><td class="row-label" style="color:var(--gold);">Median</td><td style="text-align:center;color:var(--gold);font-weight:600;">11%</td><td style="text-align:center;color:var(--gold);font-weight:600;">13%</td><td style="text-align:center;color:var(--gold);font-weight:600;">17%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="chart-half" style="max-width: 420px;">
+          <div class="chart-subtitle">ITD Tracking Error (Median)</div>
+          <table class="data-table">
+            <thead><tr><th>Index</th><th>TE Median</th></tr></thead>
+            <tbody>
+              <tr><td class="row-label">CSI 300 EIF</td><td class="heat-low" style="text-align:center;">4.7%</td></tr>
+              <tr><td class="row-label">CSI 500 EIF</td><td class="heat-mid" style="text-align:center;">7.8%</td></tr>
+              <tr><td class="row-label">CSI 1000 EIF</td><td class="heat-high" style="text-align:center;">7.9%</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top: 1.5rem;">
+            <div class="chart-subtitle">Tracking Error Box Plot Comparison</div>
+            <canvas id="chartTEBoxplot" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+      <p class="chart-source">Source: CITICS, Clocktower calculated. Including 29 CSI 300 EIFs, 112 CSI 500 EIFs, 76 CSI 1000 EIFs.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HIGH-FREQUENCY TRADING IN CHINA (PDF p.20-28) ===================== -->
+<section class="section-dark" id="hft">
+  <div class="narrative fade-in">
+    <h2>High-Frequency Trading in China</h2>
+
+    <h3>Definition</h3>
+    <p>
+      High-Frequency Trading (HFT) generally yields small profits per trade, but its strength lies in the high frequency/volume of transactions, where these small gains can accumulate into substantial profit. HFT thrives in environments with high intraday stock volatility, large market trading volumes, and high liquidity. Different institutions may have slightly different definitions of HFT. Throughout this article, bearing in mind the Chinese market context, we define HFT as follows:
+    </p>
+    <ul>
+      <li>A type of algorithmic trading that requires a high-speed trading infrastructure.</li>
+      <li>Typically, HFT investments have time horizons of less than one day (certain HFT signals can predict overnight).</li>
+      <li>Generally, HFT strategies aim to end the day with small to no positions (which can be defined as no active trading position/exposure in China due to the T+1 trading rule, which requires investors to hold a certain level of stock positions on T0 in order to complete both buy and sell transactions on T1).</li>
+    </ul>
+    <p>
+      Currently, the China Securities Regulatory Commission (CSRC) classifies a single account as engaging in HFT when it exceeds 300 order submissions or cancellations per second, or more than 20,000 orders in a single day. Fund managers in China can split their orders across multiple accounts to reduce the number of submissions per account, thereby staying below the thresholds set by stock exchanges and circumventing market regulations.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">High Frequency Trading Definitions</div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead><tr><th>Regulator</th><th>Definition / Criteria</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">U.S. CFTC</td><td>Algorithmic trading using computer programs for generating, routing, and executing orders; uses low-latency technology to minimize response time; high message rates (orders, quotes, or cancellations)</td></tr>
+            <tr><td class="row-label">U.S. SEC</td><td>Use of extraordinarily high-speed and sophisticated programs for generating, routing, and executing orders; co-location services and individual data feeds to minimize network latency; very short timeframes for establishing and liquidating positions</td></tr>
+            <tr><td class="row-label">China CSRC</td><td>A single account exceeding 300 order submissions or cancellations per second, or more than 20,000 orders in a single day</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="chart-source">Source: Clocktower organized</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Distinguishing Characteristics</h3>
+    <p>
+      According to estimates from Bloomberg Intelligence, HFT accounts for approximately 50% of the total trading volume in U.S. equities. In China, as reported by the CSRC, HFT accounts for about 20% of the total market volume in 2023. China's current HFT amount is roughly equivalent to U.S. volumes in 2005. However, due to differences in market structure, trading systems, and regulatory frameworks, it is challenging for HFT in China to reach the same proportion of trading volume that is seen in the U.S. today.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Equity Volume by HFT (%) in the US &amp; China</div>
+      <canvas id="chartHFTVolume" height="320"></canvas>
+      <p class="chart-source">Source: TABB Group estimate (before 2012), Bloomberg Intelligence (since 2012)</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>T+1 Trading System</h3>
+    <p>
+      Unlike the T+0 trading system used in the U.S. and Hong Kong stock markets, China's stock market operates under a T+1 system, meaning stocks purchased on a given day can only be sold the next day or later. As a result, HFT in China requires acquiring base stock positions to enable intraday trading. The base stock positions can be obtained by stock borrowing from brokers or holding stocks directly. For the latter, the simplest choice could be a benchmark index constituent, but in reality, it tends to be more complex and are selected by a quant model. In contrast, U.S. HFT typically concludes the trading day with minimal or no positions.
+    </p>
+    <p>
+      Due to its intraday trading implementation within the T+1 system, HFT is also referred to as the &ldquo;Quant T0&rdquo; strategy in China. In addition to &ldquo;Quant T0&rdquo;, there is also &ldquo;Manual T0&rdquo;, where trades are executed manually. Manual T0 strategies typically focus on a limited set of stocks, often several dozen specific names, whereas quant T0 strategies can monitor the entire market in real time. Some skilled traders, with a deep understanding of real-time market movement, are able to achieve higher returns than quant T0 strategies.
+    </p>
+    <p>
+      There are typically two ways to obtain base stock positions for HFT:
+    </p>
+    <ul>
+      <li><strong>Borrowing through securities lending</strong>
+        <ul>
+          <li>Securities lending to obtain base stock positions involves borrowing certain stocks from brokers at a cost, giving traders trading rights over a set period without exposing them to price fluctuation risks. Historically, securities lending for T0 trades was popular in China, with borrowing rates at some brokers reaching as high as 20%-30% annually in 2022. However, as the Chinese stock market declined in recent years, sentiment towards short selling became more sensitive, and investors' dissatisfaction grew over unfair practices related to securities lending (e.g., using securities lending to cash out restricted shares). Consequently, regulators gradually tightened restrictions on securities lending, particularly for T0 trading. On February 6, 2024, the CSRC required brokers to refrain from providing securities lending to investors using it for T0 trading. As brokers have gradually implemented such requirements, the use of securities lending for T0 trades has become increasingly restricted.</li>
+        </ul>
+      </li>
+      <li><strong>Individually owned positions</strong>
+        <ul>
+          <li>Currently, T0 trading in China primarily relies on individually owned stock positions, utilizing existing holdings for intraday trading at the start of each trading day. For many low-turnover stock strategies, such as public mutual funds with long-term investment approaches, these positions allow T0 strategies to generate additional returns. Additionally, quant EIF strategies with full beta exposure are well-suited for T0 trading. However, these methods inherently involve exposure to long-term stock price fluctuations. To mitigate beta risk, products often use index futures or options for hedging, which comes with additional hedging costs.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>China's Markets Are Not Conducive to Market Making or Cross-Exchange Arbitrage Strategies</h3>
+    <p>
+      In the U.S., the market operates under a market maker system, where high-frequency market-making strategies play a key role in HFT. According to Bloomberg Intelligence estimates, high-frequency market-making strategies account for approximately 60% of all HFT activity. This dominance is largely due to the fragmented market structure, with 10+ exchanges and 50+ dark pools, allowing the same stock to be traded across different venues. The Regulation NMS Act mandates that investors receive the best available price across all exchanges, making the market reliant on market-making strategies to provide liquidity. The primary sources of profit for market makers are exchange rebates and the bid-ask spread.
+    </p>
+    <p>
+      While in China, the Shanghai and Shenzhen stock exchanges, the main access point for China's A-shares, operate under an auction trading system, where orders are directly matched based on price and time priority among investors through a centralized process. Market makers are not required in this market, and there are no exchange rebates, which are a major source of profit for market-making strategies in the U.S. Additionally, China's regulations on HFT are becoming increasingly strict. High submission and cancellation rates within seconds can trigger regulatory monitoring, potentially leading to guidance or higher transaction fees in the future. This environment makes it difficult to implement market-making strategies that rely on high-speed trading to capture small price differences while avoiding adverse selection. Furthermore, China's T+1 trading system adds further complexity to operations.
+    </p>
+    <p>
+      Similarly, cross-exchange arbitrage strategies, which involve identifying and profiting from price differences for the same stock across different exchanges, cannot be implemented in China because each company's stock can only be listed and traded on one exchange. Generally, the Shanghai Stock Exchange focuses more on large state-owned enterprises, whereas the Shenzhen Stock Exchange caters to small and medium-sized enterprises as well as tech-driven and innovative companies. This lack of cross-exchange trading prevents the use of such arbitrage strategies.
+    </p>
+    <p>
+      In China, high-frequency strategies involving excessively frequent order placements and cancellations are restricted, as such activity is considered abnormal trading and is closely monitored. While specific rules around the amount and timing of order placements and cancellations are still being developed, guidelines have been published to limit this practice.
+    </p>
+    <p>
+      Aside from strategies discussed above, other major HFT strategies, e.g., arbitrage, trend following, reversal, and event-driven strategies in China are similar to the U.S.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Trading Systems Overview</div>
+      <div class="chart-subtitle">China Auction System vs U.S. Market-Making System</div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead><tr><th>Dimension</th><th>China (Auction System)</th><th>U.S. (Market-Making System)</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">Definition</td><td>Orders matched directly based on price and time priority among investors through a centralized process</td><td>Market makers provide continuous bid and ask quotes, facilitating trades between buyers and sellers</td></tr>
+            <tr><td class="row-label">Primary Profit Mechanism</td><td>No exchange rebates; no market maker required</td><td>Exchange rebates and bid-ask spread capture</td></tr>
+            <tr><td class="row-label">Transparency</td><td>High &mdash; all orders visible in centralized order book</td><td>Lower &mdash; fragmented across 10+ exchanges and 50+ dark pools</td></tr>
+            <tr><td class="row-label">Liquidity</td><td>Provided by all market participants directly</td><td>Primarily provided by designated market makers</td></tr>
+            <tr><td class="row-label">Transaction Costs</td><td>Lower; simpler fee structure</td><td>More complex; maker/taker fees vary by venue</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="chart-source">Source: Clocktower organized</p>
+    </div>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Applicability of HFT Strategies in China</div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead><tr><th>Strategy</th><th>Applicable?</th><th>Key Constraints</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">Market Making</td><td class="heat-very-low" style="text-align:center;">Limited</td><td>Auction system; no exchange rebates; no designated market makers</td></tr>
+            <tr><td class="row-label">Liquidity Detection</td><td class="heat-mid" style="text-align:center;">Partial</td><td>Centralized order book provides some transparency</td></tr>
+            <tr><td class="row-label">Cross-Exchange Arbitrage</td><td class="heat-very-low" style="text-align:center;">Not Feasible</td><td>Each stock listed on only one exchange</td></tr>
+            <tr><td class="row-label">Momentum Ignition</td><td class="heat-very-low" style="text-align:center;">Restricted</td><td>Considered abnormal trading; closely monitored by regulators</td></tr>
+            <tr><td class="row-label">Quote Stuffing / Spoofing</td><td class="heat-very-low" style="text-align:center;">Prohibited</td><td>Excessive order placement/cancellation triggers regulatory action</td></tr>
+            <tr><td class="row-label">Statistical Arbitrage</td><td class="heat-high" style="text-align:center;">Applicable</td><td>Similar to U.S.; constrained by T+1 settlement</td></tr>
+            <tr><td class="row-label">Event Arbitrage</td><td class="heat-high" style="text-align:center;">Applicable</td><td>Similar to U.S.</td></tr>
+            <tr><td class="row-label">Order Flow Prediction</td><td class="heat-mid" style="text-align:center;">Partial</td><td>Limited by speed constraints and regulatory oversight</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="chart-source">Source: Clocktower organized</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Tightened Leverage</h3>
+    <p>
+      In the U.S., leverage is virtually unrestricted, with some HFT strategies using more than ten times leverage intraday. In China, leverage can be utilized through methods like Direct Market Access (DMA), which historically allowed up to four times leverage. However, as of April 30, 2024, new regulations limit hedge funds use of DMA to a maximum of two times leverage.
+    </p>
+
+    <h3>Trading Speed Improvement is Less Frenzied</h3>
+    <p>
+      In the U.S., major HFT firms and low-latency infrastructure providers are willing to invest tens of millions of dollars to shave off mere fractions of a millisecond in delays, fueling an arms race for speed. For example, Jump Trading spent $14 million to purchase towers solely to reduce data transmission time from 4.25 milliseconds to 4.18 milliseconds.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Trading Speed Improvements &mdash; U.S. HFT Firms</div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead><tr><th>Firm</th><th>Method</th><th>Cost</th><th>Time Saved</th><th>Improvement</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">Jump Trading</td><td>Purchase microwave tower from CME data center</td><td>$14 million</td><td>0.07ms</td><td>4.25ms to 4.18ms</td></tr>
+            <tr><td class="row-label">Spread Networks</td><td>Fiber optic cables crossing the Appalachian Mountains directly connecting to NYSE</td><td>$300 million</td><td>3ms</td><td>7ms to 4ms</td></tr>
+            <tr><td class="row-label">Arctic Fibre Inc.</td><td>Submarine fiber optic cables between Japan Exchange Group (JPX) and London Stock Exchange (LSE)</td><td>$1.5 billion</td><td>60ms</td><td>230ms to 170ms</td></tr>
+            <tr><td class="row-label">Anova Financial Networks</td><td>Laser network between NYSE and Nasdaq</td><td>Millions of dollars</td><td>0.18ms</td><td>Twice as fast as fiber optics</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="chart-source">Source: Bloomberg, Wikipedia, ExtremeTech, Wall Street Journal, QuantUp</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <p>
+      In China, the phenomenon of marginally improving trading speed is less extreme. One reason is that China has fewer exchanges, and each stock can only be traded on one exchange. Additionally, most of the infrastructure is state provided, and various access methods cannot be directly connected to the exchanges. As a result, the steps and costs involved in improving speed in China are far lower than the investments made by large U.S. quant firms.
+    </p>
+    <p>
+      Currently, the information flow for quant trading orders in China can be divided into following parts:
+    </p>
+    <ol>
+      <li>First, market data is transmitted from the exchange to the broker's trading desk (brokers deploy servers inside the exchange's data center, where ideal speeds can reach 54 microseconds).</li>
+      <li>Subsequently, the data is processed internally by the broker's trading desk (taking approximately 2,000 to 6,000 nanoseconds).</li>
+      <li>Then data is sent from the broker's trading desk to the quant trading firm.</li>
+      <li>The firm receives the data, performs calculations, and sends a trading order back to the broker's desk where speed is influenced by factors such as software, hardware and model complexity.</li>
+      <li>Lastly, the trade is routed back to the exchange for execution.</li>
+    </ol>
+    <p>
+      There are some domestic Chinese companies who complete the entire process in just over 3 milliseconds, while slower companies take about 6 milliseconds. Most of the differences between domestic companies are within a few milliseconds. The difference in the complete loop between firms is often measured in nanoseconds when strategies are relatively simple. Chinese quant firms mainly focus on speeding up the last 3 steps. Some firms work with brokers on optimization, such as low-latency switches, market data servers, trading server optimizations, and dedicated lines setup.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">HFT Comparison | U.S. and China</div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead><tr><th>Dimension</th><th>United States</th><th>China</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">Settlement System</td><td>T+0</td><td>T+1</td></tr>
+            <tr><td class="row-label">Short-Selling</td><td>Well-developed; broad access to securities lending</td><td>Restricted; securities lending heavily regulated since 2024</td></tr>
+            <tr><td class="row-label">Trading System</td><td>Market-maker based across 10+ exchanges, 50+ dark pools</td><td>Auction-based on 2 major exchanges (Shanghai, Shenzhen)</td></tr>
+            <tr><td class="row-label">Cross-Exchange Arbitrage</td><td>Widely used; same stock tradable on multiple venues</td><td>Not feasible; each stock on one exchange only</td></tr>
+            <tr><td class="row-label">Leverage</td><td>Virtually unrestricted; 10x+ intraday common</td><td>DMA limited to 2x since April 2024</td></tr>
+            <tr><td class="row-label">Speed Investment</td><td>Multi-million dollar infrastructure arms race</td><td>Less extreme; state-provided infrastructure, few ms differences</td></tr>
+            <tr><td class="row-label">HFT Volume Share</td><td>~50% of equity volume</td><td>~20% of equity volume</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="chart-source">Source: Clocktower organized</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Intensified Regulations</h3>
+    <p>
+      In recent years, HFT has sparked increasing controversy in China's financial markets. Critics argue that HFT firms, leveraging their information and technological advantages, are encroaching on the opportunities and profits of retail investors. Others claim that these firms hold a monopolistic edge in securities lending, creating significant inequity. Regulatory authorities have stepped up efforts to impose tighter restrictions and oversight with regards to HFT in response. For instance, the once popular T0 strategy executed through securities lending is now prohibited by regulators. There are rumors that varied transaction costs for HFT strategies are also potentially on the horizon.
+    </p>
+    <p>
+      In the U.S., the 2010 "flash crash" was largely blamed on HFT, prompting regulatory bodies to introduce various measures to regulate the market, such as the well-known Dodd-Frank Act. The logic and specific measures taken to regulate HFT practices in China and the U.S. share certain similarities, which will be further explored in the "regulatory risk" section.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== INVESTING IN CHINESE QUANT STRATEGIES (PDF p.29-35) ===================== -->
+<section class="section-gradient" id="investing">
+  <div class="narrative fade-in">
+    <h2>Investing in Chinese Quant Strategies</h2>
+
+    <h3>Attractive Investment Returns</h3>
+    <p>
+      In recent years, onshore Quant Equity EIFs have delivered more attractive excess returns compared to discretionary equity strategies. The chart below shows that, over the past three years through June 2024, the excess returns of various quant strategies have outperformed discretionary strategies, despite a pullback in quant alpha at the beginning of 2024.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Quants Outperformed Discretionary Offerings Over Last 3 Years</div>
+      <div class="chart-subtitle">Cumulative returns, Jul 2021 &ndash; Jun 2024</div>
+      <canvas id="chartQuantVsDisc" height="360"></canvas>
+      <p class="chart-source">Source: Clocktower created strategy indices (median of onshore funds&rsquo; weekly gross returns, Jul 2021 to Jun 2024)</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <p>
+      Additionally, quant market-neutral and quant T0 strategies offer a more stable risk-return profile, with median volatilities of 6.38% and 6.57%, respectively, which is significantly lower than the typical 20.55% volatility of discretionary strategies. Moreover, the median Sharpe ratios of 0.55 and 1.83 are much higher than the -0.39 ratio of discretionary strategies. These options cater to investors seeking to minimize market risk exposure.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Quant MN &amp; T0 Provides Lower Volatility &amp; Higher Sharpe Ratios</div>
+      <div class="chart-row" style="margin-top: 1.5rem;">
+        <div class="chart-half">
+          <div class="chart-subtitle">Annualized Volatility</div>
+          <canvas id="chartVolBoxplot" height="280"></canvas>
+        </div>
+        <div class="chart-half">
+          <div class="chart-subtitle">Sharpe Ratio</div>
+          <canvas id="chartSharpeBoxplot" height="280"></canvas>
+        </div>
+      </div>
+      <p class="chart-source">Source: Annualized volatility and Sharpe ratio based on weekly gross return data from Jul 2021 to Jun 2024. 78 funds Quant MN, 13 funds Quant T0.</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <p>
+      Additionally, quant strategies offer differentiated return sources compared to discretionary strategies. Quant strategies have a broader stock selection, more holdings, and more diversified positions compared to the higher concentration of discretionary strategies. According to estimates from Clocktower's internal database, as of June 2024, the alpha generated by China's onshore quant strategies over the past three years has shown low correlation to the alpha from discretionary strategies, providing a diversification benefit. This helps enhance the variety of strategies within a portfolio and reduces the impact of market volatility.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Alpha/Return Correlation of Quant Strategies vs Discretionary Equity Alpha</div>
+      <table class="data-table" style="max-width: 500px; margin: 1.5rem auto;">
+        <thead><tr><th>Quant Strategy</th><th style="text-align:center;">Correlation</th></tr></thead>
+        <tbody>
+          <tr><td class="row-label">300 EIF Alpha</td><td class="heat-mid" style="text-align:center;">0.39</td></tr>
+          <tr><td class="row-label">500 EIF Alpha</td><td class="heat-very-low" style="text-align:center;">-0.26</td></tr>
+          <tr><td class="row-label">1000 EIF Alpha</td><td class="heat-mid" style="text-align:center;">0.31</td></tr>
+          <tr><td class="row-label">Index-Free EIF Alpha</td><td class="heat-mid" style="text-align:center;">0.48</td></tr>
+          <tr><td class="row-label">T0 Return</td><td class="heat-low" style="text-align:center;">0.14</td></tr>
+          <tr><td class="row-label">EMN Return</td><td class="heat-mid" style="text-align:center;">0.34</td></tr>
+        </tbody>
+      </table>
+      <p class="chart-source">Source: Calculated based on Clocktower created strategy indices</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Risks That Cannot Be Ignored</h3>
+    <p>
+      However, due to factors such as increasing AUM, growing strategy homogeneity, fierce competition, style factor reversals, and stricter regulations, the overall alpha of quant strategies has been trending downward in recent years.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">EIF Annual Alpha Distribution (2020&ndash;2023)</div>
+      <div class="chart-subtitle">Box plots showing declining alpha trend across all EIF types</div>
+      <canvas id="chartEIFAlphaBoxplot" height="360"></canvas>
+      <p class="chart-source">Source: CITICS, Clocktower calculated. Including 29 CSI 300 EIF products, 112 CSI 500 EIF products, 76 CSI 1000 EIF products.</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Key Investment Considerations</h3>
+    <p>
+      Although China's quant market has become more institutionalized in recent years, careful investor scrutiny is still required during the due diligence process. Key considerations:
+    </p>
+    <ul>
+      <li><strong>Performance Consistency:</strong> The performance of flagship products and customized products (SMAs or Funds of One) using the same strategy may differ significantly due to AUM levels or risk control parameters. Rapid AUM growth can outpace strategy capacity, leading to outsourcing strategies to other teams or using different strategies for different products, sometimes resulting in poor performance consistency. Additionally, consistency between onshore and offshore products should be verified. Investors should closely monitor the consistency across products and determine whether differences in performance can be reasonably explained.</li>
+      <li><strong>AUM and Growth Rate:</strong> Large AUM offers benefits such as more competitive compensation and access to sophisticated technologies. However, rapid AUM growth can result in lagging strategy development, potentially leading to significant alpha drawdowns. For instance, a leading quant fund's AUM soared past 100 billion RMB in 2020, yet its CSI 500 EIF product faced an alpha drawdown of nearly 7% in early 2021. Similarly, two other top quant funds saw their AUM exceed 100 billion RMB in 2021, but their CSI 500 EIF products experienced alpha drawdowns of approximately 10% and 16.5%, respectively, in early 2022.</li>
+      <li><strong>Transparency:</strong> The level of transparency a fund is willing to provide is crucial. Investors should exercise caution if a fund refuses to disclose basic information such as Barra factor tilts and attributions (ideally data should be verified utilizing a fund's custodian analysis report), snapshots of positions, industry tilts, total number of stocks held, or leverage. For instance, in late 2023, a quant hedge fund claiming to employ a market neutral strategy was implicated in a fraud scandal, leading to significant losses for multiple institutional investors, including FOF products managed by a reputable asset management company with assets exceeding 100 billion yuan. Moreover, funds often claim a wide variety of tight risk controls, but these may not be as robust as advertised. Investors are advised to cross-check performance data at higher frequency, such as daily or weekly, along with holdings, risk factors and other relevant information and metrics.</li>
+      <li><strong>Risk Management:</strong> When investing in China, some fund managers and investors consider size and other risk factors as alpha factors. Investors are advised to remain cautious with fund managers who rely heavily on style factors for returns. The ability to "time" risk factors is difficult to validate, and abrupt reversals in style factors can lead to extreme alpha drawdowns. For example, in February 2024, the market crash prompted the government's aggressive purchase of large-cap stocks initially to stabilize the market. This sudden shift in the size factor caused substantial alpha drawdowns for fund managers with less rigorous risk controls. Even among top quantitative managers, some funds experienced alpha drawdowns of approximately -18% between February 2 &ndash; February 7. This period turned out to be a critical test for different managers' style constraints, with those implementing stricter risk controls managing to preserve alpha stability amid extreme market fluctuations.</li>
+      <li><strong>Reference Check:</strong> Reference checks are crucial when investing in China, serving not only to verify details or uncover issues mentioned earlier but also important to confirm the contributions and stability of key investment and research personnel. The reference check process can also help assess team dynamics and ensure alignment of interests between the fund, its employees and investors.</li>
+    </ul>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">China&rsquo;s Top Quant Managers&rsquo; Alpha During Feb 2024 Quant Quake</div>
+      <div class="chart-subtitle">Each line represents a quant&rsquo;s CSI 500 EIF cumulative alpha</div>
+      <canvas id="chartQuantQuake" height="360"></canvas>
+      <p class="chart-source">Source: CICC</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <h3>Regulatory Risk</h3>
+    <p>
+      The regulatory scrutiny placed on quant trading in China is escalating. Changes in regulatory policies could lead to increased transaction costs and the restriction of certain trading strategies. Since 2023, exchanges have been rolling out a series of regulatory measures targeting quantitative trading, especially high-frequency trading:
+    </p>
+    <ul>
+      <li>On September 1, 2023, the Shanghai and Shenzhen stock exchanges issued two notices, establishing a specialized reporting system and corresponding regulatory arrangements for quantitative trading, which took effect on October 9, 2023.</li>
+      <li>On February 20, 2024, the exchanges announced that the reporting system had been successfully implemented and that further regulatory measures for quantitative trading would be established. On the same day, the exchange publicly reprimanded Lingjun Investment for violating algorithmic trading rules and suspended its trading account for three days.</li>
+      <li>On April 12, 2024, the CSRC drafted a memo for new regulations, which mentioned that northbound programmatic trading would be included in the reporting system following the principle of equal treatment for domestic and foreign investors. The exchanges were required to clarify the criteria for identifying high-frequency trading and implement stricter regulations, including: 1) Differential pricing with higher transaction fees, order cancellation fees, and increased data fees, and 2) Additional reporting requirements, such as the location of servers for high-frequency trading systems, system test reports, and emergency response plans for system failures. After gathering feedback, the regulations were officially issued on May 15, 2024, and will take effect on October 8, 2024.</li>
+      <li>On June 7, 2024, the exchanges released a draft of the implementation rules for public comment. It clarifies four types of algorithmic trading irregularities subject to key monitoring and defined high-frequency trading as: 1) A single account submitting or canceling more than 300 orders per second, 2) A single account submitting or canceling more than 20,000 orders per day, and 3) Other scenarios determined by the exchange.</li>
+    </ul>
+    <p>
+      The introduction of other regulatory measures has affected certain quantitative strategies, particularly those related to securities lending, such as securities lending Quant T0 strategies:
+    </p>
+    <ul>
+      <li>On January 28, 2024, the lending of restricted shares was fully suspended.</li>
+      <li>On February 6, 2024, the CSRC announced a suspension on further expanding the scale of securities lending via the China Securities Finance Corporation (CSFC) and required securities firms to strengthen the management of client trading behavior by prohibiting securities lending to investors using it for T0 trading.</li>
+      <li>On March 18, 2024, the securities lending via the CSFC was adjusted from "T+0" to "T+1", further limiting the efficiency of securities lending.</li>
+      <li>On July 10, 2024, the CSRC approved the CSFC's suspension of securities lending services, further strengthening countercyclical regulation. From July 22, the CSRC approved the stock exchanges to raise the minimum margin requirement for securities lending from 80% to 100%, and for hedge funds participating in securities lending, the minimum margin requirement was raised from 100% to 120%.</li>
+    </ul>
+    <p>
+      Additionally, quant market-neutral strategies were major users of DMA leverage, however, a series of new regulations has limited both scale and leverage:
+    </p>
+    <ul>
+      <li>On November 2023, regulators required that DMA business scale not to exceed the size as of November 8, capping the growth of DMA products.</li>
+      <li>On the evening of April 30, 2024, the "Private Securities Fund Operational Guidelines" were issued, explicitly stating that private securities funds participating in DMA business must not exceed two times leverage.</li>
+    </ul>
+    <p>
+      These measures aim to regulate the quantitative trading market and reduce the potential for abnormal shocks to the market, similar to the regulatory actions introduced in the U.S. following the 2010 &ldquo;flash crash.&rdquo; In an effort to monitor abnormal trading behavior, the Dodd-Frank Act and the expanded Commodity Exchange Act provided detailed definitions and clear prohibitions on spoofing, layering, and high-speed probing. In addition, flash orders were voted to be banned in 2009. To curb excessive competition and order placements, U.S. exchanges have set minimum order resting times, such as Nasdaq's requirement that an order must remain in place for at least 100 milliseconds before being canceled.
+    </p>
+    <p>
+      There have been growing calls for the imposition of financial transaction taxes, order fees, or cancellation fees. France introduced a high-frequency trading tax in 2012, set at 0.01%. To enhance information transparency, the SEC implemented the Large Trader Reporting rule in 2011, requiring traders who meet certain criteria to report their trading data, enabling the SEC to track the activities of major market participants. Despite resistance from some large institutions, the SEC developed the Consolidated Audit Trail in the following year to track billions of daily stock and options trades which has helped the SEC catch market manipulators and diagnose market instability. Rule 15c3-5 required brokers and dealers to establish a systematic review process, raising the market access threshold. Additional safeguards, such as circuit breakers, erroneous trade cancellation rules, and bans on orders with no intention of execution, were introduced to further mitigate market volatility.
+    </p>
+    <p>
+      Overall, the implementation of China's regulatory measures for programmatic trading represents an important step toward the standardized development of the quantitative trading industry, similar to those in developed countries. However, China's tolerance for high-frequency trading and securities lending remains tight compared to developed markets.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== HOW TO ACCESS CHINA'S QUANT STRATEGIES (PDF p.36-38) ===================== -->
+<section class="section-dark" id="access">
+  <div class="narrative fade-in">
+    <h2>How to Access China's Quant Strategies</h2>
+    <p>
+      Currently, there are two main ways for overseas investors to access Chinese quant strategies:
+    </p>
+
+    <h3>Onshore</h3>
+    <ul>
+      <li><strong>Investors can directly invest in domestic quant funds through QFII.</strong> In recent years, the application process for QFII has become less complex and easier to navigate. However, funds must be converted into RMB before entering the domestic market.</li>
+      <li><strong>Investors can also use brokers' QFII or RQFII channels to invest in domestic quant funds.</strong> This is mostly done through swap agreements. For example, by utilizing a Chinese broker's RQFII channel, an overseas investor would first sign an ISDA agreement with the broker's Hong Kong entity, which then uses its own RQFII license to subscribe to domestic fund products. Investors will need to pay broker channel fees, which are typically around 0.5% annually. Technically, the overseas investor's funds do not enter China. When choosing a channel, investors are advised to examine the broker's stability and reputation. Another option is the note structure, where investors purchase structured notes issued by the broker linked to onshore funds. The fees for this structure are slightly higher than total return swaps due to additional issuance costs.</li>
+    </ul>
+
+    <h3>Offshore</h3>
+    <ul>
+      <li><strong>Investors can directly invest in offshore funds that employ the same quantitative strategy as onshore funds.</strong> However, not all domestic funds are willing to or capable of establishing offshore entities and issuing offshore funds. Typically, setting up an offshore entity and applying for the necessary investment licenses can take about a year and involves additional costs. Furthermore, there may be performance discrepancies between the offshore and onshore funds.</li>
+      <li><strong>Investors can also invest in index products issued by brokers that are linked to the performance of quant funds.</strong> In this case, the quant manager acts as an allocator to the index, connecting to the broker's Hong Kong QFII counter and conducting quant strategy trades in accounts held at the broker's Hong Kong office. Investors sign ISDA agreements with the broker's Hong Kong entity and can create various structures linked to the index, such as options or leveraged market neutral structures. This method offers flexible investment structures, convenient fund transfers, and relatively low latency for direct trades through the broker's Hong Kong accounts.</li>
+    </ul>
+
+    <h3>Pros and Cons</h3>
+    <ul>
+      <li><strong>Onshore brokerage fees are lower:</strong> Onshore brokerage fees are approximately 0.01%, which is about one-fifth to one-third of offshore brokerage fees. The cost difference directly affects transaction fees, and the higher the trading frequency, the more sensitive the strategy is to fees. For example, with an annualized turnover rate of 100 times, investing onshore can save about 2-4% in annual fees compared to offshore.</li>
+      <li><strong>Onshore experience lower latency:</strong> Offshore latency is typically tens to around 100 milliseconds higher compared to onshore. While some Chinese brokers claim that the offshore latency is similar to onshore, manager's transaction verification suggests that offshore latency is generally higher than onshore. High-frequency and ultra-high-frequency strategies that are sensitive to latency can experience greater alpha erosion when trading offshore. However, with recent regulatory measures slowing down high-frequency trading, the difference between onshore and offshore high-frequency strategies may be narrowing.</li>
+      <li><strong>Fewer trading days offshore:</strong> Historically, this has been one of the main reasons for the performance differences between onshore and offshore strategies. Stock connect is subject to both Hong Kong and mainland China holidays. Historically, Hong Kong holidays as well as weather related closures reduce the number of offshore trading days by around 20 days on an annual basis. However, in 2023, the government began to implement new measures to reduce the difference to around 8 days. Trading through QFII with a prime broker can be a potential solution to this issue, but this route is typically more expensive than Stock Connect.</li>
+      <li><strong>Investing offshore can be a way to more easily utilize leverage and access securities lending:</strong> With restrictions on leverage and securities lending onshore, offshore can provide significant advantages when investing in China. As a result, onshore and offshore strategies can diverge to some extent. Initially, offshore investors found it challenging to participate in onshore IPO strategies and high-frequency strategies, limiting the diversity of strategy options offshore. However, offshore advantages in leverage and shorting stocks make it better suited for leveraged market neutral and quant strategies that can generate alpha on the short side.</li>
+      <li><strong>FX impact differs:</strong> Onshore access only requires consideration of exchange rates during subscriptions and redemptions, during these times investors can choose when to convert currencies. Offshore access, however, involves dealing with foreign currency settlements while investing in RMB assets, leading to real-time FX fluctuations during transactions.</li>
+      <li><strong>Onshore investments involve the inflow of funds into mainland China:</strong> Whether flows come through applying for a QFII license or investing via a broker's swap structure, investors must consider whether they are prepared to transfer their funds into mainland China.</li>
+    </ul>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Onshore Access vs Offshore Access: Pros and Cons</div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead><tr><th>Dimension</th><th>Onshore</th><th>Offshore</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">Brokerage Fees</td><td class="heat-high">~0.01% &mdash; lower (1/5 to 1/3 of offshore)</td><td class="heat-low">~0.03&ndash;0.05% &mdash; higher</td></tr>
+            <tr><td class="row-label">Latency</td><td class="heat-high">Lower &mdash; direct exchange access</td><td class="heat-low">Tens to ~100ms higher than onshore</td></tr>
+            <tr><td class="row-label">Trading Days</td><td class="heat-high">More days &mdash; mainland holidays only</td><td class="heat-low">~8&ndash;20 fewer days (HK + mainland holidays)</td></tr>
+            <tr><td class="row-label">Leverage &amp; Shorting</td><td class="heat-low">Restricted &mdash; DMA max 2x; limited securities lending</td><td class="heat-high">More accessible &mdash; flexible leverage and short selling</td></tr>
+            <tr><td class="row-label">FX Impact</td><td class="heat-high">Only at subscription/redemption; timing control</td><td class="heat-low">Real-time FX fluctuations during transactions</td></tr>
+            <tr><td class="row-label">Capital Inflow</td><td class="heat-low">Funds must enter mainland China (QFII or broker swap)</td><td class="heat-high">Funds remain offshore</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="chart-source">Source: Organized by Clocktower</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RESEARCH FOCUS — AI (PDF p.39-40) ===================== -->
+<section class="section-gradient" id="ai">
+  <div class="narrative fade-in">
+    <h2>Research Focus &mdash; Artificial Intelligence</h2>
+    <p>
+      Beginning in 2018, some domestic quant managers in China have been assessing machine learning models as a replacement for traditional multi-factor models. The applications have evolved from basic machine learning models like Lasso and Ridge to more sophisticated neural networks such as Deep Neural Networks (DNN) and Graph Neural Networks (GNN). Reinforcement learning is also used to optimize portfolios. A 2021 survey conducted by QuantUp revealed that 10.16% of institutions, including hedge funds, proprietary trading desks, and asset management divisions of securities firms, were utilizing AI in over ten distinct areas throughout the investment research processes, with AI contributing to 30% of their total investment activities.
+    </p>
+    <p>
+      Typically, in China's quant industry, the larger the company, the greater its investment and enthusiasm towards artificial intelligence. For example, Ubiquant Investment has established a Data Lab, AI Lab, and Waterdrop Lab to explore the applications of AI in data, algorithms, and trade execution. Meanwhile, High-Flyer Capital Management has invested over a billion yuan, purchased 11,000 GPUs, and rented nearly 2,000 square meters of office space to independently develop a deep learning training platform.
+    </p>
+    <p>
+      According to the "2023 China Quantitative Investment White Paper", 55% of institutions use AI for automated factor discovery and portfolio optimization to support alpha generation. AI can assist researchers in uncovering hidden information within vast datasets, sparking fresh ideas and perspectives, particularly in an environment where strategies are becoming more homogenous. Additionally, AI can help extract relational information between stocks from a model-driven perspective, thereby providing additional insights for return forecasting. Nearly half of the institutions use AI for Natural Language Processing (NLP) and data collection, with many adopting or even developing their own general AI models, such as ChatGPT, to enhance efficiency in tasks like data processing and debugging.
+    </p>
+    <p>
+      In North America, quant institutions share the same enthusiasm for AI. According to Invesco's "2023 Global Quantitative Investment Research", 90% of institutions believe AI will play an equally or more important role compared to traditional research strategies in the next decade. The proportion of institutions extensively applying AI throughout the research and investment process is similar in both North America and the Asia-Pacific region, at approximately 10%. However, North American institutions use AI slightly less across various processes compared to those in Asia-Pacific. For example, in portfolio optimization and risk management, the usage rates are 39% and 46%, respectively, in North America and Asia-Pacific.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">AI&rsquo;s Role In An Investment Process</div>
+      <div class="chart-subtitle">APAC vs North America</div>
+      <canvas id="chartAIRole" height="340"></canvas>
+      <p class="chart-source">Source: Invesco&rsquo;s Global Systematic Investing Study 2023</p>
+    </div>
+  </div>
+
+  <div class="narrative fade-in no-pad-top">
+    <p>
+      Although AI can assist in generating effective research and has historically aided in achieving solid investment returns, it still faces many unresolved challenges, such as issues related to complexity and interpretability of the models and the quality of available data. Additionally, factors like parameter selection and initial model conditions can significantly impact performance, while common issues like noise and overfitting can greatly reduce prediction accuracy. The high noise and volatility characteristics of financial data further amplify these weaknesses, leading to a decline in the performance of some AI-driven strategies. Many managers have found that AI-driven strategies tend to lose effectiveness faster than traditional ones.
+    </p>
+    <p>
+      Overall, the application and prevalence of AI in quant markets both within China and the United States is widespread and continues to grow. The future evolution for AI-driven quant strategies is expected to focus on feature engineering, algorithm upgrades, and objective optimization. This will involve incorporating human knowledge, integrating multiple models, and refining optimization for different parameters such as Information Coefficient (IC), Information Ratio (IR), and the Sharpe ratio. As breakthroughs continue in fields like deep reinforcement learning, the long-standing challenges of interpretability and overfitting in complex models in quant strategies may also be addressed.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== GLOSSARY (PDF p.41-49) ===================== -->
+<section class="section-dark" id="glossary">
+  <div class="narrative fade-in">
+    <h2>Glossary</h2>
+
+    <h3>Quant Strategies Classification</h3>
+    <p>
+      Quant strategies can be classified based on a variety of dimensions, including trading frequency, market neutrality, asset class focus, strategy logic, and risk exposure. In practice, many quant strategies integrate multiple classifications. For example, an equity quant strategy might use a multi-factor model alongside statistical arbitrage and machine learning for predictive analytics.
+    </p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">Quant Strategies Classification</div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead><tr><th>Classification</th><th>Category</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label" rowspan="2">Trading Frequency</td><td>High-Frequency Trading (HFT)</td><td>Algorithmic trading that requires a high-speed trading infrastructure, typically with investment horizon of less than one day</td></tr>
+            <tr><td>Low-Frequency Trading (LFT)</td><td>Longer holding periods, potentially days to months, focusing on medium- to long-term signals and fundamental analysis.</td></tr>
+            <tr><td class="row-label" rowspan="2">Market Neutrality</td><td>Market-Neutral</td><td>Hedges out market exposure by pairing long and short positions to minimize systematic risk, seeking absolute returns.</td></tr>
+            <tr><td>Directional</td><td>Retains exposure to overall market direction, benefiting or suffering from market trends.</td></tr>
+            <tr><td class="row-label" rowspan="4">Asset Class</td><td>Equity Quant</td><td>Focuses on equities, using models to optimize stock selection and timing, such as multi-factor models and statistical arbitrage.</td></tr>
+            <tr><td>Fixed-Income Quant</td><td>Concentrates on bonds, leveraging interest rate movements, credit spreads, and other factors for returns, including yield spread arbitrage.</td></tr>
+            <tr><td>Futures Quant</td><td>Engages in futures markets, employing strategies like trend-following and cross-commodity arbitrage. Commodity Trading Advisors (CTA) strategies often overlap with Futures Quant strategies.</td></tr>
+            <tr><td>Multi-Asset Quant</td><td>Invests across multiple asset classes (e.g., equities, bonds, commodities, and forex) to achieve balanced allocation and risk management.</td></tr>
+            <tr><td class="row-label" rowspan="6">Strategy Logic</td><td>Multi-Factor Models</td><td>Uses multiple factors (e.g., value, momentum, quality) for portfolio construction and timing.</td></tr>
+            <tr><td>Statistical Arbitrage</td><td>Capitalizes on statistical relationships between assets, such as mean-reversion and co-integration, to capture price spreads and excess returns.</td></tr>
+            <tr><td>Trend Following</td><td>Takes advantage of market trends using momentum or breakout strategies, profiting from price movements in a specific direction.</td></tr>
+            <tr><td>Machine Learning</td><td>Uses machine learning algorithms to extract complex, non-linear relationships in data, optimizing predictions and trade execution.</td></tr>
+            <tr><td>Event-Driven</td><td>Focuses on specific events (e.g., mergers, dividends, stock buybacks) to capture price movements associated with such events.</td></tr>
+            <tr><td>Market Making</td><td>Provides liquidity by quoting buy and sell prices, profiting from bid-ask spreads, usually reliant on technical and execution speed advantages.</td></tr>
+            <tr><td class="row-label" rowspan="2">Risk Exposure</td><td>Absolute Return</td><td>Seeks positive returns regardless of market conditions, often through hedging and arbitrage techniques.</td></tr>
+            <tr><td>Relative Return</td><td>Aims to generate returns relative to a benchmark, such as enhanced index strategies or momentum-based strategies.</td></tr>
+            <tr><td class="row-label" rowspan="2">Organization Structure</td><td>Multi-PM Platform</td><td>A structure with multiple independent portfolio managers, each managing distinct strategies with separate capital allocations, under centralized risk oversight and capital deployment.</td></tr>
+            <tr><td>Unified Quantitative Framework</td><td>An integrated, cohesive structure where all strategies are developed and managed through a unified process, emphasizing collaboration and streamlined operations.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="chart-source">Source: Clocktower Group</p>
+    </div>
+  </div>
+
+  <div class="narrative no-pad-top">
+    <h3>Key Terms &amp; Definitions</h3>
+
+    <h4>Qualified Foreign Institutional Investor (QFII)</h4>
+    <p>The Qualified Foreign Institutional Investor (QFII) program is a regulatory framework that allows certain licensed foreign investors to access China's domestic financial markets. Introduced by the Chinese government in 2002, the program was designed to gradually open China's capital markets to international investors while maintaining regulatory oversight. Under the QFII program, approved foreign institutions such as asset managers, pension funds, and insurance companies can invest directly in China's stock exchanges, bond markets, and other financial instruments, within a designated quota. The QFII initiative plays a crucial role in integrating China's capital markets with the global financial system, offering foreign investors greater exposure to China's economic growth while ensuring the stability and control of cross-border capital flows.</p>
+
+    <h4>Renminbi Qualified Foreign Institutional Investor (RQFII)</h4>
+    <p>The Renminbi Qualified Foreign Institutional Investor (RQFII) program is an extension of China's QFII initiative, introduced in 2011 to further open its financial markets to global investors. Unlike the QFII program, which allows foreign institutions to invest using foreign currencies, RQFII enables qualified foreign investors to use offshore Renminbi (RMB) to invest in China's domestic securities markets, including stocks, bonds, and other financial instruments. The RQFII program aims to promote the internationalization of the RMB by encouraging the currency's use outside China while providing foreign investors with greater access to Chinese assets. It also complements China's broader efforts to attract foreign capital and integrate its markets with the global economy.</p>
+
+    <h4>RegNMS (Regulation National Market System)</h4>
+    <p>RegNMS is a set of rules adopted by the U.S. Securities and Exchange Commission (SEC) in 2005 to modernize and strengthen the National Market System for equity trading. Its main goal is to promote fair competition among exchanges, protect investors, and ensure efficient price discovery. Key elements include the &ldquo;Order Protection Rule,&rdquo; which requires trades to be executed at the best available price, and rules governing access to market data and trading venues.</p>
+
+    <h4>Dodd-Frank Act</h4>
+    <p>The Dodd-Frank Wall Street Reform and Consumer Protection Act is a U.S. federal law enacted in 2010 in response to the 2008 financial crisis. It aims to reduce risks in the financial system and prevent another crisis by increasing regulation and oversight of financial institutions. Major components include the creation of new regulatory bodies, such as the Consumer Financial Protection Bureau (CFPB) and the Financial Stability Oversight Council (FSOC), and stricter capital requirements for banks. The Act also introduced reforms for derivatives markets, executive compensation, and consumer protection in financial products.</p>
+
+    <h4>Financial Stability Oversight Council (FSOC)</h4>
+    <p>The Financial Stability Oversight Council is a U.S. government body created by the Dodd-Frank Act in 2010. Its primary role is to monitor and identify risks to the stability of the U.S. financial system, particularly those posed by large, interconnected financial institutions. The FSOC is tasked with preventing systemic risks and overseeing non-bank financial firms that could pose a threat to the economy. It has the authority to designate certain firms as &ldquo;systemically important,&rdquo; subjecting them to stricter regulatory oversight.</p>
+
+    <h4>China Securities Finance Corporation (CSFC)</h4>
+    <p>The China Securities Finance Corporation (CSFC) is a state-owned financial institution established in 2011 under the supervision of the China Securities Regulatory Commission (CSRC). Its primary function is to provide financing services to stabilize China's securities market, with a focus on margin trading and securities lending. CSFC ensures market liquidity by lending securities and funds to brokerage firms, enabling them to support margin trading and short selling. It also plays a critical role in market stabilization during periods of volatility by injecting liquidity and purchasing large volumes of stocks. As a key regulatory tool, CSFC helps manage financial risks and maintain the overall stability of China's capital markets.</p>
+
+    <h4>Private Securities Fund Managers</h4>
+    <p>&ldquo;Private securities fund managers&rdquo; in China are equivalent to the West's &ldquo;hedge fund managers,&rdquo; but reflect how the industry is still in its early stages. &ldquo;Private&rdquo; differentiates them from &ldquo;public&rdquo; (mutual) funds; China's public fund industry began around 1998, while the private fund industry was not officially formalized until 2004. &ldquo;Securities&rdquo; differentiates them from &ldquo;Private Equity&rdquo; (PE) as they primarily invest in publicly traded securities. We use &ldquo;hedge fund&rdquo; and &ldquo;private fund&rdquo; interchangeably in the article.</p>
+
+    <h4>Commodity Exchange Act</h4>
+    <p>The Commodity Exchange Act (CEA) is a U.S. federal law enacted in 1936 that regulates the trading of commodity futures and options markets to ensure market transparency and prevent fraud, manipulation, and abusive practices. It provides the legal framework for oversight by the Commodity Futures Trading Commission (CFTC), which enforces the Act's provisions. The CEA mandates registration of market participants and establishes rules to prevent market manipulation and promotes transparency through reporting and record-keeping requirements. It also protects investors and was significantly expanded by the Dodd-Frank Act in 2010 to include oversight of swaps and other derivatives.</p>
+
+    <h4>Consolidated Audit Trail</h4>
+    <p>The Consolidated Audit Trail (CAT) is a regulatory system established by the U.S. Securities and Exchange Commission (SEC) to track and record all trading activity in the equity and options markets. It creates a centralized database that captures detailed information on orders, quotes and trades across multiple exchanges and market participants. The CAT was developed to enhance market transparency, improve oversight, and help regulators detect market manipulation or unusual trading patterns. It was introduced following the 2010 &ldquo;Flash Crash&rdquo; to address gaps in monitoring fragmented markets and to better protect investors.</p>
+
+    <h4>Rule 15c3-5</h4>
+    <p>Rule 15c3-5, also known as the Market Access Rule, is a regulation implemented by the U.S. Securities and Exchange Commission (SEC) in 2010 to ensure that broker-dealers providing direct market access to clients have robust risk management controls in place. The rule requires broker-dealers to implement pre-trade risk controls, such as monitoring for compliance with financial and regulatory requirements, and to set credit and capital limits for clients. It also mandates that broker-dealers maintain control over their trading infrastructure to prevent market disruptions from erroneous trades or excessive risk exposure. The rule aims to enhance market stability and prevent systemic risks.</p>
+
+    <h4>Direct Market Access (DMA) Model</h4>
+    <p>The DMA (Direct Market Access) model emerged in 2021 and essentially functions as a type of leveraged total return swap business conducted by Chinese securities firms, which has been widely used in quantitative market-neutral strategies in recent years. Historically, this model allowed for up to four times leverage. However, as of April 30, 2024, new regulations limit hedge funds using DMA to a maximum of two times leverage.</p>
+    <p>Here's a simplified example to understand how it works:</p>
+    <ol>
+      <li>The investor purchases a DMA product worth 1 million yuan from a hedge fund. At this point, the 1 million yuan is transferred from the investor's account to the product account.</li>
+      <li>The hedge fund transfers the 1 million yuan to the brokerage trading desk's account as margin. At this stage, the 1 million yuan moves from the fund's product account to the brokerage trading desk account.</li>
+      <li>After receiving the funds, the brokerage trading desk issues a total return swap certificate for the product and opens a stock trading account for the hedge fund. Based on a 25% (historically) margin requirement, the stock trading account holds 4 million yuan.</li>
+      <li>The hedge fund establishes a 4-million-yuan long position in stocks within the trading account and simultaneously instructs the brokerage trading desk to establish a short position in stock index futures worth 4 million yuan, thus creating a market-neutral position.</li>
+    </ol>
+    <p>Assuming the strategy generates a 1% profit after all fees today, the custodian will provide an updated valuation showing that the DMA product has gained 4%.</p>
+
+    <h4>Quant (Quantitative) Strategy</h4>
+    <p>A quant strategy uses mathematical models, statistical analysis, and computer algorithms to identify and execute trades. By analyzing large datasets, such as historical prices and financial metrics, these strategies aim to uncover patterns or inefficiencies in the market. Quant strategies are automated, allowing for rapid execution and minimizing human intervention.</p>
+
+    <h4>Quant Equity Enhanced Indexing/Index Funds (EIFs)</h4>
+    <p>It refers to a type of quant strategy that aims to closely track the performance of a traditional index, such as the CSI 500 index, while seeking to outperform it through a quant model. Unlike pure index funds, which strictly replicate the index, EIFs adjust the portfolio composition&mdash;such as by overweighting certain sectors or securities&mdash;to generate excess returns (alpha) while maintaining relatively low tracking error.</p>
+
+    <h4>Broad-based index EIFs</h4>
+    <p>A broad-based index is a financial index that represents the performance of a wide cross-section of the market. It typically includes a diverse range of securities across various industries and is designed to reflect the overall movement and health of the economy. Examples include the S&amp;P 500, which tracks large-cap U.S. companies, and the MSCI World Index, which measures global equity market performance. EIFs that use a broad-based index as a benchmark are called Broad-based index EIFs. In addition to broad-based index EIFs, there are other types such as Index-Free EIFs (which do not track a specific benchmark), EIFs with sector or theme indices.</p>
+
+    <h4>Index-Free EIFs</h4>
+    <p>It operates like traditional EIFs but doesn't track any specific index. It selects stocks from the entire market, unconstrained by any index's components, industry, or style exposure, aiming to achieve higher excess returns relative to the overall market or high absolute returns.</p>
+
+    <h4>Leveraged EIFs</h4>
+    <p>Leveraged EIFs are designed to achieve higher alpha through various leverage methodologies, including but not limited to Direct Market Access (DMA) and EIFs plus index futures structures.</p>
+
+    <h4>Quant Equity Market Neutral Strategy (Quant EMN)</h4>
+    <p>It is a quant strategy focused on &ldquo;market neutrality&rdquo; that typically involves taking both long and short positions, balancing them so that the overall portfolio has little to no correlation with market direction. Profits are driven by the relative performance of selected assets, aiming to generate consistent returns regardless of market conditions.</p>
+
+    <h4>Quant Equity Long/Short (L/S) Strategy</h4>
+    <p>It is a quant strategy that takes both long and short positions, enabling it to potentially profit in both upward and downward markets. This approach also incorporates risk management techniques to reduce exposure to market volatility, aiming for returns that are less correlated with overall market trends. Unlike Quant Equity Market Neutral strategies, Quant Equity Long/Short strategies are not necessarily market-neutral, offering greater flexibility to capitalize on market opportunities.</p>
+
+    <h4>CTAs (Commodity Trading Advisors)</h4>
+    <p>CTAs (Commodity Trading Advisors) take primarily directional positions in index level or macro instruments, such as futures or FX contracts, in a systematic fashion. Technically, a CTA is a trader of futures contracts as defined by the CFTC and historically, there were many CTAs who were not systematic; such traders are more likely to be classified as 'Global Macro'. CTAs are typically extremely systematized with straight through processing from signal generation to execution. Many, but by no means all, CTAs are trend following (using historical prices to determine predictable 'trending patterns') buying into markets where prices are rising and selling where markets are falling. When rising markets slow down/stop rising, trend-followers typically reduce their position and will eventually reverse its position into a short position, which it will hold until the market starts to rally again. The strategy is known for running with profits and cutting losses. Other models used in CTAs may include carry, seasonality, mean reverting or pattern recognition systems, models driven by fundamental data or non-traditional data sources. Some CTAs can also trade very short-term signals driven by market microstructure anomalies and patterns.</p>
+
+    <h4>Quant Macro</h4>
+    <p>It is a systematic approach to Global Macro, with managers taking positions in global markets based on quantitative analysis, taking in information based primarily on economic data, but also incorporating price-related information. The strategy is highly data and technology intensive. The positions tend to be relative value based, but they may also take directional positions in instruments such as futures, FX and baskets of equities, ETFs, swaps and other instruments. Signals may be arranged into relative value asset class models, cross asset class models / directional trades. Signals are also often classified under a number of factor headings: value, carry, momentum etc.</p>
+
+    <h4>Quant Risk Premia (Quant-RP)</h4>
+    <p>Hedge fund risk premia products typically seek to capture the fundamental insights of a class of hedge fund strategies (hedge fund risk premia / alternative risk premia) along with a meaningful proportion of the expected returns those strategies can earn &ndash; using a dynamic but clearly defined process. Funds typically have exposure to a well-diversified portfolio of hedge-fund premia. Premia can cover everything from equity premia (Equity market neutral &ndash; trading across value, quality, growth and momentum factors, as well as EM premia), macro premia (e.g., trend following, or EM premia), to arbitrage strategies (e.g., risk arbitrage &ndash; holding a portfolio of merger targets diversified by sector and deal type; convertible arbitrage, etc.). The strategies are typically very well understood, backed up by academic research and implemented systematically.</p>
+
+    <h4>Statistical Arbitrage (Quant Stat Arb)</h4>
+    <p>Statistical arbitrage funds typically take price data and its derivatives, such as correlation, volatility and other forms of market data, such as volume and order-book information to determine the existence of patterns. These patterns can help the manager forecast the future return of a stock, often over a relatively short timeframe. Typical signal types are mean-reversion, momentum and event-driven. Mean-reversion looks to take advantage of the phenomenon of short-term price movements occurring due to supply/demand imbalances then moving back to an equilibrium level. Momentum models look for patterns in price data that suggest that price movements will be more persistent (i.e., trend). Other statistical arbitrage funds will look to incorporate more discrete information into their process from events (e.g., publishing of analyst earnings estimates, news flow, etc.). whilst statistical arbitrage funds tend to focus more on 'technical' models. some may also incorporate some longer-term models that are driven by fundamental data (e.g., stock value models, growth, etc.), however, if these models are the more dominant driver of risk, then the fund is likely to be classified as Quantitative Equity Market Neutral. Statistical arbitrage funds are typically run with a very low level of beta and are market neutral, however, this may not always be the case, with some funds able to take significant directional risk; however, given the higher frequency trading nature of such funds, they are not expected to have significant correlation to markets over time.</p>
+
+    <h4>Smart Beta</h4>
+    <p>Smart beta is an investment strategy that combines passive and active approaches by using alternative weighting schemes and factors, such as value, momentum, or low volatility, to select and weight assets in a rules-based manner. Unlike traditional passive strategies that track market-capitalization-weighted indices, smart beta aims to enhance returns, reduce risk, or improve diversification by capturing specific market inefficiencies or risk premia. It typically offers a cost-efficient, systematic approach that lies between fully active management and pure passive investing.</p>
+
+    <h4>CSI 300 Index</h4>
+    <p>The CSI 300 Index selects the top 300 Chinese A-share stocks by market capitalization, favoring large-cap, value-oriented stocks with more stable profitability. The industry distribution is concentrated in the finance and consumer sectors. The index is more concentrated, with the top ten constituent stocks accounting for over 20% of the total weight of the CSI 300 Index, as of June 2024.</p>
+
+    <h4>CSI 500 Index</h4>
+    <p>The CSI 500 Index comprises the Chinese A-share stocks ranked from 301st to 800th by market capitalization, focusing on mid-cap stocks. The industry distribution and market capitalization are more balanced, therefore EIFs based on the CSI 500 index are the most popular, accounting for around 45% of the total number of EIFs as of July 2023.</p>
+
+    <h4>CSI 1000 Index</h4>
+    <p>The CSI 1000 Index includes Chinese A-share stocks ranked from 801st to 1800th by market capitalization, focusing on small-cap stocks. The industry's concentration is primarily in technology and advanced manufacturing sectors. The combined weight of the top ten constituent stocks accounts for only 3% of the entire index, as of June 2024.</p>
+
+    <h4>CSI 2000 Index</h4>
+    <p>The CSI 2000 Index includes Chinese A-share stocks ranked from 1801st to 3800th by market capitalization. It was introduced in August 2023 to better capture micro-cap stocks in the rapidly expanding A-share market, providing more comprehensive and supplementary coverage alongside the CSI 1000 index. The industry distribution is concentrated in the industrial sectors, with the top ten constituent stocks comprising only 2.4% of the index weight, as of June 2024.</p>
+  </div>
+
+  <div class="chart-container fade-in">
+    <div class="chart-box">
+      <div class="chart-title">China Market Index Definition and Comparison</div>
+      <div class="chart-subtitle">Ranked by market capitalization</div>
+      <div class="index-diagram" style="margin-top: 1.5rem;">
+        <div class="index-bar" style="background: rgba(198, 40, 40, 0.2);">
+          <div class="index-bar-label">CSI 300</div>
+          <div class="index-bar-fill" style="background: linear-gradient(90deg, rgba(198,40,40,0.6), rgba(198,40,40,0.3)); width: 20%;">
+            <span class="index-bar-text">Stocks 1&ndash;300</span>
+          </div>
+          <div class="index-bar-cap">Large-cap</div>
+        </div>
+        <div class="index-bar" style="background: rgba(212, 160, 23, 0.15);">
+          <div class="index-bar-label">CSI 500</div>
+          <div class="index-bar-fill" style="background: linear-gradient(90deg, rgba(212,160,23,0.5), rgba(212,160,23,0.25)); width: 33%;">
+            <span class="index-bar-text">Stocks 301&ndash;800</span>
+          </div>
+          <div class="index-bar-cap">Mid-cap</div>
+        </div>
+        <div class="index-bar" style="background: rgba(6, 214, 160, 0.1);">
+          <div class="index-bar-label">CSI 1000</div>
+          <div class="index-bar-fill" style="background: linear-gradient(90deg, rgba(6,214,160,0.4), rgba(6,214,160,0.2)); width: 60%;">
+            <span class="index-bar-text">Stocks 801&ndash;1800</span>
+          </div>
+          <div class="index-bar-cap">Small-cap</div>
+        </div>
+        <div class="index-bar" style="background: rgba(167, 139, 250, 0.1);">
+          <div class="index-bar-label">CSI 2000</div>
+          <div class="index-bar-fill" style="background: linear-gradient(90deg, rgba(167,139,250,0.4), rgba(167,139,250,0.2)); width: 100%;">
+            <span class="index-bar-text">Stocks 1801&ndash;3800</span>
+          </div>
+          <div class="index-bar-cap">Micro-cap</div>
+        </div>
+      </div>
+      <p class="chart-source">Source: Clocktower Group</p>
+    </div>
+  </div>
+
+  <div class="narrative no-pad-top">
+    <h4>High-Frequency Trading (HFT)</h4>
+    <ol>
+      <li>It involves algorithmic trading and requires a high-speed trading infrastructure.</li>
+      <li>It typically has investment time horizons of less than one day (certain HFT signals can predict overnight).</li>
+      <li>It generally aims to end the day with small or no positions (which can be defined as no active trading position/exposure in China due to the T+1 trading rule, which requires investors to hold a certain level of stock positions on T0 in order to complete both buy and sell transactions on T1).</li>
+    </ol>
+
+    <h4>T0 Strategy (including Quant T0 &amp; Manual T0)</h4>
+    <p>Unlike the T+0 trading system used in the U.S. and Hong Kong stock markets, China's stock market operates under a T+1 system, meaning stocks purchased on a given day can only be sold the next day or later. Therefore, HFT in China is also called the &ldquo;Quant T0&rdquo; strategy. In addition to Quant T0, there are Manual T0 strategies, which are executed manually by traders and are not considered HFT.</p>
+
+    <h4>Dark Pools</h4>
+    <p>A &ldquo;dark pool&rdquo; is a private financial exchange where institutional investors trade large volumes of securities, such as stocks, without public visibility until after the trades are completed. Unlike traditional stock exchanges, dark pools offer anonymity, reducing market impact by allowing large trades to be executed without affecting the stock's price. These off-exchange platforms are used to minimize the potential for price fluctuations that can occur when large orders are disclosed to the public. However, they have faced criticism for their lack of transparency and potential to undermine market fairness.</p>
+
+    <h4>Deep Neural Network (DNN)</h4>
+    <p>A DNN is a type of artificial neural network with multiple layers between the input and output layers. It is called &ldquo;deep&rdquo; because it has more than one hidden layer, allowing it to model complex, non-linear relationships in data. DNNs are commonly used in tasks such as image recognition, natural language processing, and more. The layers of a DNN consist of neurons, which are connected to each other, passing information forward and learning from data through techniques like backpropagation.</p>
+
+    <h4>Graph Neural Network (GNN)</h4>
+    <p>A GNN is a neural network specifically designed to work with graph-structured data. In a graph, data points (nodes) are connected by edges, representing relationships or interactions. GNNs are used for tasks where data is naturally represented as graphs, such as social networks, molecular structures, transportation systems, and recommendation engines. GNNs capture the dependencies between nodes and can learn node representations, enabling predictions and insights based on graph data.</p>
+  </div>
+</section>
+
+<!-- ===================== FOOTER / DISCLAIMER ===================== -->
+<footer>
+  <div style="margin-bottom: 1.5rem;">
+    <img src="assets/ctg_logo.png" alt="Clocktower Group" class="ctg-logo">
+  </div>
+  <p>
+    China Quant Deep Dive &mdash; September 2024
+  </p>
+  <div class="disclaimer">
+    <p>
+      This document (the &ldquo;Report&rdquo;) is proprietary and confidential and may not be reproduced or distributed in any format without the express written approval of Clocktower Group, L.P. (&ldquo;Clocktower&rdquo;). Any violation of the foregoing may result in material harm to Clocktower. Clocktower is an SEC registered investment adviser and information regarding the services provided and fees charged, along with other important disclosures is contained in our Form ADV, which can be obtained upon request at 1-310-458-2003 or found at www.adviserinfo.sec.gov. The receipt or the use of this Report shall not create a client-advisor relationship.
+    </p>
+    <p style="margin-top: 1rem;">
+      This Report is intended solely for informational purposes. It is not investment advice and should not be considered to be a recommendation to buy or sell any type of securities or investments or as an indication that any security listed in this Report is suitable for a particular person. Before making an investment decision with respect to any private fund, potential investors should carefully read the offering documents of such fund, and also consult with their tax, legal and financial advisors.
+    </p>
+    <p style="margin-top: 1rem;">
+      The investments described herein involve a high degree of risk, including the loss of principal investment. There can be no assurance that investment objectives will be achieved or that investors will receive a return on their capital. In addition, investment results may vary substantially on a monthly, quarterly or annual basis. Past performance is not necessarily indicative of future results.
+    </p>
+    <p style="margin-top: 1rem;">
+      This Report contains statements and information that is not purely historical in nature. These include, among other things, assumptions, expectations, intentions and beliefs about future events. All of these statements and information are intended as &ldquo;forward-looking statements&rdquo;. These forward-looking statements are identified by their use of the terms and phrases, such as &ldquo;believe,&rdquo; &ldquo;may,&rdquo; &ldquo;should,&rdquo; &ldquo;intend,&rdquo; &ldquo;expect,&rdquo; &ldquo;anticipate,&rdquo; &ldquo;project,&rdquo; &ldquo;estimate,&rdquo; &ldquo;predict,&rdquo; &ldquo;scheduled,&rdquo; and similar expressions and phrases. Forward-looking statements involve known and unknown risks, uncertainties and other factors that may cause actual results to be materially different from those described. Clocktower expressly disclaims any obligation or undertaking to update or revise any such forward-looking statements. The views and opinions expressed herein are those of Clocktower as of the date hereof and are subject to change based on prevailing market and economic conditions and will not be updated or supplemented. Clocktower assumes no responsibility for any losses, whether direct, indirect, special or consequential, which arise out of the use of this Report.
+    </p>
+    <p style="margin-top: 1rem;">
+      Clocktower does not make any representation or warranty, express or implied, as to the accuracy or completeness of the information contained in this Report and nothing contained herein shall be relied upon as a promise or representation whether as to the past or future performance. Opinions expressed herein are as of the date of this Report and may change without notice. The information contained herein should not be relied solely upon by any party in connection with any investment in any fund or security. Certain factual information contained herein may have been obtained from published sources prepared by other parties and has not been independently verified by the Clocktower Parties.
+    </p>
+    <p style="margin-top: 1rem;">
+      Certain securities referred to in this Report may not be eligible for sale in some jurisdictions. This Report may not be redistributed to persons resident in any country, state or territory where such distribution would be contrary to applicable law or regulation.
+    </p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@sgratzl/chartjs-chart-boxplot@4.4.3/build/index.umd.min.js"></script>
+
+<script>
+// ===== PROGRESS BAR =====
+window.addEventListener('scroll', () => {
+  const scrollTop = document.documentElement.scrollTop;
+  const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / scrollHeight) * 100;
+  document.getElementById('progressBar').style.width = progress + '%';
+});
+
+// ===== NAV SCROLL STATE =====
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('mainNav');
+  nav.classList.toggle('scrolled', window.scrollY > 100);
+});
+
+// ===== FADE-IN ON SCROLL =====
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.fade-in').forEach(el => {
+  fadeObserver.observe(el);
+});
+
+// ===== SCROLL-TO-EXPAND HERO (Component 2) =====
+(function() {
+  let scrollProgress = 0;
+  let mediaFullyExpanded = false;
+  let touchStartY = 0;
+  const isMobile = window.innerWidth < 768;
+
+  const expandMedia = document.getElementById('expandMedia');
+  const heroBg = document.getElementById('heroBg');
+  const splitLeft = document.getElementById('splitLeft');
+  const splitRight = document.getElementById('splitRight');
+  const heroSubtitle = document.getElementById('heroSubtitle');
+  const heroMeta = document.getElementById('heroMeta');
+  const heroScroll = document.getElementById('heroScroll');
+  const expandLogo = document.getElementById('expandLogo');
+  const hero = document.getElementById('hero');
+
+  function updateHero() {
+    const p = scrollProgress;
+    const baseW = isMobile ? 280 : 340;
+    const baseH = isMobile ? 380 : 420;
+    const maxW = window.innerWidth;
+    const maxH = window.innerHeight;
+
+    const mediaW = baseW + p * (maxW - baseW);
+    const mediaH = baseH + p * (maxH - baseH);
+    const radius = 16 * (1 - p);
+
+    expandMedia.style.width = mediaW + 'px';
+    expandMedia.style.height = mediaH + 'px';
+    expandMedia.style.borderRadius = radius + 'px';
+    expandMedia.style.boxShadow = p < 1 ? '0 0 ' + (60 - p * 60) + 'px rgba(0,0,0,' + (0.5 - p * 0.3) + ')' : 'none';
+
+    heroBg.style.opacity = 1 - p;
+
+    const tx = p * (isMobile ? 120 : 100);
+    splitLeft.style.transform = 'translateX(-' + tx + 'vw)';
+    splitRight.style.transform = 'translateX(' + tx + 'vw)';
+
+    heroSubtitle.style.opacity = Math.max(0, 1 - p * 3);
+    heroMeta.style.transform = 'translateX(' + (tx * 0.5) + 'vw)';
+    heroMeta.style.opacity = Math.max(0, 1 - p * 3);
+    heroScroll.style.opacity = Math.max(0, 1 - p * 4);
+
+    expandLogo.style.opacity = Math.min(0.6, p * 1.5);
+  }
+
+  updateHero();
+
+  function handleWheel(e) {
+    const heroRect = hero.getBoundingClientRect();
+    const isInHero = heroRect.top <= 0 && heroRect.bottom > 0;
+
+    if (mediaFullyExpanded) {
+      if (e.deltaY < 0 && window.scrollY <= 5) {
+        mediaFullyExpanded = false;
+        scrollProgress = 0.99;
+        e.preventDefault();
+        updateHero();
+      }
+      return;
+    }
+
+    if (heroRect.top > 50) return;
+
+    e.preventDefault();
+    const delta = e.deltaY * 0.0012;
+    scrollProgress = Math.min(Math.max(scrollProgress + delta, 0), 1);
+    updateHero();
+
+    if (scrollProgress >= 1) {
+      mediaFullyExpanded = true;
+    }
+  }
+
+  function handleTouchStart(e) {
+    if (!mediaFullyExpanded) {
+      touchStartY = e.touches[0].clientY;
+    }
+  }
+
+  function handleTouchMove(e) {
+    if (!touchStartY) return;
+    const touchY = e.touches[0].clientY;
+    const deltaY = touchStartY - touchY;
+
+    if (mediaFullyExpanded) {
+      if (deltaY < -20 && window.scrollY <= 5) {
+        mediaFullyExpanded = false;
+        scrollProgress = 0.99;
+        e.preventDefault();
+        updateHero();
+      }
+      return;
+    }
+
+    const heroRect = hero.getBoundingClientRect();
+    if (heroRect.top > 50) return;
+
+    e.preventDefault();
+    const factor = deltaY < 0 ? 0.008 : 0.005;
+    scrollProgress = Math.min(Math.max(scrollProgress + deltaY * factor, 0), 1);
+    updateHero();
+
+    if (scrollProgress >= 1) {
+      mediaFullyExpanded = true;
+    }
+    touchStartY = touchY;
+  }
+
+  function handleTouchEnd() {
+    touchStartY = 0;
+  }
+
+  function handleScroll() {
+    if (!mediaFullyExpanded && scrollProgress > 0 && scrollProgress < 1) {
+      window.scrollTo(0, 0);
+    }
+  }
+
+  window.addEventListener('wheel', handleWheel, { passive: false });
+  window.addEventListener('touchstart', handleTouchStart, { passive: false });
+  window.addEventListener('touchmove', handleTouchMove, { passive: false });
+  window.addEventListener('touchend', handleTouchEnd);
+  window.addEventListener('scroll', handleScroll);
+})();
+
+// ===== ENTROPY ANIMATION (inside expanding media) =====
+(function() {
+  const canvas = document.getElementById('entropyCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h, particles;
+  let mouseX = -1000, mouseY = -1000;
+  const influenceRadius = 200;
+  const gridSize = 36;
+  const maxParticles = 600;
+
+  const container = canvas.parentElement;
+  container.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+  });
+
+  container.addEventListener('mouseleave', () => {
+    mouseX = -1000;
+    mouseY = -1000;
+  });
+
+  function initForSize(newW, newH) {
+    w = canvas.width = newW;
+    h = canvas.height = newH;
+    const cols = Math.ceil(w / gridSize);
+    const rows = Math.ceil(h / gridSize);
+    particles = [];
+    const total = cols * rows;
+    const skip = total > maxParticles ? Math.ceil(total / maxParticles) : 1;
+    let idx = 0;
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        if (idx++ % skip !== 0) continue;
+        particles.push({
+          x: i * gridSize + gridSize / 2,
+          y: j * gridSize + gridSize / 2,
+          baseX: i * gridSize + gridSize / 2,
+          baseY: j * gridSize + gridSize / 2,
+          size: Math.random() * 1.5 + 0.5,
+          phase: Math.random() * Math.PI * 2,
+          vx: 0, vy: 0,
+        });
+      }
+    }
+  }
+
+  initForSize(window.innerWidth, window.innerHeight);
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+
+  let time = 0;
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    time += 0.008;
+
+    particles.forEach(p => {
+      const dx = mouseX - p.baseX;
+      const dy = mouseY - p.baseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      let targetX = p.baseX, targetY = p.baseY;
+
+      if (dist < influenceRadius) {
+        const force = (1 - dist / influenceRadius);
+        const angle = Math.atan2(dy, dx);
+        const push = force * 25;
+        targetX = p.baseX - Math.cos(angle) * push + Math.sin(time * 2 + p.phase) * force * 8;
+        targetY = p.baseY - Math.sin(angle) * push + Math.cos(time * 2 + p.phase) * force * 8;
+      } else {
+        targetX = p.baseX + Math.sin(time * 0.5 + p.phase) * 1.5;
+        targetY = p.baseY + Math.cos(time * 0.5 + p.phase) * 1.5;
+      }
+
+      p.vx += (targetX - p.x) * 0.08;
+      p.vy += (targetY - p.y) * 0.08;
+      p.vx *= 0.85;
+      p.vy *= 0.85;
+      p.x += p.vx;
+      p.y += p.vy;
+
+      const chaos = dist < influenceRadius ? (1 - dist / influenceRadius) : 0;
+      const alpha = 0.12 + chaos * 0.6;
+      const size = p.size * (1 + chaos * 2);
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+      ctx.fill();
+    });
+
+    if (particles.length < 400) {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < gridSize * 1.8) {
+            const alpha = (1 - dist / (gridSize * 1.8)) * 0.06;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => {
+    initForSize(window.innerWidth, window.innerHeight);
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+  });
+  draw();
+})();
+
+// ===== CHART.JS INITIALIZATION =====
+(function() {
+  const fontFamily = "'Calibri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+  const textColor = '#d4c4c4';
+  const gridColor = 'rgba(255,255,255,0.06)';
+  const red = '#c62828';
+  const redLight = '#ef5350';
+  const gold = '#d4a017';
+  const goldLight = '#ffd54f';
+  const green = '#06d6a0';
+  const purple = '#a78bfa';
+  const orange = '#fb923c';
+  const coral = '#ff6b6b';
+
+  Chart.defaults.font.family = fontFamily;
+  Chart.defaults.color = textColor;
+  Chart.defaults.plugins.legend.labels.boxWidth = 12;
+  Chart.defaults.plugins.legend.labels.padding = 12;
+
+  function doughnutConfig(labels, data, colors) {
+    return {
+      type: 'doughnut',
+      data: { labels, datasets: [{ data, backgroundColor: colors, borderColor: 'rgba(26,10,10,0.8)', borderWidth: 2 }] },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 8 } },
+          datalabels: { color: '#fff', font: { size: 11, weight: 'bold' }, formatter: (v, ctx) => { const sum = ctx.dataset.data.reduce((a,b) => a+b, 0); return Math.round(v/sum*100) + '%'; }, display: (ctx) => ctx.dataset.data[ctx.dataIndex] / ctx.dataset.data.reduce((a,b) => a+b, 0) > 0.04 }
+        }
+      },
+      plugins: [ChartDataLabels]
+    };
+  }
+
+  // -- Ethnicity pie chart
+  new Chart(document.getElementById('chartEthnicity'), doughnutConfig(
+    ['White', 'Asian', 'Hispanic/Latino', 'Black/African American', 'Unknown', 'American Indian'],
+    [68, 14.1, 7.7, 5.6, 4.5, 0.1],
+    [red, gold, green, purple, '#8b7070', orange]
+  ));
+
+  // -- Languages pie chart
+  new Chart(document.getElementById('chartLanguages'), doughnutConfig(
+    ['Chinese', 'Spanish', 'Japanese', 'Other'],
+    [51, 33, 9, 7],
+    [red, gold, green, purple]
+  ));
+
+  // -- China Quant Concentration
+  new Chart(document.getElementById('chartChinaConcentration'), doughnutConfig(
+    ['>10bn RMB', '5-10bn RMB', '2-5bn RMB', '1-2bn RMB', '500mn-1bn RMB', '<500mn RMB'],
+    [32, 23, 40, 51, 63, 480],
+    [red, redLight, gold, goldLight, green, '#8b7070']
+  ));
+
+  // -- China Strategy Allocation
+  new Chart(document.getElementById('chartStrategyCN'), doughnutConfig(
+    ['EIF (Long-Only)', 'Equity MN', 'Equity L/S & Index-Free', 'CTA', 'Quant Macro', 'Stat Arb', 'Multi-strategy'],
+    [39, 33, 9, 8, 4, 4, 3],
+    [red, redLight, gold, goldLight, green, purple, orange]
+  ));
+
+  // -- US Strategy Allocation
+  new Chart(document.getElementById('chartStrategyUS'), doughnutConfig(
+    ['CTA', 'Quant Macro', 'Stat Arb', 'Quant EMN', 'Risk Premia'],
+    [35, 25, 16, 15, 9],
+    [gold, goldLight, red, redLight, green]
+  ));
+
+  // -- EIF Breakdown
+  new Chart(document.getElementById('chartEIFBreakdown'), doughnutConfig(
+    ['Broad-based Index', 'Index-Free EIFs', 'Other Index'],
+    [65, 29, 6],
+    [red, gold, '#8b7070']
+  ));
+
+  // -- EIF Detail (broad-based breakdown)
+  new Chart(document.getElementById('chartEIFDetail'), doughnutConfig(
+    ['CSI 500', 'CSI 1000', 'CSI 300', 'Others'],
+    [45, 13, 6, 1],
+    [red, redLight, gold, '#8b7070']
+  ));
+
+  // -- Global Quant AUM stacked bar
+  const globalYears = [];
+  for (let y = 1990; y <= 2016; y++) globalYears.push(y.toString());
+  const quantPct = [20,29,23,24,28,35,34,33,33,30,27,27,29,27,28,26,21,23,26,23,24,28,25,28,28,28,30];
+  const totalAUM = [50,60,70,100,120,140,180,250,300,350,400,450,460,520,700,850,1100,1500,1600,1100,1200,1300,1400,1600,1900,2200,2800];
+  const quantAUM = totalAUM.map((t, i) => Math.round(t * quantPct[i] / 100));
+  const nonQuantAUM = totalAUM.map((t, i) => t - quantAUM[i]);
+
+  new Chart(document.getElementById('chartGlobalAUM'), {
+    type: 'bar',
+    data: {
+      labels: globalYears,
+      datasets: [
+        { label: 'Non-Quant Strategies', data: nonQuantAUM, backgroundColor: 'rgba(139,112,112,0.6)', borderWidth: 0 },
+        { label: 'Quant Strategies', data: quantAUM, backgroundColor: 'rgba(198,40,40,0.7)', borderWidth: 0 }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 } } },
+        y: { stacked: true, grid: { color: gridColor }, title: { display: true, text: 'AUM ($bn)', color: textColor }, ticks: { font: { size: 10 } } }
+      },
+      plugins: {
+        legend: { position: 'top' },
+        datalabels: { display: false },
+        tooltip: {
+          callbacks: {
+            afterBody: (items) => { const idx = items[0].dataIndex; return 'Quant share: ' + quantPct[idx] + '%'; }
+          }
+        }
+      }
+    }
+  });
+
+  // -- China Quant Rapid Development (dual axis)
+  const cnYears = ['2016','2017','2018','2019','2020','2021','2022','2023Q3'];
+  const discAUM = [520,550,510,480,530,580,540,520];
+  const quantAUMCN = [16,30,40,60,100,170,214,190];
+  const cumLaunches = [200,350,500,700,1100,1800,2500,3200];
+  const quantShareCN = [3,6,8,17,19,24,27,27];
+
+  new Chart(document.getElementById('chartChinaAUM'), {
+    type: 'bar',
+    data: {
+      labels: cnYears,
+      datasets: [
+        { label: 'Discretionary AUM ($bn)', data: discAUM, backgroundColor: 'rgba(139,112,112,0.5)', borderWidth: 0, yAxisID: 'y' },
+        { label: 'Quant AUM ($bn)', data: quantAUMCN, backgroundColor: 'rgba(198,40,40,0.7)', borderWidth: 0, yAxisID: 'y' },
+        { label: 'Cum. Quant Launches', data: cumLaunches, type: 'line', borderColor: gold, backgroundColor: 'transparent', pointBackgroundColor: gold, pointRadius: 4, borderWidth: 2, yAxisID: 'y1' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { position: 'left', grid: { color: gridColor }, title: { display: true, text: 'AUM ($bn)', color: textColor }, ticks: { font: { size: 10 } } },
+        y1: { position: 'right', grid: { display: false }, title: { display: true, text: 'Cumulative Launches', color: gold }, ticks: { color: gold, font: { size: 10 } } }
+      },
+      plugins: { legend: { position: 'top' }, datalabels: { display: false } }
+    }
+  });
+
+  // -- Top 10 AUM Comparison
+  new Chart(document.getElementById('chartTop10AUM'), {
+    type: 'bar',
+    data: {
+      labels: ['China Top 10', 'Global Top 10'],
+      datasets: [{ data: [55, 735], backgroundColor: [red, gold], borderWidth: 0 }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      scales: {
+        x: { grid: { color: gridColor }, title: { display: true, text: 'AUM ($bn)', color: textColor } },
+        y: { grid: { display: false } }
+      },
+      plugins: {
+        legend: { display: false },
+        datalabels: { anchor: 'end', align: 'end', color: '#fff', font: { size: 13, weight: 'bold' }, formatter: v => '$' + v + 'B' }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+
+  // -- Quant Participation Rate
+  new Chart(document.getElementById('chartParticipation'), {
+    type: 'bar',
+    data: {
+      labels: ['China', 'United States'],
+      datasets: [
+        { label: 'Buy-Side Quant Funds', data: [25, 17], backgroundColor: 'rgba(198,40,40,0.7)' },
+        { label: 'Non-Bank Market Makers / HFT', data: [0, 41.5], backgroundColor: 'rgba(139,112,112,0.6)' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: { stacked: true, grid: { color: gridColor }, title: { display: true, text: '% of Equity Market Volume', color: textColor }, max: 70 }
+      },
+      plugins: {
+        datalabels: { color: '#fff', font: { size: 12, weight: 'bold' }, formatter: v => v > 0 ? v + '%' : '', anchor: 'center' }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+
+  // -- EIF Alpha vs US EMN
+  new Chart(document.getElementById('chartEIFvsEMN'), {
+    type: 'bar',
+    data: {
+      labels: ['2020', '2021', '2022', '2023'],
+      datasets: [
+        { label: 'CSI 300 EIF Alpha', data: [18, 19, 10, 7], backgroundColor: 'rgba(198,40,40,0.6)' },
+        { label: 'CSI 500 EIF Alpha', data: [25, 18, 11, 11], backgroundColor: 'rgba(212,160,23,0.6)' },
+        { label: 'CSI 1000 EIF Alpha', data: [31, 23, 16, 16], backgroundColor: 'rgba(6,214,160,0.5)' },
+        { label: 'US Quant EMN Return', data: [-15, 13, 5, 9], backgroundColor: 'rgba(167,139,250,0.6)' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { grid: { display: false } },
+        y: { grid: { color: gridColor }, title: { display: true, text: 'Alpha / Return (%)', color: textColor } }
+      },
+      plugins: {
+        datalabels: { display: false }
+      }
+    }
+  });
+
+  // -- Research Focus by Asset Class
+  new Chart(document.getElementById('chartResearchFocus'), {
+    type: 'bar',
+    data: {
+      labels: ['A-shares', 'Futures', 'Options', 'Bonds', 'HK Stocks', 'U.S. Stocks', 'EM Stocks', 'Crypto', 'Others', 'OTC Deriv.'],
+      datasets: [
+        { label: '2022', data: [78, 55, 30, 28, 18, 15, 7, 15, 3, 0], backgroundColor: 'rgba(139,112,112,0.6)' },
+        { label: '2023', data: [80, 58, 36, 32, 17, 13, 5, 5, 3, 25], backgroundColor: 'rgba(198,40,40,0.7)' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 } } },
+        y: { grid: { color: gridColor }, title: { display: true, text: '% of Institutions', color: textColor } }
+      },
+      plugins: { datalabels: { display: false } }
+    }
+  });
+
+  // -- Barra Factor Cumulative Returns (multi-line)
+  const barraLabels = ['Dec 2020','Mar 2021','Jun 2021','Sep 2021','Dec 2021','Mar 2022','Jun 2022','Sep 2022','Dec 2022','Mar 2023','Jun 2023','Sep 2023','Dec 2023'];
+  const barraData = {
+    'Beta':            [0, 5, 10, 15, 18, 12, 15, 18, 20, 22, 23, 24, 25],
+    'Momentum':        [0, 3, 8, 12, 14, 10, 12, 14, 15, 17, 18, 19, 20],
+    'Size':            [0, 2, 4, 5, 6, 4, 3, 4, 5, 5, 5, 5, 5],
+    'Earnings Yield':  [0, 1, 2, 3, 4, 3, 3, 4, 4, 5, 5, 5, 5],
+    'Resid. Vol':      [0, 3, 5, 2, -2, -5, -3, -1, 0, 1, 0, 0, 0],
+    'Growth':          [0, 2, 3, 1, -1, -3, -2, 0, 0, 1, 0, 0, 0],
+    'Book-to-Price':   [0, -1, -2, -3, -5, -7, -8, -9, -10, -10, -10, -10, -10],
+    'Leverage':        [0, -2, -4, -6, -8, -10, -12, -13, -14, -14, -15, -15, -15],
+    'Liquidity':       [0, -3, -5, -8, -10, -13, -15, -17, -18, -19, -20, -20, -20],
+    'Non-linear Size': [0, -4, -7, -10, -13, -16, -19, -21, -23, -24, -25, -25, -25]
+  };
+  const barraColors = [red, redLight, gold, goldLight, '#87ceeb', orange, '#9acd32', '#8b0000', '#654321', purple];
+
+  new Chart(document.getElementById('chartBarraFactors'), {
+    type: 'line',
+    data: {
+      labels: barraLabels,
+      datasets: Object.keys(barraData).map((key, i) => ({
+        label: key, data: barraData[key], borderColor: barraColors[i], backgroundColor: 'transparent',
+        borderWidth: 2, pointRadius: 0, tension: 0.3
+      }))
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 9 } } },
+        y: { grid: { color: gridColor }, title: { display: true, text: 'Cumulative Return (%)', color: textColor } }
+      },
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8 } }, datalabels: { display: false } }
+    }
+  });
+
+  // -- HFT Volume
+  const hftYears = [];
+  for (let y = 2005; y <= 2024; y++) hftYears.push(y.toString());
+  const hftUS = [21,26,35,52,61,56,55,51,53,49,51,53,55,52,53,59,55,55,55,56];
+  const hftCN = new Array(19).fill(null).concat([20]);
+
+  new Chart(document.getElementById('chartHFTVolume'), {
+    type: 'bar',
+    data: {
+      labels: hftYears,
+      datasets: [
+        { label: 'U.S. HFT %', data: hftUS, backgroundColor: 'rgba(212,160,23,0.6)', borderWidth: 0 },
+        { label: 'China HFT % (2024)', data: hftCN, backgroundColor: 'rgba(198,40,40,0.8)', borderWidth: 0 }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 } } },
+        y: { grid: { color: gridColor }, title: { display: true, text: '% of Equity Volume', color: textColor }, max: 70 }
+      },
+      plugins: { datalabels: { display: false } }
+    }
+  });
+
+  // -- Quants vs Discretionary (multi-line)
+  const qvdLabels = ['Jul 2021','Oct 2021','Jan 2022','Apr 2022','Jul 2022','Oct 2022','Jan 2023','Apr 2023','Jul 2023','Oct 2023','Jan 2024','Apr 2024','Jun 2024'];
+  const qvdData = {
+    '300 EIF Alpha':      [0, 5, 10, 12, 15, 18, 22, 25, 28, 32, 38, 35, 40],
+    '500 EIF Alpha':      [0, 6, 12, 14, 16, 19, 23, 26, 29, 32, 37, 33, 37],
+    '1000 EIF Alpha':     [0, 8, 15, 18, 21, 25, 30, 33, 36, 40, 48, 42, 47],
+    'Index-free EIF':     [0, 5, 10, 12, 14, 17, 20, 23, 25, 28, 34, 30, 35],
+    'Quant EMN':          [0, 3, 6, 7, 8, 10, 13, 15, 17, 19, 22, 20, 22],
+    'Quant T0':           [0, 4, 8, 10, 12, 15, 18, 21, 23, 25, 29, 27, 30],
+    'Disc. Equity Alpha': [0, 2, 0, -3, -5, -4, -2, 0, -1, -3, -5, -3, -2]
+  };
+  const qvdColors = [red, gold, green, redLight, purple, orange, '#8b7070'];
+
+  new Chart(document.getElementById('chartQuantVsDisc'), {
+    type: 'line',
+    data: {
+      labels: qvdLabels,
+      datasets: Object.keys(qvdData).map((key, i) => ({
+        label: key, data: qvdData[key], borderColor: qvdColors[i], backgroundColor: 'transparent',
+        borderWidth: 2, pointRadius: 0, tension: 0.3, borderDash: key.includes('Disc') ? [5,5] : []
+      }))
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 9 } } },
+        y: { grid: { color: gridColor }, title: { display: true, text: 'Cumulative Return (%)', color: textColor } }
+      },
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8 } }, datalabels: { display: false } }
+    }
+  });
+
+  // -- Quant Quake drawdown (16 managers)
+  const qqDates = ['Feb 1','Feb 2','Feb 5','Feb 6','Feb 7','Feb 8'];
+  const qqColors = [];
+  for (let i = 0; i < 16; i++) {
+    const t = i / 15;
+    qqColors.push('rgba(' + Math.round(198 - t * 160) + ',' + Math.round(40 + t * 100) + ',' + Math.round(40 + t * 120) + ',0.7)');
+  }
+  const qqData = [
+    [0, -0.5, -2, -3, -3.5, -3],
+    [0, -0.3, -1.5, -3, -4, -4.5],
+    [0, -0.8, -3, -4.5, -5, -5],
+    [0, -0.5, -2.5, -5, -6, -6.5],
+    [0, -1, -3.5, -6, -7, -7],
+    [0, -0.7, -3, -6, -7.5, -8],
+    [0, -1.2, -4, -7, -8.5, -8.5],
+    [0, -1, -4.5, -7.5, -9, -9],
+    [0, -1.5, -5, -8, -10, -10],
+    [0, -1.2, -5, -8.5, -11, -11.5],
+    [0, -1.5, -5.5, -9, -12, -12],
+    [0, -2, -6, -10, -13, -13],
+    [0, -2, -7, -11, -14, -14.5],
+    [0, -2.5, -7.5, -12, -15, -15],
+    [0, -3, -8, -13, -16, -17],
+    [0, -3.5, -9, -14, -17, -18]
+  ];
+
+  new Chart(document.getElementById('chartQuantQuake'), {
+    type: 'line',
+    data: {
+      labels: qqDates,
+      datasets: qqData.map((d, i) => ({
+        label: 'Manager ' + (i + 1), data: d, borderColor: qqColors[i], backgroundColor: 'transparent',
+        borderWidth: 1.5, pointRadius: 2, pointBackgroundColor: qqColors[i], tension: 0.3
+      }))
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: { grid: { display: false } },
+        y: { grid: { color: gridColor }, title: { display: true, text: 'Cumulative Alpha (%)', color: textColor } }
+      },
+      plugins: { legend: { display: false }, datalabels: { display: false } }
+    }
+  });
+
+  // -- AI's Role
+  new Chart(document.getElementById('chartAIRole'), {
+    type: 'bar',
+    data: {
+      labels: ['Identify Patterns\n& Trends', 'Optimize Portfolio\n& Risk Mgmt', 'Develop & Test\nStrategies', 'Monitor & Adjust\nPositions', 'Sentiment\nAnalysis', 'Automate Trading\nDecisions'],
+      datasets: [
+        { label: 'APAC', data: [65, 46, 31, 35, 31, 12], backgroundColor: 'rgba(198,40,40,0.7)' },
+        { label: 'North America', data: [48, 39, 34, 20, 23, 11], backgroundColor: 'rgba(212,160,23,0.6)' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 0, font: { size: 9 } } },
+        y: { grid: { color: gridColor }, title: { display: true, text: '% of Institutions', color: textColor }, max: 80 }
+      },
+      plugins: {
+        datalabels: { anchor: 'end', align: 'top', color: textColor, font: { size: 10 }, formatter: v => v + '%' }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+
+  // -- Box Plots (Tracking Error)
+  if (typeof BoxPlotChart !== 'undefined' || (Chart.controllers && Chart.controllers.boxplot)) {
+    new Chart(document.getElementById('chartTEBoxplot'), {
+      type: 'boxplot',
+      data: {
+        labels: ['CSI 300 EIF', 'CSI 500 EIF', 'CSI 1000 EIF'],
+        datasets: [{
+          label: 'Tracking Error',
+          backgroundColor: ['rgba(198,40,40,0.3)', 'rgba(212,160,23,0.3)', 'rgba(6,214,160,0.3)'],
+          borderColor: [red, gold, green],
+          borderWidth: 2,
+          data: [
+            { min: 3, q1: 4, median: 4.7, q3: 5.5, max: 7, outliers: [11] },
+            { min: 5, q1: 7, median: 7.8, q3: 10, max: 14, outliers: [17, 25] },
+            { min: 3, q1: 7, median: 7.9, q3: 10.5, max: 16 }
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { grid: { display: false } },
+          y: { grid: { color: gridColor }, title: { display: true, text: 'TE (%)', color: textColor } }
+        },
+        plugins: { legend: { display: false }, datalabels: { display: false } }
+      }
+    });
+
+    // -- Volatility box plot
+    new Chart(document.getElementById('chartVolBoxplot'), {
+      type: 'boxplot',
+      data: {
+        labels: ['Quant MN', 'Quant T0', 'Disc. Equity'],
+        datasets: [{
+          label: 'Annualized Volatility',
+          backgroundColor: ['rgba(198,40,40,0.3)', 'rgba(212,160,23,0.3)', 'rgba(139,112,112,0.3)'],
+          borderColor: [red, gold, '#8b7070'],
+          borderWidth: 2,
+          data: [
+            { min: 3, q1: 5, median: 6.38, q3: 10, max: 20 },
+            { min: 3, q1: 5, median: 6.57, q3: 9, max: 10 },
+            { min: 8, q1: 15, median: 20.55, q3: 25, max: 40, outliers: [55, 65] }
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { grid: { display: false } },
+          y: { grid: { color: gridColor }, title: { display: true, text: 'Vol (%)', color: textColor } }
+        },
+        plugins: { legend: { display: false }, datalabels: { display: false } }
+      }
+    });
+
+    // -- Sharpe box plot
+    new Chart(document.getElementById('chartSharpeBoxplot'), {
+      type: 'boxplot',
+      data: {
+        labels: ['Quant MN', 'Quant T0', 'Disc. Equity'],
+        datasets: [{
+          label: 'Sharpe Ratio',
+          backgroundColor: ['rgba(198,40,40,0.3)', 'rgba(212,160,23,0.3)', 'rgba(139,112,112,0.3)'],
+          borderColor: [red, gold, '#8b7070'],
+          borderWidth: 2,
+          data: [
+            { min: -2, q1: 0, median: 0.55, q3: 1, max: 2, outliers: [2.5] },
+            { min: 0, q1: 1.5, median: 1.83, q3: 2.5, max: 5 },
+            { min: -3, q1: -0.5, median: -0.39, q3: 0.5, max: 2 }
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { grid: { display: false } },
+          y: { grid: { color: gridColor }, title: { display: true, text: 'Sharpe', color: textColor } }
+        },
+        plugins: { legend: { display: false }, datalabels: { display: false } }
+      }
+    });
+
+    // -- EIF Annual Alpha Box Plots
+    new Chart(document.getElementById('chartEIFAlphaBoxplot'), {
+      type: 'boxplot',
+      data: {
+        labels: ['300\n2020', '300\n2021', '300\n2022', '300\n2023', '500\n2020', '500\n2021', '500\n2022', '500\n2023', '1000\n2020', '1000\n2021', '1000\n2022', '1000\n2023'],
+        datasets: [{
+          label: 'Annual Alpha',
+          backgroundColor: [
+            'rgba(198,40,40,0.3)','rgba(198,40,40,0.3)','rgba(198,40,40,0.3)','rgba(198,40,40,0.3)',
+            'rgba(212,160,23,0.3)','rgba(212,160,23,0.3)','rgba(212,160,23,0.3)','rgba(212,160,23,0.3)',
+            'rgba(6,214,160,0.3)','rgba(6,214,160,0.3)','rgba(6,214,160,0.3)','rgba(6,214,160,0.3)'
+          ],
+          borderColor: [red,red,red,red,gold,gold,gold,gold,green,green,green,green],
+          borderWidth: 2,
+          data: [
+            { min: -10, q1: 12, median: 18, q3: 28, max: 50 },
+            { min: 0, q1: 13, median: 19, q3: 25, max: 30 },
+            { min: -5, q1: 5, median: 10, q3: 15, max: 25 },
+            { min: 0, q1: 3, median: 7, q3: 12, max: 15 },
+            { min: -20, q1: 18, median: 25, q3: 33, max: 45 },
+            { min: -10, q1: 12, median: 18, q3: 25, max: 35 },
+            { min: 0, q1: 7, median: 11, q3: 18, max: 30, outliers: [68] },
+            { min: -5, q1: 7, median: 11, q3: 16, max: 25, outliers: [40] },
+            { min: 10, q1: 24, median: 31, q3: 40, max: 50 },
+            { min: 10, q1: 18, median: 23, q3: 30, max: 40 },
+            { min: 5, q1: 12, median: 16, q3: 20, max: 25 },
+            { min: 5, q1: 12, median: 16, q3: 20, max: 25 }
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+          y: { grid: { color: gridColor }, title: { display: true, text: 'Annual Alpha (%)', color: textColor } }
+        },
+        plugins: { legend: { display: false }, datalabels: { display: false } }
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
